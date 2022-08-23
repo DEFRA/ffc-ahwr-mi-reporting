@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+azurePort="7081"
+
+set -e
+projectRoot="$(a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; cd "$a/.." || return; pwd)"
+
+cd "${projectRoot}"
+
+docker-compose down $@ && \
+    pgrep -f "^func start -p $azurePort" | xargs kill -9

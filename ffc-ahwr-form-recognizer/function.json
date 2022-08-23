@@ -1,0 +1,12 @@
+{
+  "disabled": false,
+  "bindings": [
+      {
+          "name": "document",
+          "type": "blobTrigger",
+          "direction": "in",
+          "path": "reports/forms/{name}",
+          "connection":"STORAGE_CONNECTION_STRING"
+      }
+  ]
+}
