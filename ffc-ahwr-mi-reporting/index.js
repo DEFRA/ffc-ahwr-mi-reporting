@@ -14,5 +14,6 @@ module.exports = async (context, miReportTimer) => {
   if (miReportTimer.isPastDue) {
     context.log('Node is running late')
   }
+
   context.log('Node timer trigger function ran', timeStamp)
 }

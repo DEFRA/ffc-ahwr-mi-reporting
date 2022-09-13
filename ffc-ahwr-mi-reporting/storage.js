@@ -6,6 +6,7 @@ let blobServiceClient
 let container
 
 const connect = () => {
+  console.log('Connecting to storage', connectionString, containerName, tableName)
   blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
   container = blobServiceClient.getContainerClient(containerName)
   tableClient = TableClient.fromConnectionString(connectionString, tableName, { allowInsecureConnection: true })
