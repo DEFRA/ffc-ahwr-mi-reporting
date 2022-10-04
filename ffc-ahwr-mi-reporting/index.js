@@ -8,7 +8,7 @@ module.exports = async (context, miReportTimer) => {
   const events = await queryEntitiesByTimestamp()
   if (events.length) {
     context.log('Report creation started', timeStamp)
-    buildMiReport(events)
+    await buildMiReport(events)
   }
 
   if (miReportTimer.isPastDue) {
