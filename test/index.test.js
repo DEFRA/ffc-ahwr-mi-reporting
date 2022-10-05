@@ -1,6 +1,10 @@
 const mockContext = require('./mock-context')
 const mockTimer = require('./mock-timer')
 const mockUpload = jest.fn()
+
+const send = require('../ffc-ahwr-mi-reporting/email/notify-send')
+jest.mock('../ffc-ahwr-mi-reporting/email/notify-send')
+
 jest.mock('@azure/storage-blob', () => {
   return {
     BlobServiceClient: {
@@ -60,5 +64,6 @@ describe('report', () => {
   test('should write file to share', async () => {
     await generateReport(mockContext, mockTimer)
     expect(mockUpload).toHaveBeenCalled()
+    expect(send).toHaveBeenCalled()
   })
 })
