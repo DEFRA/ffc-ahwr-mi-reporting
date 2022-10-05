@@ -2,6 +2,8 @@ const mockContext = require('./mock-context')
 const mockTimer = require('./mock-timer')
 const mockUpload = jest.fn()
 
+jest.mock('../ffc-ahwr-mi-reporting/email/notify-client')
+
 const send = require('../ffc-ahwr-mi-reporting/email/notify-send')
 jest.mock('../ffc-ahwr-mi-reporting/email/notify-send')
 
