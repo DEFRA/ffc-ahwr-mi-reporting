@@ -42,8 +42,8 @@ jest.mock('@azure/data-tables', () => {
     }
   }
 })
+
 const generateReport = require('../ffc-ahwr-mi-reporting')
-let notifyClient
 
 describe('report', () => {
   beforeEach(() => {
