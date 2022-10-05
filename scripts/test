@@ -1,0 +1,39 @@
+#!/usr/bin/env sh
+
+set -e
+projectRoot="$(a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; cd "$a/.." || return; pwd)"
+
+show_help() {
+  echo "
+    Usage: scripts/test [OPTION...]
+    Run tests.
+
+    Options:
+      -w, --watch   watch tests
+      -h, --help    display this help text
+    "
+}
+
+while :; do
+  case $1 in
+    -w|--watch)
+      watch="true"
+      ;;
+
+    -h|--help)   # Call a "show_help" function to display a synopsis, then exit.
+      show_help
+      exit
+      ;;
+    *)
+      break
+  esac
+
+  shift
+done
+
+# Run tests
+if [ "${watch}" = "true" ]; then
+  npm run test:watch
+else
+  npm run test
+fi

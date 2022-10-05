@@ -1,3 +1,2 @@
-# FFC AHWR MI Reporting
-
-> Azure function app to create reporting data
+# ffc-pay-mi-reporting
+FFC Pay MI report
