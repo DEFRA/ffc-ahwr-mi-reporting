@@ -2,7 +2,7 @@ const { queryEntitiesByTimestamp, connect } = require('./storage')
 const buildMiReport = require('./mi-report')
 
 module.exports = async (context, miReportTimer) => {
-  connect()
+  await connect()
   const timeStamp = new Date().toISOString()
   context.log('Sourcing report data')
   const events = await queryEntitiesByTimestamp()

@@ -4,11 +4,19 @@ const { connectionString, containerName, tableName } = require('./config')
 let tableClient
 let blobServiceClient
 let container
+let containersInitialised
 
-const connect = () => {
+const initialiseContainers = async () => {
+  console.log('Making sure blob containers exist')
+  await container.createIfNotExists()
+  containersInitialised = true
+}
+
+const connect = async () => {
   console.log('Connecting to storage', connectionString, containerName, tableName)
   blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
   container = blobServiceClient.getContainerClient(containerName)
+  containersInitialised ?? await initialiseContainers()
   tableClient = TableClient.fromConnectionString(connectionString, tableName, { allowInsecureConnection: true })
 }
 
