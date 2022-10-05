@@ -2,9 +2,9 @@ const mockContext = require('./mock-context')
 const mockTimer = require('./mock-timer')
 const mockUpload = jest.fn()
 
-const config = require('../ffc-ahwr-mi-reporting/config')
-jest.mock('../ffc-ahwr-mi-reporting/config')
+const originalEnv = process.env
 
+const notifyClient = require('../ffc-ahwr-mi-reporting/email/notify-client')
 jest.mock('../ffc-ahwr-mi-reporting/email/notify-client')
 
 const send = require('../ffc-ahwr-mi-reporting/email/notify-send')
@@ -49,7 +49,11 @@ const generateReport = require('../ffc-ahwr-mi-reporting')
 
 describe('report', () => {
   beforeEach(() => {
-    config.notifyApiKey = 'test-1234-567-890'
+    process.env = {
+      ...originalEnv,
+      NOTIFY_API_KEY: 'examplekey-644a2a30-7487-4e98-a908-b5ecd82d5225-644a2a30-7487-4e98-a908-b5ecd82d5225'
+    }
+
     mockEvents = [{
       partitionKey: 'partition',
       EventType: 'batch-processing',
@@ -65,6 +69,7 @@ describe('report', () => {
 
   afterEach(() => {
     jest.clearAllMocks()
+    process.env = originalEnv
   })
 
   test('should write file to share', async () => {
