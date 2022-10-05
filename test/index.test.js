@@ -2,6 +2,9 @@ const mockContext = require('./mock-context')
 const mockTimer = require('./mock-timer')
 const mockUpload = jest.fn()
 
+const config = require('../ffc-ahwr-mi-reporting/config')
+jest.mock('../ffc-ahwr-mi-reporting/config')
+
 jest.mock('../ffc-ahwr-mi-reporting/email/notify-client')
 
 const send = require('../ffc-ahwr-mi-reporting/email/notify-send')
@@ -46,6 +49,7 @@ const generateReport = require('../ffc-ahwr-mi-reporting')
 
 describe('report', () => {
   beforeEach(() => {
+    config.notifyApiKey = 'test-1234-567-890'
     mockEvents = [{
       partitionKey: 'partition',
       EventType: 'batch-processing',
