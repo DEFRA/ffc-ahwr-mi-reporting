@@ -4,7 +4,6 @@ const mockUpload = jest.fn()
 
 const originalEnv = process.env
 
-const notifyClient = require('../ffc-ahwr-mi-reporting/email/notify-client')
 jest.mock('../ffc-ahwr-mi-reporting/email/notify-client')
 
 const send = require('../ffc-ahwr-mi-reporting/email/notify-send')
