@@ -78,7 +78,7 @@ const parseCsvData = (events) => {
   return {
     sbi: organisation?.sbi,
     cph: organisation?.cph,
-    name: organisation?.name,
+    name: organisation?.name.replace(/,/g, '","'),
     farmer: organisation?.farmerName,
     address: organisation?.address.replace(/,/g, '","'),
     email: organisation?.email,
