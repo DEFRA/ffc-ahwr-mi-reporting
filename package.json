@@ -1,6 +1,6 @@
 {
   "name": "ffc-ahwr-mi-reporting",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Azure Function to create MI reports",
   "author": "Defra",
   "contributors": [
@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "lint": "standard",
+    "lint-fix": "standard --fix",
     "start": "func start -p 7081",
     "start:detached": "func start -p 7081 1> /dev/null 2> /dev/null &",
     "start:verbose": "func start -p 7081 --verbose",
@@ -21,7 +22,7 @@
     "@azure/storage-blob": "12.10.0",
     "joi": "17.6.0",
     "moment": "2.29.4",
-    "notifications-node-client": "^5.1.1"
+    "notifications-node-client": "^7.0.0"
   },
   "devDependencies": {
     "@types/jest": "28.1.6",

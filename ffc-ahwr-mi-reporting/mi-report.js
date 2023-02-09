@@ -2,6 +2,7 @@ const moment = require('moment')
 const { writeFile } = require('./storage')
 const createFileName = require('./create-filename')
 const send = require('./email/notify-send')
+const groupByPartitionKey = require('./group-by-partition-key')
 
 const formatDate = (dateToFormat, currentDateFormat = 'YYYY-MM-DD', dateFormat = 'DD/MM/YYYY HH:mm') => {
   if (dateToFormat) {
@@ -16,15 +17,6 @@ const convertFromBoolean = (value) => {
   }
 
   return ''
-}
-
-const groupByPartitionKey = (events) => {
-  return events.reduce((group, event) => {
-    const { partitionKey } = event
-    group[partitionKey] = group[partitionKey] ?? []
-    group[partitionKey].push(event)
-    return group
-  }, {})
 }
 
 const parsePayload = (events, eventType) => {
