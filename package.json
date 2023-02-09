@@ -1,6 +1,6 @@
 {
   "name": "ffc-ahwr-mi-reporting",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Azure Function to create MI reports",
   "author": "Defra",
   "contributors": [
