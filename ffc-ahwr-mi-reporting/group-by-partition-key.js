@@ -1,5 +1,4 @@
 const groupByPartitionKey = (events) => {
-  console.log(`events is ${JSON.stringify(events)}`)
   return events.reduce((group, event) => {
     let { partitionKey } = event
     if (partitionKey && partitionKey.includes('_')) {
