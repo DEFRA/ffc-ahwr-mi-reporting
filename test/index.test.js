@@ -1,32 +1,3 @@
-const mockContext = require('./mock-context')
-const mockTimer = require('./mock-timer')
-const mockUpload = jest.fn()
-
-jest.mock('notifications-node-client')
-
-const send = require('../ffc-ahwr-mi-reporting/email/notify-send')
-jest.mock('../ffc-ahwr-mi-reporting/email/notify-send')
-
-jest.mock('@azure/storage-blob', () => {
-  return {
-    BlobServiceClient: {
-      fromConnectionString: jest.fn().mockImplementation(() => {
-        return {
-          getContainerClient: jest.fn().mockImplementation(() => {
-            return {
-              createIfNotExists: jest.fn(),
-              getBlockBlobClient: jest.fn().mockImplementation(() => {
-                return {
-                  upload: mockUpload
-                }
-              })
-            }
-          })
-        }
-      })
-    }
-  }
-})
 let mockEvents = []
 jest.mock('@azure/data-tables', () => {
   return {
@@ -43,9 +14,73 @@ jest.mock('@azure/data-tables', () => {
   }
 })
 
-const generateReport = require('../ffc-ahwr-mi-reporting')
+let generateReport
+let mockContext
+let mockTimer
+const mockSendEmail = jest.fn()
+const mockUpload = jest.fn()
+const mockWriteFile = jest.fn()
+const mockTemplateId = '133333'
+const mockEnvironment = 'test'
+const mockMiEmailAddress = 'test@email.com'
 
 describe('report', () => {
+  beforeAll(() => {
+    mockContext = require('./mock-context')
+    mockTimer = require('./mock-timer')
+
+    jest.mock('notifications-node-client', () => ({
+      NotifyClient: jest.fn().mockImplementation(() => ({
+        sendEmail: mockSendEmail,
+        prepareUpload: jest.fn().mockReturnValue({ })
+      }))
+    }))
+
+    jest.mock('../ffc-ahwr-mi-reporting/storage', () => {
+      return {
+        queryEntitiesByTimestamp: jest.fn().mockResolvedValueOnce([{
+          foo: 'bar'
+        }]),
+        connect: jest.fn(),
+        writeFile: mockWriteFile,
+        downloadFile: jest.fn()
+      }
+    })
+
+    jest.mock('../ffc-ahwr-mi-reporting/config', () => {
+      const originalModule = jest.requireActual('../ffc-ahwr-mi-reporting/config')
+      return {
+        ...originalModule,
+        templateMiReport: mockTemplateId,
+        environment: mockEnvironment,
+        miEmailAddress: mockMiEmailAddress
+      }
+    })
+
+    jest.mock('@azure/storage-blob', () => {
+      return {
+        BlobServiceClient: {
+          fromConnectionString: jest.fn().mockImplementation(() => {
+            return {
+              getContainerClient: jest.fn().mockImplementation(() => {
+                return {
+                  createIfNotExists: jest.fn(),
+                  getBlockBlobClient: jest.fn().mockImplementation(() => {
+                    return {
+                      upload: mockUpload
+                    }
+                  })
+                }
+              })
+            }
+          })
+        }
+      }
+    })
+
+    generateReport = require('../ffc-ahwr-mi-reporting')
+  })
+
   beforeEach(() => {
     mockEvents = [{
       partitionKey: 'partition',
@@ -66,7 +101,12 @@ describe('report', () => {
 
   test('should write file to share', async () => {
     await generateReport(mockContext, mockTimer)
-    expect(mockUpload).toHaveBeenCalled()
-    expect(send).toHaveBeenCalled()
+    expect(mockWriteFile).toHaveBeenCalled()
+    expect(mockSendEmail).toHaveBeenCalledWith(mockTemplateId, mockMiEmailAddress, {
+      personalisation: {
+        environment: mockEnvironment,
+        link_to_file: expect.anything()
+      }
+    })
   })
 })
