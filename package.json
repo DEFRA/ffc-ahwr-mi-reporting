@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "lint": "standard",
+    "lint-fix": "standard --fix",
     "start": "func start -p 7081",
     "start:detached": "func start -p 7081 1> /dev/null 2> /dev/null &",
     "start:verbose": "func start -p 7081 --verbose",
