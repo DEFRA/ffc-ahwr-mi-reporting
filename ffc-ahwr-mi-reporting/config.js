@@ -4,5 +4,6 @@ module.exports = {
   tableName: 'ahwreventstore',
   notifyApiKey: process.env.NOTIFY_API_KEY,
   templateMiReport: process.env.MI_TEMPLATE_REPORT,
-  miEmailAddress: process.env.MI_EMAIL_ADDRESS
+  miEmailAddress: process.env.MI_EMAIL_ADDRESS,
+  environment: process.env.ENVIRONMENT ?? 'unknown'
 }
