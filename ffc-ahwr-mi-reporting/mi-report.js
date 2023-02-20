@@ -126,7 +126,7 @@ const parseEligibilityCsvData = (events) => {
     eligible: eligible.value ? eligible.value : accessGranted.value ? accessGranted.value : 'FALSE',
     registrationOfInterestDate: registrationOfInterestTimestamp.value ? registrationOfInterestTimestamp.value : waitingListUpdated.value ? waitingListUpdated.value : 'n/a',
     ineligibleReason: ineligibleReason.value ? ineligibleReason.value : 'n/a',
-    onWaitingList: accessGranted.value ? accessGranted.value : onWaitingList.value ? onWaitingList.value : 'FALSE',
+    onWaitingList: accessGranted.value ? 'FALSE' : onWaitingList.value ? onWaitingList.value : 'FALSE',
     accessGranted: accessGranted.value ? accessGranted.value : 'FALSE',
     accessGrantedTimestamp: accessGrantedTimestamp.value ? accessGrantedTimestamp.value : 'n/a'
   }
