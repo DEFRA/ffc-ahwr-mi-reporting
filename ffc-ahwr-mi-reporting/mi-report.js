@@ -1,7 +1,7 @@
 const moment = require('moment')
 const { writeFile } = require('./storage')
 const createFileName = require('./create-filename')
-const send = require('./email/notify-send')
+const { send, sendEligibilityReport } = require('./email/notify-send')
 const groupByPartitionKey = require('./group-by-partition-key')
 
 const formatDate = (dateToFormat, currentDateFormat = 'YYYY-MM-DD', dateFormat = 'DD/MM/YYYY HH:mm') => {
@@ -98,11 +98,28 @@ const parseCsvData = (events) => {
   }
 }
 
+const parseEligibilityCsvData = (events) => {
+  return {
+    foo: 'bar'
+  }
+}
+
 const saveCsv = async (miParsedData) => {
   if (miParsedData) {
     const csvData = convertToCSV(miParsedData)
-    await writeFile(createFileName(), csvData)
+    await writeFile(createFileName('ahwr-mi-report.csv'), csvData)
     await send()
+    console.log('CSV saved')
+  } else {
+    console.log('No data to create CSV')
+  }
+}
+
+const saveEligibilityCsv = async (miParsedData) => {
+  if (miParsedData) {
+    const csvData = convertToCSV(miParsedData)
+    await writeFile(createFileName('ahwr-eligibility-mi-report.csv'), csvData)
+    await sendEligibilityReport()
     console.log('CSV saved')
   } else {
     console.log('No data to create CSV')
@@ -119,4 +136,17 @@ const buildMiReport = async (events) => {
   await saveCsv(miParsedData)
 }
 
-module.exports = buildMiReport
+const buildEligibilityMiReport = async (events) => {
+  const miParsedData = []
+  const eventByPartitionKey = groupByPartitionKey(events)
+  for (const eventGroup in eventByPartitionKey) {
+    const eventData = eventByPartitionKey[eventGroup]
+    miParsedData.push(parseEligibilityCsvData(eventData))
+  }
+  await saveEligibilityCsv(miParsedData)
+}
+
+module.exports = {
+  buildMiReport,
+  buildEligibilityMiReport
+}
