@@ -99,8 +99,36 @@ const parseCsvData = (events) => {
 }
 
 const parseEligibilityCsvData = (events) => {
+  const sbi = parseData(events, 'registered_their_interest', 'sbi')
+  const crn = parseData(events, 'registered_their_interest', 'crn')
+  const businessEmail = parseData(events, 'registered_their_interest', 'businessEmail')
+  const eligible = parseData(events, 'registered_their_interest', 'eligible')
+  const registrationOfInterestTimestamp = parseData(events, 'registered_their_interest', 'interestRegisteredAt')
+  const ineligibleReason = parseData(events, 'registered_their_interest', 'ineligibleReason')
+  const onWaitingList = parseData(events, 'registered_their_interest', 'onWaitingList')
+
+  const accessGranted = parseData(events, 'gained_access_to_the_apply_journey', 'accessGranted')
+  const accessGrantedTimestamp = parseData(events, 'gained_access_to_the_apply_journey', 'accessGrantedAt')
+  const sbi2 = parseData(events, 'gained_access_to_the_apply_journey', 'sbi')
+  const crn2 = parseData(events, 'gained_access_to_the_apply_journey', 'crn')
+  const email2 = parseData(events, 'gained_access_to_the_apply_journey', 'businessEmail')
+  const waitingListUpdated = parseData(events, 'gained_access_to_the_apply_journey', 'waitingUpdatedAt')
+
+  // it is possible to have the gained_access_to_the_apply_journey event without the registered_their_interest
+  // if the registration came before we released. Therefore, to avoid empty data do a comparison between sbi on register your interest
+  // and the sbi form apply guidance invite 
+
+
   return {
-    foo: 'bar'
+    sbi: sbi.value ? sbi.value : sbi2 ? sbi2.value : 'n/a',
+    crn: crn.value ? crn.value : crn2 ? crn2.value : 'n/a',
+    businessEmail: businessEmail.value ? businessEmail.value : email2 ? email2.value : 'n/a',
+    eligible: eligible.value ? eligible.value : accessGranted.value ? accessGranted.value : 'FALSE',
+    registrationOfInterestDate: registrationOfInterestTimestamp.value ? registrationOfInterestTimestamp.value : waitingListUpdated.value ? waitingListUpdated.value : 'n/a',
+    ineligibleReason: ineligibleReason.value ? ineligibleReason.value : 'n/a',
+    onWaitingList: accessGranted.value ? accessGranted.value : onWaitingList.value ? onWaitingList.value : 'FALSE',
+    accessGranted: accessGranted.value ? accessGranted.value : 'FALSE',
+    accessGrantedTimestamp: accessGrantedTimestamp.value ? accessGrantedTimestamp.value : 'n/a'
   }
 }
 
@@ -141,7 +169,10 @@ const buildEligibilityMiReport = async (events) => {
   const eventByPartitionKey = groupByPartitionKey(events)
   for (const eventGroup in eventByPartitionKey) {
     const eventData = eventByPartitionKey[eventGroup]
-    miParsedData.push(parseEligibilityCsvData(eventData))
+    const filteredEvents = eventData.filter(event => event.EventType === 'registered_their_interest' || event.EventType === 'gained_access_to_the_apply_journey')  
+    if (filteredEvents.length != 0) {
+      miParsedData.push(parseEligibilityCsvData(eventData))
+    }
   }
   await saveEligibilityCsv(miParsedData)
 }

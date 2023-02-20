@@ -8,11 +8,11 @@ const send = async () => {
     const contents = await downloadFile(createFileName('ahwr-mi-report.csv'))
     const personalisation = { environment, link_to_file: notifyClient.prepareUpload(contents, true) }
     console.log(`Sending MI report to email ${miEmailAddress} for environment ${environment}`)
-    return notifyClient.sendEmail(
-      templateMiReport,
-      miEmailAddress,
-      { personalisation }
-    )
+    // return notifyClient.sendEmail(
+    //   templateMiReport,
+    //   miEmailAddress,
+    //   { personalisation }
+    // )
   }
 }
 

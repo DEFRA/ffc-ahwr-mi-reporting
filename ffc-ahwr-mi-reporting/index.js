@@ -10,6 +10,8 @@ module.exports = async (context, miReportTimer) => {
     context.log('Report creation started', timeStamp)
     await buildMiReport(events)
     await buildEligibilityMiReport(events)
+  } else {
+    context.log('No events found')
   }
 
   if (miReportTimer.isPastDue) {
