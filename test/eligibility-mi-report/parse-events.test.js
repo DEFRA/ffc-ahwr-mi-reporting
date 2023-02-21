@@ -48,15 +48,6 @@ describe('Parse Events', () => {
                 "raisedOn":"2023-02-21T12:32:01.348Z"
             }`,
             Status: 'success'
-          },
-          {
-            toString: () => 'no events',
-            given: {
-              events: []
-            },
-            expect: {
-              parsedEvents: []
-            }
           }
         ]
       },
@@ -74,6 +65,15 @@ describe('Parse Events', () => {
             accessGrantedTimestamp: '2023-02-21T12:32:00.765Z'
           }
         ]
+      }
+    },
+    {
+      toString: () => 'no events',
+      given: {
+        events: []
+      },
+      expect: {
+        parsedEvents: []
       }
     }
   ])('%s', async (testCase) => {
