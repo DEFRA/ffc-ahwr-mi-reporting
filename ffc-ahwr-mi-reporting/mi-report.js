@@ -159,7 +159,10 @@ const buildMiReport = async (events) => {
   const eventByPartitionKey = groupByPartitionKey(events)
   for (const eventGroup in eventByPartitionKey) {
     const eventData = eventByPartitionKey[eventGroup]
-    miParsedData.push(parseCsvData(eventData))
+    const filteredEvents = eventData.filter(event => event.EventType !== 'registration_of_interest' || event.EventType !== 'gained_access_to_the_apply_journey')  
+    if (filteredEvents.length != 0) {
+      miParsedData.push(parseCsvData(filteredEvents))
+    }
   }
   await saveCsv(miParsedData)
 }
@@ -171,7 +174,7 @@ const buildEligibilityMiReport = async (events) => {
     const eventData = eventByPartitionKey[eventGroup]
     const filteredEvents = eventData.filter(event => event.EventType === 'registration_of_interest' || event.EventType === 'gained_access_to_the_apply_journey')  
     if (filteredEvents.length != 0) {
-      miParsedData.push(parseEligibilityCsvData(eventData))
+      miParsedData.push(parseEligibilityCsvData(filteredEvents))
     }
   }
   await saveEligibilityCsv(miParsedData)
