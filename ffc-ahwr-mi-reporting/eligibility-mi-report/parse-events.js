@@ -34,14 +34,43 @@ const parse = (events) => {
   }
 }
 
+const parseDuplicateSubmissions = (events) => {
+  const sbi = parseData(events, 'duplicate_submission', 'sbi')
+  const crn = parseData(events, 'duplicate_submission', 'crn')
+  const businessEmail = parseData(events, 'duplicate_submission', 'businessEmail')
+  const registrationOfInterestTimestamp = parseData(events, 'duplicate_submission', 'interestRegisteredAt')
+  const eligible = parseData(events, 'duplicate_submission', 'eligible')
+  const ineligibleReason = parseData(events, 'duplicate_submission', 'ineligibleReason')
+  const onWaitingList = parseData(events, 'duplicate_submission', 'onWaitingList')
+  const accessGranted = parseData(events, 'duplicate_submission', 'accessGranted')
+  const accessGrantedTimestamp = parseData(events, 'duplicate_submission', 'accessGrantedAt')
+
+  return {
+    sbi: sbi?.value,
+    crn: crn?.value,
+    businessEmail: businessEmail?.value,
+    registrationOfInterestTimestamp: registrationOfInterestTimestamp?.value,
+    eligible: eligible?.value,
+    ineligibleReason: ineligibleReason?.value,
+    onWaitingList: onWaitingList?.value ? 'TRUE' : 'FALSE',
+    accessGranted: accessGranted?.value,
+    accessGrantedTimestamp: accessGrantedTimestamp?.value
+  }
+}
+
 const parseEvents = (events) => {
   const parsedEvents = []
   const eventByPartitionKey = groupByPartitionKey(events)
   for (const eventGroup in eventByPartitionKey) {
     const eventData = eventByPartitionKey[eventGroup]
-    const filteredEvents = eventData.filter(event => event.EventType === 'registration_of_interest' || event.EventType === 'gained_access_to_the_apply_journey')
+    const filteredEvents = eventData
+      .filter(event => event.EventType === 'registration_of_interest' || event.EventType === 'gained_access_to_the_apply_journey')
     if (filteredEvents.length !== 0) {
       parsedEvents.push(parse(filteredEvents))
+    }
+    const duplicateSubmissions = eventData.filter(event => event.EventType === 'duplicate_submission')
+    if (duplicateSubmissions.length !== 0) {
+      parsedEvents.push(parseDuplicateSubmissions(duplicateSubmissions))
     }
   }
   return parsedEvents
