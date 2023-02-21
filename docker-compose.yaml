@@ -7,9 +7,9 @@ services:
     volumes:
       - azurite_data:/data
     ports:
-      - "10015:10000"
-      - "10016:10001"
-      - "10017:10002"
+      - "10006:10000"
+      - "10007:10001"
+      - "10008:10002"
 
 volumes:
   azurite_data:

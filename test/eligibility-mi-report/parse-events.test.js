@@ -19,16 +19,7 @@ describe('Parse Events', () => {
 
   test.each([
     {
-      toString: () => 'empty events',
-      given: {
-        events: []
-      },
-      expect: {
-        parsedEvents: []
-      }
-    },
-    {
-      toString: () => 'one event',
+      toString: () => 'single "gained_access_to_the_apply_journey" event',
       given: {
         events: [
           {
@@ -48,7 +39,8 @@ describe('Parse Events', () => {
                     "businessEmail":"business2@email.com",
                     "onWaitingList":false,
                     "waitingUpdatedAt":"2023-02-21T12:31:51.354Z",
-                    "eligible":true,"ineligibleReason":"n/a",
+                    "eligible":true,
+                    "ineligibleReason":"n/a",
                     "accessGranted":true,
                     "accessGrantedAt":"2023-02-21T12:32:00.765Z"
                 },
@@ -56,6 +48,15 @@ describe('Parse Events', () => {
                 "raisedOn":"2023-02-21T12:32:01.348Z"
             }`,
             Status: 'success'
+          },
+          {
+            toString: () => 'no events',
+            given: {
+              events: []
+            },
+            expect: {
+              parsedEvents: []
+            }
           }
         ]
       },
