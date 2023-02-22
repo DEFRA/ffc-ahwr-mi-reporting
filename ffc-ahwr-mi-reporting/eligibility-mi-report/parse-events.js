@@ -35,6 +35,7 @@ const parse = (events) => {
 }
 
 const parseEvents = (events) => {
+  console.log(events)
   const parsedEvents = []
   const eventByPartitionKey = groupByPartitionKey(events)
   for (const eventGroup in eventByPartitionKey) {

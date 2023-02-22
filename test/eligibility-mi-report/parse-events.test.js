@@ -134,7 +134,7 @@ describe('Parse Events', () => {
       }
     },
     {
-      toString: () => 'duplicate submission',
+      toString: () => 'duplicate submissions',
       given: {
         events: [
           {
@@ -281,6 +281,95 @@ describe('Parse Events', () => {
             registrationOfInterestTimestamp: '2023-02-22T12:41:59.181Z',
             eligible: false,
             ineligibleReason: 'Duplicate submission',
+            onWaitingList: 'FALSE',
+            accessGranted: false,
+            accessGrantedTimestamp: 'n/a'
+          }
+        ]
+      }
+    },
+    {
+      toString: () => 'two "no_match" events',
+      given: {
+        events: [
+          {
+            partitionKey: '108675111',
+            rowKey: '108675111_1677059013159',
+            timestamp: '2023-02-22T09:43:34.6230164Z',
+            SessionId: '108675111_1103314955',
+            EventType: 'no_match',
+            EventRaised: '2023-02-22T09:43:33.159Z',
+            EventBy: 'business3@email.com',
+            Payload: `{
+              "type":"no_match",
+              "message":"The customer has been recognised as ineligible",
+              "data":{
+                "sbi":"108675111",
+                "crn":"1103314955",
+                "businessEmail":"business3@email.com",
+                "interestRegisteredAt":"2023-02-22T09:43:33.150Z",
+                "onWaitingList":false,
+                "waitingUpdatedAt":"n/a",
+                "eligible":false,
+                "ineligibleReason":"No match against data warehouse",
+                "accessGranted":false,
+                "accessGrantedAt":"n/a"
+              },
+              "raisedBy":"business3@email.com",
+              "raisedOn":"2023-02-22T09:43:33.159Z"
+            }`,
+            Status: 'success'
+          },
+          {
+            partitionKey: '108675111',
+            rowKey: '108675111_1677059013159',
+            timestamp: '2023-02-23T09:43:34.6230164Z',
+            SessionId: '108675111_1103314955',
+            EventType: 'no_match',
+            EventRaised: '2023-02-23T09:43:33.159Z',
+            EventBy: 'business3@email.com',
+            Payload: `{
+              "type":"no_match",
+              "message":"The customer has been recognised as ineligible",
+              "data":{
+                "sbi":"108675111",
+                "crn":"1103314955",
+                "businessEmail":"business3@email.com",
+                "interestRegisteredAt":"2023-02-23T09:43:33.150Z",
+                "onWaitingList":false,
+                "waitingUpdatedAt":"n/a",
+                "eligible":false,
+                "ineligibleReason":"No match against data warehouse",
+                "accessGranted":false,
+                "accessGrantedAt":"n/a"
+              },
+              "raisedBy":"business3@email.com",
+              "raisedOn":"2023-02-23T09:43:33.159Z"
+            }`,
+            Status: 'success'
+          }
+        ]
+      },
+      expect: {
+        parsedEvents: [
+          {
+            sbi: '108675111',
+            crn: '1103314955',
+            businessEmail: 'business3@email.com',
+            registrationOfInterestTimestamp: '2023-02-22T09:43:33.150Z',
+            eligible: false,
+            ineligibleReason: 'No match against data warehouse',
+            onWaitingList: 'FALSE',
+            accessGranted: false,
+            accessGrantedTimestamp: 'n/a'
+          },
+          {
+            sbi: '108675111',
+            crn: '1103314955',
+            businessEmail: 'business3@email.com',
+            registrationOfInterestTimestamp: '2023-02-23T09:43:33.150Z',
+            eligible: false,
+            ineligibleReason: 'No match against data warehouse',
             onWaitingList: 'FALSE',
             accessGranted: false,
             accessGrantedTimestamp: 'n/a'
