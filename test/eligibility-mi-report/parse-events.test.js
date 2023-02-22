@@ -145,7 +145,24 @@ describe('Parse Events', () => {
             EventType: 'registration_of_interest',
             EventRaised: '2023-02-21T12:37:20.432Z',
             EventBy: 'business3@email.com',
-            Payload: '{"type":"registration_of_interest","message":"The customer has been put on the waiting list","data":{"sbi":"108675110","crn":"1103314955","businessEmail":"business3@email.com","interestRegisteredAt":"2023-02-21T12:37:20.426Z","eligible":true,"ineligibleReason":"n/a","onWaitingList":true,"waitingUpdatedAt":"2023-02-21T12:37:20.426Z","accessGranted":false,"accessGrantedAt":"n/a"},"raisedBy":"business3@email.com","raisedOn":"2023-02-21T12:37:20.432Z"}',
+            Payload: `{
+              "type":"registration_of_interest",
+              "message":"The customer has been put on the waiting list",
+              "data":{
+                "sbi":"108675110",
+                "crn":"1103314955",
+                "businessEmail":"business3@email.com",
+                "interestRegisteredAt":"2023-02-21T12:37:20.426Z",
+                "eligible":true,
+                "ineligibleReason":"n/a",
+                "onWaitingList":true,
+                "waitingUpdatedAt":"2023-02-21T12:37:20.426Z",
+                "accessGranted":false,
+                "accessGrantedAt":"n/a"
+              },
+              "raisedBy":"business3@email.com",
+              "raisedOn":"2023-02-21T12:37:20.432Z"
+            }`,
             Status: 'success'
           },
           {
@@ -156,7 +173,23 @@ describe('Parse Events', () => {
             EventType: 'gained_access_to_the_apply_journey',
             EventRaised: '2023-02-21T12:38:01.245Z',
             EventBy: 'business3@email.com',
-            Payload: '{"type":"gained_access_to_the_apply_journey","message":"The user has gained access to the apply journey","data":{"crn":"1103314955","sbi":"108675110","businessEmail":"business3@email.com","onWaitingList":false,"waitingUpdatedAt":"2023-02-21T12:37:19.910Z","eligible":true,"ineligibleReason":"n/a","accessGranted":true,"accessGrantedAt":"2023-02-21T12:38:00.790Z"},"raisedBy":"business3@email.com","raisedOn":"2023-02-21T12:38:01.245Z"}',
+            Payload: `{
+              "type":"gained_access_to_the_apply_journey",
+              "message":"The user has gained access to the apply journey",
+              "data":{
+                "crn":"1103314955",
+                "sbi":"108675110",
+                "businessEmail":"business3@email.com",
+                "onWaitingList":false,
+                "waitingUpdatedAt":"2023-02-21T12:37:19.910Z",
+                "eligible":true,
+                "ineligibleReason":"n/a",
+                "accessGranted":true,
+                "accessGrantedAt":"2023-02-21T12:38:00.790Z"
+              },
+              "raisedBy":"business3@email.com",
+              "raisedOn":"2023-02-21T12:38:01.245Z"
+            }`,
             Status: 'success'
           },
           {
@@ -186,6 +219,34 @@ describe('Parse Events', () => {
                 "raisedOn":"2023-02-21T12:41:59.184Z"
             }`,
             Status: 'success'
+          },
+          {
+            partitionKey: '108675110',
+            rowKey: '108675110_1676983319184',
+            timestamp: '2023-02-22T12:42:00.5097017Z',
+            SessionId: '108675110_1103314955',
+            EventType: 'duplicate_submission',
+            EventRaised: '2023-02-22T12:41:59.184Z',
+            EventBy: 'business3@email.com',
+            Payload: `{
+                "type":"duplicate_submission",
+                "message":"The customer has been recognised as ineligible",
+                "data":{
+                    "crn":"1103314955",
+                    "sbi":"108675110",
+                    "businessEmail":"business3@email.com",
+                    "interestRegisteredAt":"2023-02-22T12:41:59.181Z",
+                    "onWaitingList":false,
+                    "waitingUpdatedAt":"n/a",
+                    "eligible":false,
+                    "ineligibleReason":"Duplicate submission",
+                    "accessGranted":false,
+                    "accessGrantedAt":"n/a"
+                },
+                "raisedBy":"business3@email.com",
+                "raisedOn":"2023-02-22T12:41:59.184Z"
+            }`,
+            Status: 'success'
           }
         ]
       },
@@ -207,6 +268,17 @@ describe('Parse Events', () => {
             crn: '1103314955',
             businessEmail: 'business3@email.com',
             registrationOfInterestTimestamp: '2023-02-21T12:41:59.181Z',
+            eligible: false,
+            ineligibleReason: 'Duplicate submission',
+            onWaitingList: 'FALSE',
+            accessGranted: false,
+            accessGrantedTimestamp: 'n/a'
+          },
+          {
+            sbi: '108675110',
+            crn: '1103314955',
+            businessEmail: 'business3@email.com',
+            registrationOfInterestTimestamp: '2023-02-22T12:41:59.181Z',
             eligible: false,
             ineligibleReason: 'Duplicate submission',
             onWaitingList: 'FALSE',
