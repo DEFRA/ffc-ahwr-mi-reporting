@@ -1,5 +1,6 @@
 const groupByPartitionKey = require('../group-by-partition-key')
 const { parseData } = require('../parse-data')
+const convertFromBoolean = require('../convert-from-boolean')
 
 const parse = (events) => {
   const sbi = parseData(events, 'registration_of_interest', 'sbi')
@@ -25,17 +26,16 @@ const parse = (events) => {
     sbi: sbi.value ? sbi.value : sbi2 ? sbi2.value : 'n/a',
     crn: crn.value ? crn.value : crn2 ? crn2.value : 'n/a',
     businessEmail: businessEmail.value ? businessEmail.value : email2 ? email2.value : 'n/a',
-    eligible: eligible.value ? eligible.value : accessGranted.value ? accessGranted.value : 'FALSE',
+    eligible: eligible.value ? convertFromBoolean(eligible.value) : convertFromBoolean(accessGranted.value),
     registrationOfInterestTimestamp: registrationOfInterestTimestamp.value ? registrationOfInterestTimestamp.value : waitingListUpdated.value ? waitingListUpdated.value : 'n/a',
     ineligibleReason: ineligibleReason.value ? ineligibleReason.value : 'n/a',
-    onWaitingList: accessGranted.value ? 'FALSE' : onWaitingList.value ? onWaitingList.value : 'FALSE',
-    accessGranted: accessGranted.value ? accessGranted.value : 'FALSE',
+    onWaitingList: accessGranted.value ? convertFromBoolean(false) : convertFromBoolean(onWaitingList.value),
+    accessGranted: convertFromBoolean(accessGranted.value),
     accessGrantedTimestamp: accessGrantedTimestamp.value ? accessGrantedTimestamp.value : 'n/a'
   }
 }
 
 const parseEvents = (events) => {
-  console.log(events)
   const parsedEvents = []
   const eventByPartitionKey = groupByPartitionKey(events)
   for (const eventGroup in eventByPartitionKey) {
@@ -52,10 +52,10 @@ const parseEvents = (events) => {
         crn: payload.data.crn,
         businessEmail: payload.data.businessEmail,
         registrationOfInterestTimestamp: payload.data.interestRegisteredAt,
-        eligible: payload.data.eligible,
+        eligible: convertFromBoolean(payload.data.eligible),
         ineligibleReason: payload.data.ineligibleReason,
-        onWaitingList: payload.data.onWaitingList ? 'TRUE' : 'FALSE',
-        accessGranted: payload.data.accessGranted,
+        onWaitingList: convertFromBoolean(payload.data.onWaitingList),
+        accessGranted: convertFromBoolean(payload.data.accessGranted),
         accessGrantedTimestamp: payload.data.accessGrantedTimestamp ? payload.data.accessGrantedTimestamp : 'n/a'
       }))
     )

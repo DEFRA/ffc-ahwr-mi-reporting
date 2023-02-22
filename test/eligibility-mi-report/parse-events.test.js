@@ -47,10 +47,10 @@ describe('Parse Events', () => {
             crn: '1103314955',
             businessEmail: 'business2@email.com',
             registrationOfInterestTimestamp: '2023-02-21T12:31:51.354Z',
-            eligible: true,
+            eligible: 'Yes',
             ineligibleReason: 'n/a',
-            onWaitingList: 'FALSE',
-            accessGranted: true,
+            onWaitingList: 'No',
+            accessGranted: 'Yes',
             accessGrantedTimestamp: '2023-02-21T12:32:00.765Z'
           }
         ]
@@ -124,10 +124,10 @@ describe('Parse Events', () => {
             crn: '1100000077',
             businessEmail: '105000061@email.com',
             registrationOfInterestTimestamp: '2023-02-20T19:38:52.061Z',
-            eligible: true,
+            eligible: 'Yes',
             ineligibleReason: 'n/a',
-            onWaitingList: 'FALSE',
-            accessGranted: true,
+            onWaitingList: 'No',
+            accessGranted: 'Yes',
             accessGrantedTimestamp: '2023-02-20T19:40:00.405Z'
           }
         ]
@@ -257,10 +257,10 @@ describe('Parse Events', () => {
             crn: '1103314955',
             businessEmail: 'business3@email.com',
             registrationOfInterestTimestamp: '2023-02-21T12:37:20.426Z',
-            eligible: true,
+            eligible: 'Yes',
             ineligibleReason: 'n/a',
-            onWaitingList: 'FALSE',
-            accessGranted: true,
+            onWaitingList: 'No',
+            accessGranted: 'Yes',
             accessGrantedTimestamp: '2023-02-21T12:38:00.790Z'
           },
           {
@@ -268,10 +268,10 @@ describe('Parse Events', () => {
             crn: '1103314955',
             businessEmail: 'business3@email.com',
             registrationOfInterestTimestamp: '2023-02-21T12:41:59.181Z',
-            eligible: false,
+            eligible: 'No',
             ineligibleReason: 'Duplicate submission',
-            onWaitingList: 'FALSE',
-            accessGranted: false,
+            onWaitingList: 'No',
+            accessGranted: 'No',
             accessGrantedTimestamp: 'n/a'
           },
           {
@@ -279,10 +279,10 @@ describe('Parse Events', () => {
             crn: '1103314955',
             businessEmail: 'business3@email.com',
             registrationOfInterestTimestamp: '2023-02-22T12:41:59.181Z',
-            eligible: false,
+            eligible: 'No',
             ineligibleReason: 'Duplicate submission',
-            onWaitingList: 'FALSE',
-            accessGranted: false,
+            onWaitingList: 'No',
+            accessGranted: 'No',
             accessGrantedTimestamp: 'n/a'
           }
         ]
@@ -357,10 +357,10 @@ describe('Parse Events', () => {
             crn: '1103314955',
             businessEmail: 'business3@email.com',
             registrationOfInterestTimestamp: '2023-02-22T09:43:33.150Z',
-            eligible: false,
+            eligible: 'No',
             ineligibleReason: 'No match against data warehouse',
-            onWaitingList: 'FALSE',
-            accessGranted: false,
+            onWaitingList: 'No',
+            accessGranted: 'No',
             accessGrantedTimestamp: 'n/a'
           },
           {
@@ -368,10 +368,10 @@ describe('Parse Events', () => {
             crn: '1103314955',
             businessEmail: 'business3@email.com',
             registrationOfInterestTimestamp: '2023-02-23T09:43:33.150Z',
-            eligible: false,
+            eligible: 'No',
             ineligibleReason: 'No match against data warehouse',
-            onWaitingList: 'FALSE',
-            accessGranted: false,
+            onWaitingList: 'No',
+            accessGranted: 'No',
             accessGrantedTimestamp: 'n/a'
           }
         ]

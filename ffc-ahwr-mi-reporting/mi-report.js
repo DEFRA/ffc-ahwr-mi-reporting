@@ -6,13 +6,7 @@ const groupByPartitionKey = require('./group-by-partition-key')
 const { parseData, parsePayload, formatDate } = require('./parse-data')
 const convertToCSV = require('./convert-to-csv')
 const buildEligibilityMiReport = require('./eligibility-mi-report')
-
-const convertFromBoolean = (value) => {
-  if (value) {
-    return value === true ? 'yes' : 'no'
-  }
-  return ''
-}
+const convertFromBoolean = require('./convert-from-boolean')
 
 const parseCsvData = (events) => {
   const organisationData = parsePayload(events, 'farmerApplyData-organisation')
@@ -78,7 +72,12 @@ const buildMiReport = async (events) => {
   const eventByPartitionKey = groupByPartitionKey(events)
   for (const eventGroup in eventByPartitionKey) {
     const eventData = eventByPartitionKey[eventGroup]
-    const filteredEvents = eventData.filter(event => event.EventType !== 'registration_of_interest' && event.EventType !== 'gained_access_to_the_apply_journey')
+    const filteredEvents = eventData.filter(
+      event => event.EventType !== 'registration_of_interest' &&
+      event.EventType !== 'gained_access_to_the_apply_journey' &&
+      event.EventType !== 'duplicate_submissions' &&
+      event.EventType !== 'no_match'
+    )
     if (filteredEvents.length !== 0) {
       miParsedData.push(parseCsvData(filteredEvents))
     }
