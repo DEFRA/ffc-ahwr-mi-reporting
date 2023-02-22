@@ -30,7 +30,7 @@ const parse = (events) => {
     eligible: eligible.value ? convertFromBoolean(eligible.value) : convertFromBoolean(accessGranted.value),
     ineligibleReason: ineligibleReason.value ? ineligibleReason.value : 'n/a',
     onWaitingList: accessGranted.value ? convertFromBoolean(false) : convertFromBoolean(onWaitingList.value),
-    accessGranted: convertFromBoolean(accessGranted.value),
+    accessGranted: accessGranted.value ? convertFromBoolean(accessGranted.value) : convertFromBoolean(false),
     accessGrantedTimestamp: accessGrantedTimestamp.value ? accessGrantedTimestamp.value : 'n/a'
   }
 }

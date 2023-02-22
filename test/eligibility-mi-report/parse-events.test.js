@@ -8,6 +8,56 @@ describe('Parse Events', () => {
 
   test.each([
     {
+      toString: () => 'single "registration_of_interest" event',
+      given: {
+        events: [
+          {
+            partitionKey: '105000061',
+            rowKey: '105000061_1676921932072',
+            timestamp: '2023-02-21T10:26:13.6534925Z',
+            EventBy: '105000061@email.com',
+            EventRaised: '2023-02-20T19:38:52.072Z',
+            EventType: 'auto-eligibility:registration_of_interest',
+            Payload: `{
+                "type":"auto-eligibility:registration_of_interest",
+                "message":"The customer has been put on the waiting list",
+                "data":{
+                    "sbi":"105000061",
+                    "crn":"1100000077",
+                    "businessEmail":"105000061@email.com",
+                    "interestRegisteredAt":"2023-02-20T19:38:52.061Z",
+                    "eligible":true,
+                    "ineligibleReason":"n/a",
+                    "onWaitingList":true,
+                    "waitingUpdatedAt":"2023-02-20T19:38:52.061Z",
+                    "accessGranted":false,
+                    "accessGrantedAt":"n/a"
+                },
+                "raisedBy":"105000061@email.com",
+                "raisedOn":"2023-02-20T19:38:52.072Z"
+            }`,
+            SessionId: '105000061_1100000077',
+            Status: 'success'
+          }
+        ]
+      },
+      expect: {
+        parsedEvents: [
+          {
+            sbi: '105000061',
+            crn: '1100000077',
+            businessEmail: '105000061@email.com',
+            registrationOfInterestTimestamp: '2023-02-20T19:38:52.061Z',
+            eligible: 'Yes',
+            ineligibleReason: 'n/a',
+            onWaitingList: 'Yes',
+            accessGranted: 'No',
+            accessGrantedTimestamp: 'n/a'
+          }
+        ]
+      }
+    },
+    {
       toString: () => 'single "gained_access_to_the_apply_journey" event',
       given: {
         events: [
@@ -134,7 +184,7 @@ describe('Parse Events', () => {
       }
     },
     {
-      toString: () => 'duplicate submissions',
+      toString: () => 'two "duplicate_submission" events',
       given: {
         events: [
           {
