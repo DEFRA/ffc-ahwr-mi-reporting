@@ -16,7 +16,9 @@ const saveEligibilityCsv = async (miParsedData) => {
 }
 
 const buildEligibilityMiReport = async (events) => {
-  await saveEligibilityCsv(parseEvents(events))
+  const parsedEvents = parseEvents(events)
+  parsedEvents.sort((a, b) => new Date(b.registrationOfInterestTimestamp) - new Date(a.registrationOfInterestTimestamp))
+  await saveEligibilityCsv(parsedEvents)
 }
 
 module.exports = buildEligibilityMiReport
