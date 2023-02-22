@@ -72,12 +72,7 @@ const buildMiReport = async (events) => {
   const eventByPartitionKey = groupByPartitionKey(events)
   for (const eventGroup in eventByPartitionKey) {
     const eventData = eventByPartitionKey[eventGroup]
-    const filteredEvents = eventData.filter(
-      event => event.EventType !== 'registration_of_interest' &&
-      event.EventType !== 'gained_access_to_the_apply_journey' &&
-      event.EventType !== 'duplicate_submissions' &&
-      event.EventType !== 'no_match'
-    )
+    const filteredEvents = eventData.filter(event => !`${event.EventType}`.startsWith('auto-eligibility'))
     if (filteredEvents.length !== 0) {
       miParsedData.push(parseCsvData(filteredEvents))
     }

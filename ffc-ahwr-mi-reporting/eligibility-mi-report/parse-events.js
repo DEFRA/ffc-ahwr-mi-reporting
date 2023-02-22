@@ -3,20 +3,20 @@ const { parseData } = require('../parse-data')
 const convertFromBoolean = require('../convert-from-boolean')
 
 const parse = (events) => {
-  const sbi = parseData(events, 'registration_of_interest', 'sbi')
-  const crn = parseData(events, 'registration_of_interest', 'crn')
-  const businessEmail = parseData(events, 'registration_of_interest', 'businessEmail')
-  const eligible = parseData(events, 'registration_of_interest', 'eligible')
-  const registrationOfInterestTimestamp = parseData(events, 'registration_of_interest', 'interestRegisteredAt')
-  const ineligibleReason = parseData(events, 'registration_of_interest', 'ineligibleReason')
-  const onWaitingList = parseData(events, 'registration_of_interest', 'onWaitingList')
+  const sbi = parseData(events, 'auto-eligibility:registration_of_interest', 'sbi')
+  const crn = parseData(events, 'auto-eligibility:registration_of_interest', 'crn')
+  const businessEmail = parseData(events, 'auto-eligibility:registration_of_interest', 'businessEmail')
+  const eligible = parseData(events, 'auto-eligibility:registration_of_interest', 'eligible')
+  const registrationOfInterestTimestamp = parseData(events, 'auto-eligibility:registration_of_interest', 'interestRegisteredAt')
+  const ineligibleReason = parseData(events, 'auto-eligibility:registration_of_interest', 'ineligibleReason')
+  const onWaitingList = parseData(events, 'auto-eligibility:registration_of_interest', 'onWaitingList')
 
-  const accessGranted = parseData(events, 'gained_access_to_the_apply_journey', 'accessGranted')
-  const accessGrantedTimestamp = parseData(events, 'gained_access_to_the_apply_journey', 'accessGrantedAt')
-  const sbi2 = parseData(events, 'gained_access_to_the_apply_journey', 'sbi')
-  const crn2 = parseData(events, 'gained_access_to_the_apply_journey', 'crn')
-  const email2 = parseData(events, 'gained_access_to_the_apply_journey', 'businessEmail')
-  const waitingListUpdated = parseData(events, 'gained_access_to_the_apply_journey', 'waitingUpdatedAt')
+  const accessGranted = parseData(events, 'auto-eligibility:gained_access_to_the_apply_journey', 'accessGranted')
+  const accessGrantedTimestamp = parseData(events, 'auto-eligibility:gained_access_to_the_apply_journey', 'accessGrantedAt')
+  const sbi2 = parseData(events, 'auto-eligibility:gained_access_to_the_apply_journey', 'sbi')
+  const crn2 = parseData(events, 'auto-eligibility:gained_access_to_the_apply_journey', 'crn')
+  const email2 = parseData(events, 'auto-eligibility:gained_access_to_the_apply_journey', 'businessEmail')
+  const waitingListUpdated = parseData(events, 'auto-eligibility:gained_access_to_the_apply_journey', 'waitingUpdatedAt')
 
   // it is possible to have the gained_access_to_the_apply_journey event without the registered_their_interest
   // if the registration came before we released. Therefore, to avoid empty data do a comparison between sbi on register your interest
@@ -40,12 +40,12 @@ const parseEvents = (events) => {
   const eventByPartitionKey = groupByPartitionKey(events)
   for (const eventGroup in eventByPartitionKey) {
     const eventData = eventByPartitionKey[eventGroup]
-    const filteredEvents = eventData.filter(event => event.EventType === 'registration_of_interest' || event.EventType === 'gained_access_to_the_apply_journey')
+    const filteredEvents = eventData.filter(event => event.EventType === 'auto-eligibility:registration_of_interest' || event.EventType === 'auto-eligibility:gained_access_to_the_apply_journey')
     if (filteredEvents.length !== 0) {
       parsedEvents.push(parse(filteredEvents))
     }
     parsedEvents.push(...eventData
-      .filter(event => event.EventType === 'duplicate_submission' || event.EventType === 'no_match')
+      .filter(event => event.EventType === 'auto-eligibility:duplicate_submission' || event.EventType === 'auto-eligibility:no_match')
       .map(event => JSON.parse(event.Payload))
       .map(payload => ({
         sbi: payload.data.sbi,
