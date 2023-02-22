@@ -1,12 +1,7 @@
 const moment = require('moment')
-const { writeFile } = require('./storage')
-const createFileName = require('./create-filename')
-const { send } = require('./email/notify-send')
-const groupByPartitionKey = require('./group-by-partition-key')
-const { parseData, parsePayload, formatDate } = require('./parse-data')
-const convertToCSV = require('./convert-to-csv')
-const buildEligibilityMiReport = require('./eligibility-mi-report')
-const convertFromBoolean = require('./convert-from-boolean')
+const groupByPartitionKey = require('../group-by-partition-key')
+const { parseData, parsePayload, formatDate } = require('../parse-data')
+const convertFromBoolean = require('../convert-from-boolean')
 
 const parseCsvData = (events) => {
   const organisationData = parsePayload(events, 'farmerApplyData-organisation')
@@ -56,18 +51,7 @@ const parseCsvData = (events) => {
   }
 }
 
-const saveCsv = async (miParsedData) => {
-  if (miParsedData) {
-    const csvData = convertToCSV(miParsedData)
-    await writeFile(createFileName('ahwr-mi-report.csv'), csvData)
-    await send()
-    console.log('CSV saved')
-  } else {
-    console.log('No data to create CSV')
-  }
-}
-
-const buildMiReport = async (events) => {
+const parseEvents = (events) => {
   const miParsedData = []
   const eventByPartitionKey = groupByPartitionKey(events)
   for (const eventGroup in eventByPartitionKey) {
@@ -77,10 +61,7 @@ const buildMiReport = async (events) => {
       miParsedData.push(parseCsvData(filteredEvents))
     }
   }
-  await saveCsv(miParsedData)
+  return miParsedData
 }
 
-module.exports = {
-  buildMiReport,
-  buildEligibilityMiReport
-}
+module.exports = parseEvents
