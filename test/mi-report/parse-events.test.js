@@ -1,6 +1,17 @@
 const parseEvents = require('../../ffc-ahwr-mi-reporting/mi-report/parse-events')
 
+const MOCK_NOW = new Date()
+
 describe('Parse Events', () => {
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(MOCK_NOW)
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   afterEach(() => {
     jest.clearAllMocks()
     jest.resetAllMocks()
