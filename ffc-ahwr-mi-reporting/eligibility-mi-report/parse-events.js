@@ -1,5 +1,5 @@
 const groupByPartitionKey = require('../group-by-partition-key')
-const { parseData, parsePayload } = require('../parse-data')
+const { parseData } = require('../parse-data')
 
 const parse = (events) => {
   const sbi = parseData(events, 'registration_of_interest', 'sbi')
