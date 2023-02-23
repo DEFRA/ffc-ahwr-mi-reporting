@@ -1,4 +1,4 @@
-const groupByPartitionKey = require('../ffc-ahwr-mi-reporting/group-by-partition-key')
+const groupByPartitionKey = require('../../../ffc-ahwr-mi-reporting/storage/group-by-partition-key')
 
 describe('report', () => {
   test('should partition events', async () => {

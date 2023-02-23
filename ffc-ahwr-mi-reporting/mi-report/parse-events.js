@@ -1,54 +1,7 @@
 const moment = require('moment')
-const { writeFile } = require('./storage')
-const createFileName = require('./create-filename')
-const send = require('./email/notify-send')
-const groupByPartitionKey = require('./group-by-partition-key')
-
-const formatDate = (dateToFormat, currentDateFormat = 'YYYY-MM-DD', dateFormat = 'DD/MM/YYYY HH:mm') => {
-  if (dateToFormat) {
-    return moment(dateToFormat, currentDateFormat).format(dateFormat)
-  }
-  return 'Unknown'
-}
-
-const convertFromBoolean = (value) => {
-  if (value) {
-    return value === true ? 'yes' : 'no'
-  }
-
-  return ''
-}
-
-const parsePayload = (events, eventType) => {
-  const eventData = events.filter(event => event.EventType === eventType)
-  const latestEvent = eventData.sort((a, b) => new Date(b.EventRaised) - new Date(a.EventRaised))[0]
-  return latestEvent?.Payload ? JSON.parse(latestEvent?.Payload) : {}
-}
-
-const parseData = (events, type, key) => {
-  let value = ''
-  let raisedOn = ''
-  const data = parsePayload(events, type)
-
-  try {
-    value = data?.data[key]
-    raisedOn = formatDate(data?.raisedOn, moment.ISO_8601)
-  } catch (error) {
-    console.log(`${key} not found`)
-  }
-
-  return {
-    value,
-    raisedOn
-  }
-}
-
-const convertToCSV = (data) => {
-  let csv = ''
-  csv = data.map(row => Object.values(row))
-  csv.unshift(Object.keys(data[0]))
-  return `"${csv.join('"\n"').replace(/,/g, '","')}"`
-}
+const groupByPartitionKey = require('../storage/group-by-partition-key')
+const { parseData, parsePayload, formatDate } = require('../parse-data')
+const convertFromBoolean = require('../csv/convert-from-boolean')
 
 const parseCsvData = (events) => {
   const organisationData = parsePayload(events, 'farmerApplyData-organisation')
@@ -98,25 +51,17 @@ const parseCsvData = (events) => {
   }
 }
 
-const saveCsv = async (miParsedData) => {
-  if (miParsedData) {
-    const csvData = convertToCSV(miParsedData)
-    await writeFile(createFileName(), csvData)
-    await send()
-    console.log('CSV saved')
-  } else {
-    console.log('No data to create CSV')
-  }
-}
-
-const buildMiReport = async (events) => {
+const parseEvents = (events) => {
   const miParsedData = []
   const eventByPartitionKey = groupByPartitionKey(events)
   for (const eventGroup in eventByPartitionKey) {
     const eventData = eventByPartitionKey[eventGroup]
-    miParsedData.push(parseCsvData(eventData))
+    const filteredEvents = eventData.filter(event => !`${event.EventType}`.startsWith('auto-eligibility'))
+    if (filteredEvents.length !== 0) {
+      miParsedData.push(parseCsvData(filteredEvents))
+    }
   }
-  await saveCsv(miParsedData)
+  return miParsedData
 }
 
-module.exports = buildMiReport
+module.exports = parseEvents

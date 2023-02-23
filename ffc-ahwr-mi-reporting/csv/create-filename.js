@@ -1,8 +1,8 @@
 const month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
-const createFilename = () => {
+const createFilename = (filename) => {
   const createdDate = new Date()
-  return `${createdDate.getYear()}/${month[createdDate.getMonth()]}/${createdDate.getDay()}/ahwr-mi-report.csv`
+  return `${createdDate.getYear()}/${month[createdDate.getMonth()]}/${createdDate.getDay()}/${filename}`
 }
 
 module.exports = createFilename

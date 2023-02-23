@@ -1,6 +1,6 @@
 const { TableClient, odata } = require('@azure/data-tables')
 const { BlobServiceClient } = require('@azure/storage-blob')
-const { connectionString, containerName, tableName } = require('./config')
+const { connectionString, containerName, tableName } = require('../config/config')
 let tableClient
 let blobServiceClient
 let container
@@ -13,7 +13,7 @@ const initialiseContainers = async () => {
 }
 
 const connect = async () => {
-  console.log('Connecting to storage', connectionString, containerName, tableName)
+  console.log(`Connecting to storage with connectionString ${connectionString} containerName ${containerName} tableName ${tableName}`)
   blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
   container = blobServiceClient.getContainerClient(containerName)
   containersInitialised ?? await initialiseContainers()
