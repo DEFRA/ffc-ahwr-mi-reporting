@@ -1,6 +1,6 @@
 const convertFromBoolean = (value) => {
   if (typeof value === 'boolean') {
-    return value === true ? 'Yes' : 'No'
+    return value === true ? 'yes' : 'no'
   }
   return value
 }

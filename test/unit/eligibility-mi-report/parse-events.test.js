@@ -48,10 +48,10 @@ describe('Parse Events', () => {
             crn: '1100000077',
             businessEmail: '105000061@email.com',
             registrationOfInterestAt: '20/02/2023 19:38',
-            eligible: 'Yes',
+            eligible: 'yes',
             ineligibleReason: 'n/a',
-            onWaitingList: 'Yes',
-            accessGranted: 'No',
+            onWaitingList: 'yes',
+            accessGranted: 'no',
             accessGrantedAt: 'n/a'
           }
         ]
@@ -97,10 +97,10 @@ describe('Parse Events', () => {
             crn: '1103314955',
             businessEmail: 'business2@email.com',
             registrationOfInterestAt: '21/02/2023 12:31',
-            eligible: 'Yes',
+            eligible: 'yes',
             ineligibleReason: 'n/a',
-            onWaitingList: 'No',
-            accessGranted: 'Yes',
+            onWaitingList: 'no',
+            accessGranted: 'yes',
             accessGrantedAt: '21/02/2023 12:32'
           }
         ]
@@ -174,10 +174,10 @@ describe('Parse Events', () => {
             crn: '1100000077',
             businessEmail: '105000061@email.com',
             registrationOfInterestAt: '20/02/2023 19:38',
-            eligible: 'Yes',
+            eligible: 'yes',
             ineligibleReason: 'n/a',
-            onWaitingList: 'No',
-            accessGranted: 'Yes',
+            onWaitingList: 'no',
+            accessGranted: 'yes',
             accessGrantedAt: '20/02/2023 19:40'
           }
         ]
@@ -306,34 +306,34 @@ describe('Parse Events', () => {
             sbi: '108675110',
             crn: '1103314955',
             businessEmail: 'business3@email.com',
-            registrationOfInterestAt: '21/02/2023 12:37',
-            eligible: 'Yes',
-            ineligibleReason: 'n/a',
-            onWaitingList: 'No',
-            accessGranted: 'Yes',
-            accessGrantedAt: '21/02/2023 12:38'
+            registrationOfInterestAt: '22/02/2023 12:41',
+            eligible: 'no',
+            ineligibleReason: 'Duplicate submission',
+            onWaitingList: 'no',
+            accessGranted: 'no',
+            accessGrantedAt: 'n/a'
           },
           {
             sbi: '108675110',
             crn: '1103314955',
             businessEmail: 'business3@email.com',
             registrationOfInterestAt: '21/02/2023 12:41',
-            eligible: 'No',
+            eligible: 'no',
             ineligibleReason: 'Duplicate submission',
-            onWaitingList: 'No',
-            accessGranted: 'No',
+            onWaitingList: 'no',
+            accessGranted: 'no',
             accessGrantedAt: 'n/a'
           },
           {
             sbi: '108675110',
             crn: '1103314955',
             businessEmail: 'business3@email.com',
-            registrationOfInterestAt: '22/02/2023 12:41',
-            eligible: 'No',
-            ineligibleReason: 'Duplicate submission',
-            onWaitingList: 'No',
-            accessGranted: 'No',
-            accessGrantedAt: 'n/a'
+            registrationOfInterestAt: '21/02/2023 12:37',
+            eligible: 'yes',
+            ineligibleReason: 'n/a',
+            onWaitingList: 'no',
+            accessGranted: 'yes',
+            accessGrantedAt: '21/02/2023 12:38'
           }
         ]
       }
@@ -406,22 +406,22 @@ describe('Parse Events', () => {
             sbi: '108675111',
             crn: '1103314955',
             businessEmail: 'business3@email.com',
-            registrationOfInterestAt: '22/02/2023 09:43',
-            eligible: 'No',
+            registrationOfInterestAt: '23/02/2023 09:43',
+            eligible: 'no',
             ineligibleReason: 'No match against data warehouse',
-            onWaitingList: 'No',
-            accessGranted: 'No',
+            onWaitingList: 'no',
+            accessGranted: 'no',
             accessGrantedAt: 'n/a'
           },
           {
             sbi: '108675111',
             crn: '1103314955',
             businessEmail: 'business3@email.com',
-            registrationOfInterestAt: '23/02/2023 09:43',
-            eligible: 'No',
+            registrationOfInterestAt: '22/02/2023 09:43',
+            eligible: 'no',
             ineligibleReason: 'No match against data warehouse',
-            onWaitingList: 'No',
-            accessGranted: 'No',
+            onWaitingList: 'no',
+            accessGranted: 'no',
             accessGrantedAt: 'n/a'
           }
         ]

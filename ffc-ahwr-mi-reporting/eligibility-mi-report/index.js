@@ -10,9 +10,6 @@ const buildEligibilityMiReport = async (events) => {
     console.log('No data to create CSV')
     return
   }
-  parsedEvents.sort(
-    (a, b) => new Date(b.registrationOfInterestAt) - new Date(a.registrationOfInterestAt)
-  )
   const csvData = convertToCSV(parsedEvents)
   const csvFilename = createFileName('ahwr-eligibility-mi-report.csv')
   await writeFile(csvFilename, csvData)

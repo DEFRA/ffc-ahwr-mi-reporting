@@ -79,7 +79,9 @@ const parseEvents = (events) => {
       }))
     )
   }
-  return parsedEvents
+  return parsedEvents.sort((a, b) => {
+    return moment(b.registrationOfInterestAt, 'DD/MM/YYYY HH:mm').valueOf() - moment(a.registrationOfInterestAt, 'DD/MM/YYYY HH:mm').valueOf()
+  })
 }
 
 module.exports = parseEvents
