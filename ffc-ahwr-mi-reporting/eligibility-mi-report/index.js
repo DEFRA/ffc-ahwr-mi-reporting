@@ -6,7 +6,7 @@ const parseEvents = require('./parse-events')
 
 const buildEligibilityMiReport = async (events) => {
   const parsedEvents = parseEvents(events)
-  if (parseEvents.length === 0) {
+  if (parsedEvents.length === 0) {
     console.log('No data to create CSV')
     return
   }
