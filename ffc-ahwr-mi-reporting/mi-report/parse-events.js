@@ -1,7 +1,7 @@
 const moment = require('moment')
-const groupByPartitionKey = require('../group-by-partition-key')
+const groupByPartitionKey = require('../storage/group-by-partition-key')
 const { parseData, parsePayload, formatDate } = require('../parse-data')
-const convertFromBoolean = require('../convert-from-boolean')
+const convertFromBoolean = require('../csv/convert-from-boolean')
 
 const parseCsvData = (events) => {
   const organisationData = parsePayload(events, 'farmerApplyData-organisation')

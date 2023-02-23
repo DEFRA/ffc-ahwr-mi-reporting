@@ -1,17 +1,6 @@
-const parseEvents = require('../../ffc-ahwr-mi-reporting/mi-report/parse-events')
-
-const MOCK_NOW = new Date()
+const parseEvents = require('../../../ffc-ahwr-mi-reporting/mi-report/parse-events')
 
 describe('Parse Events', () => {
-  beforeAll(() => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(MOCK_NOW)
-  })
-
-  afterAll(() => {
-    jest.useRealTimers()
-  })
-
   afterEach(() => {
     jest.clearAllMocks()
     jest.resetAllMocks()
@@ -416,47 +405,47 @@ describe('Parse Events', () => {
             claimVisitDate: 'Unknown',
             claimVisitDateRaisedOn: '',
             confirmCheckDetails: 'yes',
-            confirmCheckDetailsRaisedOn: '22/02/2023 16:16',
+            confirmCheckDetailsRaisedOn: '22/02/2023 15:16',
             cph: undefined,
             declaration: 'Yes',
-            declarationRaisedOn: '22/02/2023 16:16',
+            declarationRaisedOn: '22/02/2023 15:16',
             eligibleSpecies: 'yes',
-            eligibleSpeciesRaisedOn: '22/02/2023 16:16',
+            eligibleSpeciesRaisedOn: '22/02/2023 15:16',
             email: '1100000210@email.com',
             farmer: 'Mr Farmer 210',
             name: 'My Farm Batch 7 Ltd',
             sbi: '105000200',
             whichReview: 'dairy',
-            whichReviewRaisedOn: '22/02/2023 16:16'
+            whichReviewRaisedOn: '22/02/2023 15:16'
           },
           {
             address: '125 Main Road"," Covenham St. Bartholomew"," Louth"," LN11 0PF"," United Kingdom',
             applicationNumber: 'AHWR-9D11-0EAA',
             claimClaimed: 'success',
-            claimClaimedRaisedOn: '22/02/2023 16:22',
+            claimClaimedRaisedOn: '22/02/2023 15:22',
             claimDetailsCorrect: 'yes',
-            claimDetailsCorrectRaisedOn: '22/02/2023 16:22',
+            claimDetailsCorrectRaisedOn: '22/02/2023 15:22',
             claimUrnResult: 'URNURN',
-            claimUrnResultRaisedOn: '22/02/2023 16:22',
+            claimUrnResultRaisedOn: '22/02/2023 15:22',
             claimVetName: 'ssdaje',
-            claimVetNameRaisedOn: '22/02/2023 16:22',
+            claimVetNameRaisedOn: '22/02/2023 15:22',
             claimVetRcvs: '1111112',
-            claimVetRcvsRaisedOn: '22/02/2023 16:22',
+            claimVetRcvsRaisedOn: '22/02/2023 15:22',
             claimVisitDate: '22/02/2023',
-            claimVisitDateRaisedOn: '22/02/2023 16:22',
+            claimVisitDateRaisedOn: '22/02/2023 15:22',
             confirmCheckDetails: 'yes',
-            confirmCheckDetailsRaisedOn: '22/02/2023 16:22',
+            confirmCheckDetailsRaisedOn: '22/02/2023 15:22',
             cph: undefined,
             declaration: 'Yes',
-            declarationRaisedOn: '22/02/2023 16:22',
+            declarationRaisedOn: '22/02/2023 15:22',
             eligibleSpecies: 'yes',
-            eligibleSpeciesRaisedOn: '22/02/2023 16:22',
+            eligibleSpeciesRaisedOn: '22/02/2023 15:22',
             email: '1100000212@email.com',
             farmer: 'Mr Farmer 212',
             name: 'My Farm Batch 7 Ltd',
             sbi: '105000202',
             whichReview: 'pigs',
-            whichReviewRaisedOn: '22/02/2023 16:22'
+            whichReviewRaisedOn: '22/02/2023 15:22'
           }
         ]
       }

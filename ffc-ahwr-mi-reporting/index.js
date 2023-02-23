@@ -1,4 +1,4 @@
-const { queryEntitiesByTimestamp, connect } = require('./storage')
+const { queryEntitiesByTimestamp, connect } = require('./storage/storage')
 const buildMiReport = require('./mi-report')
 const buildEligibilityMiReport = require('./eligibility-mi-report')
 

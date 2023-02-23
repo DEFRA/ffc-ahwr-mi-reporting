@@ -1,7 +1,7 @@
-const { writeFile } = require('../storage')
-const createFileName = require('../create-filename')
+const { writeFile } = require('../storage/storage')
+const createFileName = require('../csv/create-filename')
 const { send } = require('../email/notify-send')
-const convertToCSV = require('../convert-to-csv')
+const convertToCSV = require('../csv/convert-to-csv')
 const parseEvents = require('./parse-events')
 
 const saveCsv = async (miParsedData) => {

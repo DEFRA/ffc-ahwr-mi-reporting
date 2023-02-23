@@ -2,7 +2,7 @@ const moment = require('moment')
 
 const formatDate = (dateToFormat, currentDateFormat = 'YYYY-MM-DD', dateFormat = 'DD/MM/YYYY HH:mm') => {
   if (dateToFormat) {
-    return moment(dateToFormat, currentDateFormat).format(dateFormat)
+    return moment(dateToFormat, currentDateFormat).utc().format(dateFormat)
   }
   return 'Unknown'
 }

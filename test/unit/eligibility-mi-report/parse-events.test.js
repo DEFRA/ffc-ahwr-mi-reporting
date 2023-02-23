@@ -1,4 +1,4 @@
-const parseEvents = require('../../ffc-ahwr-mi-reporting/eligibility-mi-report/parse-events')
+const parseEvents = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/parse-events')
 
 describe('Parse Events', () => {
   afterEach(() => {

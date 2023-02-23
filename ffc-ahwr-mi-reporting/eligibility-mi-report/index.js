@@ -1,6 +1,6 @@
-const convertToCSV = require('../convert-to-csv')
-const createFileName = require('../create-filename')
-const { writeFile } = require('../storage')
+const convertToCSV = require('../csv/convert-to-csv')
+const createFileName = require('../csv/create-filename')
+const { writeFile } = require('../storage/storage')
 const { sendEligibilityReport } = require('../email/notify-send')
 const parseEvents = require('./parse-events')
 

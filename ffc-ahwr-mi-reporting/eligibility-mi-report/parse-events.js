@@ -1,6 +1,6 @@
-const groupByPartitionKey = require('../group-by-partition-key')
+const groupByPartitionKey = require('../storage/group-by-partition-key')
 const { parseData } = require('../parse-data')
-const convertFromBoolean = require('../convert-from-boolean')
+const convertFromBoolean = require('../csv/convert-from-boolean')
 
 const parse = (events) => {
   const sbi = parseData(events, 'auto-eligibility:registration_of_interest', 'sbi')

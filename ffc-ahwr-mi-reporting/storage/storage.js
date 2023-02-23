@@ -1,6 +1,6 @@
 const { TableClient, odata } = require('@azure/data-tables')
 const { BlobServiceClient } = require('@azure/storage-blob')
-const { connectionString, containerName, tableName } = require('./config')
+const { connectionString, containerName, tableName } = require('../config/config')
 let tableClient
 let blobServiceClient
 let container

@@ -1,7 +1,7 @@
 const notifyClient = require('./notify-client')
-const createFileName = require('../create-filename')
-const { downloadFile } = require('../storage')
-const { templateMiReport, templateEligibilityMiReport, miEmailAddress, environment } = require('../config')
+const createFileName = require('../csv/create-filename')
+const { downloadFile } = require('../storage/storage')
+const { templateMiReport, templateEligibilityMiReport, miEmailAddress, environment } = require('../config/config')
 
 const send = async () => {
   if (miEmailAddress) {

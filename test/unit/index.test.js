@@ -26,8 +26,8 @@ const mockMiEmailAddress = 'test@email.com'
 
 describe('report', () => {
   beforeAll(() => {
-    mockContext = require('./mock-context')
-    mockTimer = require('./mock-timer')
+    mockContext = require('../mock/mock-context')
+    mockTimer = require('../mock/mock-timer')
 
     jest.mock('notifications-node-client', () => ({
       NotifyClient: jest.fn().mockImplementation(() => ({
@@ -36,7 +36,7 @@ describe('report', () => {
       }))
     }))
 
-    jest.mock('../ffc-ahwr-mi-reporting/storage', () => {
+    jest.mock('../../ffc-ahwr-mi-reporting/storage/storage', () => {
       return {
         queryEntitiesByTimestamp: jest.fn().mockResolvedValueOnce([{
           foo: 'bar'
@@ -47,8 +47,8 @@ describe('report', () => {
       }
     })
 
-    jest.mock('../ffc-ahwr-mi-reporting/config', () => {
-      const originalModule = jest.requireActual('../ffc-ahwr-mi-reporting/config')
+    jest.mock('../../ffc-ahwr-mi-reporting/config/config', () => {
+      const originalModule = jest.requireActual('../../ffc-ahwr-mi-reporting/config/config')
       return {
         ...originalModule,
         templateMiReport: mockTemplateId,
@@ -78,7 +78,7 @@ describe('report', () => {
       }
     })
 
-    generateReport = require('../ffc-ahwr-mi-reporting')
+    generateReport = require('../../ffc-ahwr-mi-reporting')
   })
 
   beforeEach(() => {
