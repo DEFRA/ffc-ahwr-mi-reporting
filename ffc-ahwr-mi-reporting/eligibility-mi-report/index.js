@@ -11,7 +11,7 @@ const buildEligibilityMiReport = async (events) => {
     return
   }
   parsedEvents.sort(
-    (a, b) => new Date(b.registrationOfInterestTimestamp) - new Date(a.registrationOfInterestTimestamp)
+    (a, b) => new Date(b.registrationOfInterestAt) - new Date(a.registrationOfInterestAt)
   )
   const csvData = convertToCSV(parsedEvents)
   const csvFilename = createFileName('ahwr-eligibility-mi-report.csv')
