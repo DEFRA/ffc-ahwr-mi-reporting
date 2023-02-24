@@ -20,6 +20,10 @@ const parseCsvData = (events) => {
   const claimUrnResult = parseData(events, 'claim-urnResult', 'urnResult')
   const claimClaimed = parseData(events, 'claim-claimed', 'claimed')
 
+  const agreementWithdrawn = parseData(events, 'agreement-withdrawn', 'withdrawn')
+  const claimApproved = parseData(events, 'claim-approved', 'approved')
+  const claimRejected = parseData(events, 'claim-rejected', 'rejected')
+
   return {
     sbi: organisation?.sbi,
     cph: organisation?.cph,
@@ -47,7 +51,13 @@ const parseCsvData = (events) => {
     claimUrnResult: claimUrnResult?.value.toString().replace(/,/g, ''),
     claimUrnResultRaisedOn: claimUrnResult?.raisedOn,
     claimClaimed: claimClaimed?.value,
-    claimClaimedRaisedOn: claimClaimed?.raisedOn
+    claimClaimedRaisedOn: claimClaimed?.raisedOn,
+    applicationWithdrawn: agreementWithdrawn?.value,
+    applicationWithdrawnRaisedOn: agreementWithdrawn?.raisedOn,
+    claimApproved: claimApproved?.value,
+    claimApprovedRaisedOn: claimApproved?.raisedOn,
+    claimRejected: claimRejected?.value,
+    claimRejectedRaisedOn: claimRejected?.raisedOn
   }
 }
 
