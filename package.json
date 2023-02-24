@@ -1,10 +1,6 @@
 {
   "name": "ffc-ahwr-mi-reporting",
-<<<<<<< HEAD
   "version": "0.3.1",
-=======
-  "version": "0.3.0",
->>>>>>> 56abe8d (152699: Initial updates for withdraw & approval MI report events)
   "description": "Azure Function to create MI reports",
   "author": "Defra",
   "contributors": [

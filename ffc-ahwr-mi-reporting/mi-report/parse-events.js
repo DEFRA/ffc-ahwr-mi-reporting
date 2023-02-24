@@ -53,11 +53,14 @@ const parseCsvData = (events) => {
     claimClaimed: claimClaimed?.value,
     claimClaimedRaisedOn: claimClaimed?.raisedOn,
     applicationWithdrawn: agreementWithdrawn?.value,
-    applicationWithdrawnRaisedOn: agreementWithdrawn?.raisedOn,
+    applicationWithdrawnOn: agreementWithdrawn?.raisedOn,
+    applicationWithdrawnBy: agreementWithdrawn?.raisedBy,
     claimApproved: claimApproved?.value,
-    claimApprovedRaisedOn: claimApproved?.raisedOn,
+    claimApprovedOn: claimApproved?.raisedOn,
+    claimApprovedBy: claimApproved?.raisedBy,
     claimRejected: claimRejected?.value,
-    claimRejectedRaisedOn: claimRejected?.raisedOn
+    claimRejectedOn: claimRejected?.raisedOn,
+    claimRejectedBy: claimRejected?.raisedBy
   }
 }
 
