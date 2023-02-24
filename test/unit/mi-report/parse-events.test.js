@@ -416,7 +416,16 @@ describe('Parse Events', () => {
             name: 'My Farm Batch 7 Ltd',
             sbi: '105000200',
             whichReview: 'dairy',
-            whichReviewRaisedOn: '22/02/2023 15:16'
+            whichReviewRaisedOn: '22/02/2023 15:16',
+            applicationWithdrawn: '',
+            applicationWithdrawnBy: '',
+            applicationWithdrawnOn: '',
+            claimApproved: '',
+            claimApprovedBy: '',
+            claimApprovedOn: '',
+            claimRejected: '',
+            claimRejectedBy: '',
+            claimRejectedOn: ''
           },
           {
             address: '125 Main Road"," Covenham St. Bartholomew"," Louth"," LN11 0PF"," United Kingdom',
@@ -445,7 +454,16 @@ describe('Parse Events', () => {
             name: 'My Farm Batch 7 Ltd',
             sbi: '105000202',
             whichReview: 'pigs',
-            whichReviewRaisedOn: '22/02/2023 15:22'
+            whichReviewRaisedOn: '22/02/2023 15:22',
+            applicationWithdrawn: '',
+            applicationWithdrawnBy: '',
+            applicationWithdrawnOn: '',
+            claimApproved: '',
+            claimApprovedBy: '',
+            claimApprovedOn: '',
+            claimRejected: '',
+            claimRejectedBy: '',
+            claimRejectedOn: ''
           }
         ]
       }
