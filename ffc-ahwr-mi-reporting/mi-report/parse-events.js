@@ -40,11 +40,11 @@ const parseCsvData = (events) => {
     claimDetailsCorrectRaisedOn: claimDetailsCorrect?.raisedOn,
     claimVisitDate: formatDate(claimVisitDate?.value, moment.ISO_8601, 'DD/MM/YYYY'),
     claimVisitDateRaisedOn: claimVisitDate?.raisedOn,
-    claimVetName: claimVetName?.value,
+    claimVetName: claimVetName?.value.replace(/,/g, ''),
     claimVetNameRaisedOn: claimVetName?.raisedOn,
     claimVetRcvs: claimVetRcvs?.value,
     claimVetRcvsRaisedOn: claimVetRcvs?.raisedOn,
-    claimUrnResult: claimUrnResult?.value.toString(),
+    claimUrnResult: claimUrnResult?.value.toString().replace(/,/g, ''),
     claimUrnResultRaisedOn: claimUrnResult?.raisedOn,
     claimClaimed: claimClaimed?.value,
     claimClaimedRaisedOn: claimClaimed?.raisedOn
@@ -55,6 +55,7 @@ const parseEvents = (events) => {
   const miParsedData = []
   const eventByPartitionKey = groupByPartitionKey(events)
   for (const eventGroup in eventByPartitionKey) {
+    console.log(`eventGroup is ${eventGroup}`)
     const eventData = eventByPartitionKey[eventGroup]
     const filteredEvents = eventData.filter(event => !`${event.EventType}`.startsWith('auto-eligibility'))
     if (filteredEvents.length !== 0) {
