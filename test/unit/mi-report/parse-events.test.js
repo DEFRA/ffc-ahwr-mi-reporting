@@ -384,6 +384,57 @@ describe('Parse Events', () => {
             EventBy: '1100000212@email.com',
             Payload: '{"type":"claim-claimed","message":"Session set for claim and claimed.","data":{"claimed":"success"},"raisedBy":"1100000212@email.com","raisedOn":"2023-02-22T15:22:54.873Z"}',
             Status: 'success'
+          },
+          {
+            partitionKey: '105000202',
+            rowKey: '105000202_1678177224031',
+            timestamp: '2023-03-07T08:20:24.8923912Z',
+            SessionId: 'fb6518a0-c6bf-4f21-93c1-9de5ad7a5f93',
+            EventType: 'application:status-updated(2)',
+            EventRaised: '2023-03-07T08:20:24.031Z',
+            EventBy: 'Christopher',
+            Payload: `{
+              "type":"application:status-updated",
+              "message":"Application has been updated",
+              "data":{"reference":"AHWR-FB65-18A0","statusId":2},
+              "raisedBy":"Christopher",
+              "raisedOn":"2023-03-07T08:20:24.031Z"
+            }`,
+            Status: 'success'
+          },
+          {
+            partitionKey: '105000202',
+            rowKey: '105000202_1678177224031',
+            timestamp: '2023-03-07T08:20:24.8923912Z',
+            SessionId: 'fb6518a0-c6bf-4f21-93c1-9de5ad7a5f93',
+            EventType: 'application:status-updated(9)',
+            EventRaised: '2023-03-07T08:20:24.031Z',
+            EventBy: 'Christopher',
+            Payload: `{
+              "type":"application:status-updated",
+              "message":"Application has been updated",
+              "data":{"reference":"AHWR-FB65-18A0","statusId":9},
+              "raisedBy":"Christopher",
+              "raisedOn":"2023-03-07T08:21:24.031Z"
+            }`,
+            Status: 'success'
+          },
+          {
+            partitionKey: '105000202',
+            rowKey: '105000202_1678177224031',
+            timestamp: '2023-03-07T08:20:24.8923912Z',
+            SessionId: 'fb6518a0-c6bf-4f21-93c1-9de5ad7a5f93',
+            EventType: 'application:status-updated(10)',
+            EventRaised: '2023-03-07T08:20:24.031Z',
+            EventBy: 'Marcin',
+            Payload: `{
+              "type":"application:status-updated",
+              "message":"Application has been updated",
+              "data":{"reference":"AHWR-FB65-18A0","statusId":10},
+              "raisedBy":"Marcin",
+              "raisedOn":"2023-03-07T08:22:24.031Z"
+            }`,
+            Status: 'success'
           }
         ]
       },
@@ -417,13 +468,13 @@ describe('Parse Events', () => {
             sbi: '105000200',
             whichReview: 'dairy',
             whichReviewRaisedOn: '22/02/2023 15:16',
-            applicationWithdrawn: '',
+            applicationWithdrawn: 'no',
             applicationWithdrawnBy: '',
             applicationWithdrawnOn: '',
-            claimApproved: '',
+            claimApproved: 'no',
             claimApprovedBy: '',
             claimApprovedOn: '',
-            claimRejected: '',
+            claimRejected: 'no',
             claimRejectedBy: '',
             claimRejectedOn: ''
           },
@@ -455,15 +506,15 @@ describe('Parse Events', () => {
             sbi: '105000202',
             whichReview: 'pigs',
             whichReviewRaisedOn: '22/02/2023 15:22',
-            applicationWithdrawn: '',
-            applicationWithdrawnBy: '',
-            applicationWithdrawnOn: '',
-            claimApproved: '',
-            claimApprovedBy: '',
-            claimApprovedOn: '',
-            claimRejected: '',
-            claimRejectedBy: '',
-            claimRejectedOn: ''
+            applicationWithdrawn: 'yes',
+            applicationWithdrawnBy: 'Christopher',
+            applicationWithdrawnOn: '07/03/2023 08:20',
+            claimApproved: 'yes',
+            claimApprovedBy: 'Christopher',
+            claimApprovedOn: '07/03/2023 08:21',
+            claimRejected: 'yes',
+            claimRejectedBy: 'Marcin',
+            claimRejectedOn: '07/03/2023 08:22'
           }
         ]
       }
