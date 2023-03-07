@@ -390,7 +390,7 @@ describe('Parse Events', () => {
             rowKey: '105000202_1678177224031',
             timestamp: '2023-03-07T08:20:24.8923912Z',
             SessionId: 'fb6518a0-c6bf-4f21-93c1-9de5ad7a5f93',
-            EventType: 'application:status-updated(2)',
+            EventType: 'application:status-updated:2',
             EventRaised: '2023-03-07T08:20:24.031Z',
             EventBy: 'Christopher',
             Payload: `{
@@ -407,7 +407,7 @@ describe('Parse Events', () => {
             rowKey: '105000202_1678177224031',
             timestamp: '2023-03-07T08:20:24.8923912Z',
             SessionId: 'fb6518a0-c6bf-4f21-93c1-9de5ad7a5f93',
-            EventType: 'application:status-updated(9)',
+            EventType: 'application:status-updated:9',
             EventRaised: '2023-03-07T08:20:24.031Z',
             EventBy: 'Christopher',
             Payload: `{
@@ -424,7 +424,7 @@ describe('Parse Events', () => {
             rowKey: '105000202_1678177224031',
             timestamp: '2023-03-07T08:20:24.8923912Z',
             SessionId: 'fb6518a0-c6bf-4f21-93c1-9de5ad7a5f93',
-            EventType: 'application:status-updated(10)',
+            EventType: 'application:status-updated:10',
             EventRaised: '2023-03-07T08:20:24.031Z',
             EventBy: 'Marcin',
             Payload: `{

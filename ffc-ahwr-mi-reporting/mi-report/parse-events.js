@@ -27,9 +27,9 @@ const parseCsvData = (events) => {
   const claimUrnResult = parseData(events, 'claim-urnResult', 'urnResult')
   const claimClaimed = parseData(events, 'claim-claimed', 'claimed')
 
-  const agreementWithdrawn = parseData(events, `application:status-updated(${applicationStatus.withdrawn})`, 'statusId')
-  const claimApproved = parseData(events, `application:status-updated(${applicationStatus.readyToPay})`, 'statusId')
-  const claimRejected = parseData(events, `application:status-updated(${applicationStatus.rejected})`, 'statusId')
+  const agreementWithdrawn = parseData(events, `application:status-updated:${applicationStatus.withdrawn}`, 'statusId')
+  const claimApproved = parseData(events, `application:status-updated:${applicationStatus.readyToPay}`, 'statusId')
+  const claimRejected = parseData(events, `application:status-updated:${applicationStatus.rejected}`, 'statusId')
 
   return {
     sbi: organisation?.sbi,
