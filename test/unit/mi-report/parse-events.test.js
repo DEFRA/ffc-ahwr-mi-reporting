@@ -538,7 +538,13 @@ describe('Parse Events', () => {
           EventType: 'claim-vetName',
           EventRaised: '2023-02-22T15:22:42.767Z',
           EventBy: '1100000212@email.com',
-          Payload: '{"type":"claim-vetName","message":"Session set for claim and vetName.","data":{"vetName":"something, something"},"raisedBy":"1100000212@email.com","raisedOn":"2023-02-22T15:22:42.767Z"}',
+          Payload: `{
+            "type":"claim-vetName",
+            "message":"Session set for claim and vetName.",
+            "data":{"vetName":"something, something"},
+            "raisedBy":"1100000212@email.com",
+            "raisedOn":"2023-02-22T15:22:42.767Z"
+          }`,
           Status: 'success'
         }, {
           partitionKey: '105000202',
@@ -548,7 +554,13 @@ describe('Parse Events', () => {
           EventType: 'claim-urnResult',
           EventRaised: '2023-02-22T15:22:48.560Z',
           EventBy: '1100000212@email.com',
-          Payload: '{"type":"claim-urnResult","message":"Session set for claim and urnResult.","data":{"urnResult":"URNURN, URNURN"},"raisedBy":"1100000212@email.com","raisedOn":"2023-02-22T15:22:48.560Z"}',
+          Payload: `{
+            "type":"claim-urnResult",
+            "message":"Session set for claim and urnResult.",
+            "data":{"urnResult":"URNURN, URNURN"},
+            "raisedBy":"1100000212@email.com",
+            "raisedOn":"2023-02-22T15:22:48.560Z"
+          }`,
           Status: 'success'
         }]
       },
@@ -581,7 +593,16 @@ describe('Parse Events', () => {
             name: undefined,
             sbi: undefined,
             whichReview: '',
-            whichReviewRaisedOn: ''
+            whichReviewRaisedOn: '',
+            applicationWithdrawn: 'no',
+            applicationWithdrawnBy: 'n/a',
+            applicationWithdrawnOn: 'n/a',
+            claimApproved: 'no',
+            claimApprovedBy: 'n/a',
+            claimApprovedOn: 'n/a',
+            claimRejected: 'no',
+            claimRejectedBy: 'n/a',
+            claimRejectedOn: 'n/a'
           }
         ]
       }

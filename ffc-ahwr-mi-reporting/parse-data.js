@@ -16,18 +16,21 @@ const parsePayload = (events, eventType) => {
 const parseData = (events, type, key) => {
   let value = ''
   let raisedOn = ''
+  let raisedBy = ''
   const data = parsePayload(events, type)
 
   try {
     value = data?.data[key]
     raisedOn = formatDate(data?.raisedOn, moment.ISO_8601)
+    raisedBy = data?.raisedBy
   } catch (error) {
     console.log(`${key} not found`)
   }
 
   return {
     value,
-    raisedOn
+    raisedOn,
+    raisedBy
   }
 }
 
