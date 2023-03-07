@@ -2,6 +2,7 @@ const moment = require('moment')
 const groupByPartitionKey = require('../storage/group-by-partition-key')
 const { parseData, parsePayload, formatDate } = require('../parse-data')
 const convertFromBoolean = require('../csv/convert-from-boolean')
+const notApplicableIfUndefined = require('../csv/not-applicable-if-undefined')
 
 const applicationStatus = {
   withdrawn: 2,
@@ -59,14 +60,14 @@ const parseCsvData = (events) => {
     claimClaimed: claimClaimed?.value,
     claimClaimedRaisedOn: claimClaimed?.raisedOn,
     applicationWithdrawn: convertFromBoolean(agreementWithdrawn?.value === applicationStatus.withdrawn),
-    applicationWithdrawnOn: agreementWithdrawn?.raisedOn,
-    applicationWithdrawnBy: agreementWithdrawn?.raisedBy,
+    applicationWithdrawnOn: notApplicableIfUndefined(agreementWithdrawn?.raisedOn),
+    applicationWithdrawnBy: notApplicableIfUndefined(agreementWithdrawn?.raisedBy),
     claimApproved: convertFromBoolean(claimApproved?.value === applicationStatus.readyToPay),
-    claimApprovedOn: claimApproved?.raisedOn,
-    claimApprovedBy: claimApproved?.raisedBy,
+    claimApprovedOn: notApplicableIfUndefined(claimApproved?.raisedOn),
+    claimApprovedBy: notApplicableIfUndefined(claimApproved?.raisedBy),
     claimRejected: convertFromBoolean(claimRejected?.value === applicationStatus.rejected),
-    claimRejectedOn: claimRejected?.raisedOn,
-    claimRejectedBy: claimRejected?.raisedBy
+    claimRejectedOn: notApplicableIfUndefined(claimRejected?.raisedOn),
+    claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy)
   }
 }
 

@@ -469,14 +469,14 @@ describe('Parse Events', () => {
             whichReview: 'dairy',
             whichReviewRaisedOn: '22/02/2023 15:16',
             applicationWithdrawn: 'no',
-            applicationWithdrawnBy: '',
-            applicationWithdrawnOn: '',
+            applicationWithdrawnBy: 'n/a',
+            applicationWithdrawnOn: 'n/a',
             claimApproved: 'no',
-            claimApprovedBy: '',
-            claimApprovedOn: '',
+            claimApprovedBy: 'n/a',
+            claimApprovedOn: 'n/a',
             claimRejected: 'no',
-            claimRejectedBy: '',
-            claimRejectedOn: ''
+            claimRejectedBy: 'n/a',
+            claimRejectedOn: 'n/a'
           },
           {
             address: '125 Main Road"," Covenham St. Bartholomew"," Louth"," LN11 0PF"," United Kingdom',
