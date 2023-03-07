@@ -55,7 +55,6 @@ const parseEvents = (events) => {
   const miParsedData = []
   const eventByPartitionKey = groupByPartitionKey(events)
   for (const eventGroup in eventByPartitionKey) {
-    console.log(`eventGroup is ${eventGroup}`)
     const eventData = eventByPartitionKey[eventGroup]
     const filteredEvents = eventData.filter(event => !`${event.EventType}`.startsWith('auto-eligibility'))
     if (filteredEvents.length !== 0) {
