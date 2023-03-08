@@ -8,7 +8,7 @@ const formatDate = (dateToFormat, currentDateFormat = 'YYYY-MM-DD', dateFormat =
 }
 
 const parsePayload = (events, eventType) => {
-  const eventData = events.filter(event => event.EventType === eventType)
+  const eventData = events.filter(event => event.EventType.startsWith(eventType))
   const latestEvent = eventData.sort((a, b) => new Date(b.EventRaised) - new Date(a.EventRaised))[0]
   return latestEvent?.Payload ? JSON.parse(latestEvent?.Payload) : {}
 }

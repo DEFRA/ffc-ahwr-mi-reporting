@@ -30,6 +30,7 @@ const parseCsvData = (events) => {
   const agreementWithdrawn = parseData(events, `application:status-updated:${applicationStatus.withdrawn}`, 'statusId')
   const claimApproved = parseData(events, `application:status-updated:${applicationStatus.readyToPay}`, 'statusId')
   const claimRejected = parseData(events, `application:status-updated:${applicationStatus.rejected}`, 'statusId')
+  const agreementCurrentState = parseData(events, `application:status-updated`, 'statusId')
 
   return {
     sbi: organisation?.sbi,
@@ -67,7 +68,8 @@ const parseCsvData = (events) => {
     claimApprovedBy: notApplicableIfUndefined(claimApproved?.raisedBy),
     claimRejected: convertFromBoolean(claimRejected?.value === applicationStatus.rejected),
     claimRejectedOn: notApplicableIfUndefined(claimRejected?.raisedOn),
-    claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy)
+    claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy),
+    agreementCurrentState: notApplicableIfUndefined(agreementCurrentState?.value)
   }
 }
 

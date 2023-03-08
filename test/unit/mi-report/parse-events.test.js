@@ -408,7 +408,7 @@ describe('Parse Events', () => {
             timestamp: '2023-03-07T08:20:24.8923912Z',
             SessionId: 'fb6518a0-c6bf-4f21-93c1-9de5ad7a5f93',
             EventType: 'application:status-updated:9',
-            EventRaised: '2023-03-07T08:20:24.031Z',
+            EventRaised: '2023-03-07T08:21:24.031Z',
             EventBy: 'Christopher',
             Payload: `{
               "type":"application:status-updated",
@@ -425,7 +425,7 @@ describe('Parse Events', () => {
             timestamp: '2023-03-07T08:20:24.8923912Z',
             SessionId: 'fb6518a0-c6bf-4f21-93c1-9de5ad7a5f93',
             EventType: 'application:status-updated:10',
-            EventRaised: '2023-03-07T08:20:24.031Z',
+            EventRaised: '2023-03-07T08:22:24.031Z',
             EventBy: 'Marcin',
             Payload: `{
               "type":"application:status-updated",
@@ -476,7 +476,8 @@ describe('Parse Events', () => {
             claimApprovedOn: 'n/a',
             claimRejected: 'no',
             claimRejectedBy: 'n/a',
-            claimRejectedOn: 'n/a'
+            claimRejectedOn: 'n/a',
+            agreementCurrentState: 'n/a'
           },
           {
             address: '125 Main Road"," Covenham St. Bartholomew"," Louth"," LN11 0PF"," United Kingdom',
@@ -514,7 +515,8 @@ describe('Parse Events', () => {
             claimApprovedOn: '07/03/2023 08:21',
             claimRejected: 'yes',
             claimRejectedBy: 'Marcin',
-            claimRejectedOn: '07/03/2023 08:22'
+            claimRejectedOn: '07/03/2023 08:22',
+            agreementCurrentState: 10
           }
         ]
       }
@@ -602,7 +604,8 @@ describe('Parse Events', () => {
             claimApprovedOn: 'n/a',
             claimRejected: 'no',
             claimRejectedBy: 'n/a',
-            claimRejectedOn: 'n/a'
+            claimRejectedOn: 'n/a',
+            agreementCurrentState: 'n/a'
           }
         ]
       }
