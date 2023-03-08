@@ -12,6 +12,15 @@ describe('notApplicableIfUndefined(value)', () => {
       }
     },
     {
+      toString: () => 'returns n/a if empty',
+      given: {
+        value: ''
+      },
+      expect: {
+        result: 'n/a'
+      }
+    },
+    {
       toString: () => 'returns value if defined',
       given: {
         value: 'abc'

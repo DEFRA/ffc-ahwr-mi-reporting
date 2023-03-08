@@ -39,7 +39,8 @@ describe('report', () => {
     jest.mock('../../ffc-ahwr-mi-reporting/storage/storage', () => {
       return {
         queryEntitiesByTimestamp: jest.fn().mockResolvedValueOnce([{
-          foo: 'bar'
+          foo: 'bar',
+          EventType: 'eventType'
         }]),
         connect: jest.fn(),
         writeFile: mockWriteFile,

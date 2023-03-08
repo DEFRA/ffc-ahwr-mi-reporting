@@ -2,6 +2,14 @@ const moment = require('moment')
 const groupByPartitionKey = require('../storage/group-by-partition-key')
 const { parseData, parsePayload, formatDate } = require('../parse-data')
 const convertFromBoolean = require('../csv/convert-from-boolean')
+const notApplicableIfUndefined = require('../csv/not-applicable-if-undefined')
+const agreementStatusIdToString = require('./agreement-status-id-to-string')
+
+const applicationStatus = {
+  withdrawn: 2,
+  readyToPay: 9,
+  rejected: 10
+}
 
 const parseCsvData = (events) => {
   const organisationData = parsePayload(events, 'farmerApplyData-organisation')
@@ -19,6 +27,11 @@ const parseCsvData = (events) => {
   const claimVetRcvs = parseData(events, 'claim-vetRcvs', 'vetRcvs')
   const claimUrnResult = parseData(events, 'claim-urnResult', 'urnResult')
   const claimClaimed = parseData(events, 'claim-claimed', 'claimed')
+
+  const agreementWithdrawn = parseData(events, `application:status-updated:${applicationStatus.withdrawn}`, 'statusId')
+  const claimApproved = parseData(events, `application:status-updated:${applicationStatus.readyToPay}`, 'statusId')
+  const claimRejected = parseData(events, `application:status-updated:${applicationStatus.rejected}`, 'statusId')
+  const agreementCurrentStatusId = parseData(events, 'application:status-updated', 'statusId')
 
   return {
     sbi: organisation?.sbi,
@@ -47,7 +60,17 @@ const parseCsvData = (events) => {
     claimUrnResult: claimUrnResult?.value.toString().replace(/,/g, ''),
     claimUrnResultRaisedOn: claimUrnResult?.raisedOn,
     claimClaimed: claimClaimed?.value,
-    claimClaimedRaisedOn: claimClaimed?.raisedOn
+    claimClaimedRaisedOn: claimClaimed?.raisedOn,
+    applicationWithdrawn: convertFromBoolean(agreementWithdrawn?.value === applicationStatus.withdrawn),
+    applicationWithdrawnOn: notApplicableIfUndefined(agreementWithdrawn?.raisedOn),
+    applicationWithdrawnBy: notApplicableIfUndefined(agreementWithdrawn?.raisedBy),
+    claimApproved: convertFromBoolean(claimApproved?.value === applicationStatus.readyToPay),
+    claimApprovedOn: notApplicableIfUndefined(claimApproved?.raisedOn),
+    claimApprovedBy: notApplicableIfUndefined(claimApproved?.raisedBy),
+    claimRejected: convertFromBoolean(claimRejected?.value === applicationStatus.rejected),
+    claimRejectedOn: notApplicableIfUndefined(claimRejected?.raisedOn),
+    claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy),
+    agreementCurrentStatus: notApplicableIfUndefined(agreementStatusIdToString(agreementCurrentStatusId?.value))
   }
 }
 
