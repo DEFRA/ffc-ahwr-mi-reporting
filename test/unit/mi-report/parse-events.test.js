@@ -477,7 +477,7 @@ describe('Parse Events', () => {
             claimRejected: 'no',
             claimRejectedBy: 'n/a',
             claimRejectedOn: 'n/a',
-            agreementCurrentState: 'n/a'
+            agreementCurrentStatus: 'n/a'
           },
           {
             address: '125 Main Road"," Covenham St. Bartholomew"," Louth"," LN11 0PF"," United Kingdom',
@@ -516,7 +516,7 @@ describe('Parse Events', () => {
             claimRejected: 'yes',
             claimRejectedBy: 'Marcin',
             claimRejectedOn: '07/03/2023 08:22',
-            agreementCurrentState: 10
+            agreementCurrentStatus: 'REJECTED'
           }
         ]
       }
@@ -605,7 +605,7 @@ describe('Parse Events', () => {
             claimRejected: 'no',
             claimRejectedBy: 'n/a',
             claimRejectedOn: 'n/a',
-            agreementCurrentState: 'n/a'
+            agreementCurrentStatus: 'n/a'
           }
         ]
       }

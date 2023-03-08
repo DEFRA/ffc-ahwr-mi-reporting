@@ -3,6 +3,7 @@ const groupByPartitionKey = require('../storage/group-by-partition-key')
 const { parseData, parsePayload, formatDate } = require('../parse-data')
 const convertFromBoolean = require('../csv/convert-from-boolean')
 const notApplicableIfUndefined = require('../csv/not-applicable-if-undefined')
+const agreementStatusIdToString = require('./agreement-status-id-to-string')
 
 const applicationStatus = {
   withdrawn: 2,
@@ -30,7 +31,7 @@ const parseCsvData = (events) => {
   const agreementWithdrawn = parseData(events, `application:status-updated:${applicationStatus.withdrawn}`, 'statusId')
   const claimApproved = parseData(events, `application:status-updated:${applicationStatus.readyToPay}`, 'statusId')
   const claimRejected = parseData(events, `application:status-updated:${applicationStatus.rejected}`, 'statusId')
-  const agreementCurrentState = parseData(events, `application:status-updated`, 'statusId')
+  const agreementCurrentStatusId = parseData(events, 'application:status-updated', 'statusId')
 
   return {
     sbi: organisation?.sbi,
@@ -69,7 +70,7 @@ const parseCsvData = (events) => {
     claimRejected: convertFromBoolean(claimRejected?.value === applicationStatus.rejected),
     claimRejectedOn: notApplicableIfUndefined(claimRejected?.raisedOn),
     claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy),
-    agreementCurrentState: notApplicableIfUndefined(agreementCurrentState?.value)
+    agreementCurrentStatus: notApplicableIfUndefined(agreementStatusIdToString(agreementCurrentStatusId?.value))
   }
 }
 
