@@ -520,8 +520,7 @@ describe('Parse Events', () => {
           }
         ]
       }
-    }
-    /*
+    },
     {
       toString: () => 'no events',
       given: {
@@ -910,7 +909,6 @@ describe('Parse Events', () => {
         ]
       }
     }
-    */
   ])('%s', async (testCase) => {
     const parsedEvents = parseEvents(testCase.given.events)
     expect(parsedEvents).toEqual(testCase.expect.parsedEvents)
