@@ -74,14 +74,48 @@ const parseCsvData = (events) => {
   }
 }
 
+const groupBy = function (xs, key) {
+  return xs.reduce(function (rv, x) {
+    (rv[x[key]] = rv[x[key]] || []).push(x)
+    return rv
+  }, {})
+}
+
 const parseEvents = (events) => {
   const miParsedData = []
   const eventByPartitionKey = groupByPartitionKey(events)
   for (const eventGroup in eventByPartitionKey) {
-    const eventData = eventByPartitionKey[eventGroup]
-    const filteredEvents = eventData.filter(event => !`${event.EventType}`.startsWith('auto-eligibility'))
-    if (filteredEvents.length !== 0) {
-      miParsedData.push(parseCsvData(filteredEvents))
+    const filteredEvents = eventByPartitionKey[eventGroup]
+      .filter(event => !`${event.EventType}`.startsWith('auto-eligibility'))
+
+    const applicationEvents = groupBy(
+      filteredEvents.filter(event => `${event.EventType}`.startsWith('application:status-updated')),
+      'SessionId'
+    )
+    Object.keys(applicationEvents).forEach(applicationId => {
+      const referenceEvent = filteredEvents.find(e =>
+        `${e.EventType}`.startsWith('farmerApplyData-reference') &&
+        JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[applicationId][0].Payload).data.reference
+      )
+      if (typeof referenceEvent === 'undefined') {
+        return
+      }
+      const applyEvents = filteredEvents
+        .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
+        .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
+      const claimEvents = filteredEvents
+        .filter(event => `${event.EventType}`.startsWith('claim'))
+
+      miParsedData.push(parseCsvData([
+        ...applicationEvents[applicationId],
+        ...applyEvents,
+        ...claimEvents
+      ]))
+    })
+    if (Object.keys(applicationEvents).length === 0) {
+      miParsedData.push(parseCsvData(
+        filteredEvents
+      ))
     }
   }
   return miParsedData
