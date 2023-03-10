@@ -623,8 +623,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-organisation',
             EventRaised: '2023-03-09T15:00:39.862Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"organisation":{"farmerName":"Chris Smith","name":"Chris Farm","sbi":"100000216","crn":"1000000216","address":"Some Road, London, MK45 9ES","email":"christopher.smith@kainos.com"}},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:00:39.862Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"organisation":{"farmerName":"Chris Smith","name":"Chris Farm","sbi":"100000216","crn":"1000000216","address":"Some Road, London, MK45 9ES","email":"business@email.com"}},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:00:39.862Z"}',
             Status: 'success'
           },
           {
@@ -634,8 +634,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-confirmCheckDetails',
             EventRaised: '2023-03-09T15:00:44.646Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-confirmCheckDetails","message":"Session set for farmerApplyData and confirmCheckDetails.","data":{"confirmCheckDetails":"yes"},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:00:44.646Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-confirmCheckDetails","message":"Session set for farmerApplyData and confirmCheckDetails.","data":{"confirmCheckDetails":"yes"},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:00:44.646Z"}',
             Status: 'success'
           },
           {
@@ -645,8 +645,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-whichReview',
             EventRaised: '2023-03-09T15:00:49.390Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-whichReview","message":"Session set for farmerApplyData and whichReview.","data":{"whichReview":"pigs"},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:00:49.390Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-whichReview","message":"Session set for farmerApplyData and whichReview.","data":{"whichReview":"pigs"},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:00:49.390Z"}',
             Status: 'success'
           },
           {
@@ -656,8 +656,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-eligibleSpecies',
             EventRaised: '2023-03-09T15:00:52.710Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-eligibleSpecies","message":"Session set for farmerApplyData and eligibleSpecies.","data":{"eligibleSpecies":"yes"},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:00:52.710Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-eligibleSpecies","message":"Session set for farmerApplyData and eligibleSpecies.","data":{"eligibleSpecies":"yes"},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:00:52.710Z"}',
             Status: 'success'
           },
           {
@@ -667,8 +667,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-reference',
             EventRaised: '2023-03-09T15:00:54.951Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-reference","message":"Session set for farmerApplyData and reference.","data":{"reference":null},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:00:54.951Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-reference","message":"Session set for farmerApplyData and reference.","data":{"reference":null},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:00:54.951Z"}',
             Status: 'success'
           },
           {
@@ -678,8 +678,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-declaration',
             EventRaised: '2023-03-09T15:00:59.280Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-declaration","message":"Session set for farmerApplyData and declaration.","data":{"declaration":true},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:00:59.280Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-declaration","message":"Session set for farmerApplyData and declaration.","data":{"declaration":true},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:00:59.280Z"}',
             Status: 'success'
           },
           {
@@ -689,8 +689,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-offerStatus',
             EventRaised: '2023-03-09T15:00:59.281Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-offerStatus","message":"Session set for farmerApplyData and offerStatus.","data":{"offerStatus":"accepted"},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:00:59.281Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-offerStatus","message":"Session set for farmerApplyData and offerStatus.","data":{"offerStatus":"accepted"},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:00:59.281Z"}',
             Status: 'success'
           },
           {
@@ -711,8 +711,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-reference',
             EventRaised: '2023-03-09T15:01:03.563Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-reference","message":"Session set for farmerApplyData and reference.","data":{"reference":"AHWR-F8C2-DD6B"},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:01:03.563Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-reference","message":"Session set for farmerApplyData and reference.","data":{"reference":"AHWR-F8C2-DD6B"},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:01:03.563Z"}',
             Status: 'success'
           },
           {
@@ -733,8 +733,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-organisation',
             EventRaised: '2023-03-09T15:23:26.431Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"organisation":{"farmerName":"Chris Smith","name":"Chris Farm","sbi":"100000216","crn":"1000000216","address":"Some Road, London, MK45 9ES","email":"christopher.smith@kainos.com"}},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:23:26.431Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"organisation":{"farmerName":"Chris Smith","name":"Chris Farm","sbi":"100000216","crn":"1000000216","address":"Some Road, London, MK45 9ES","email":"business@email.com"}},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:23:26.431Z"}',
             Status: 'success'
           },
           {
@@ -744,8 +744,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-confirmCheckDetails',
             EventRaised: '2023-03-09T15:23:30.060Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-confirmCheckDetails","message":"Session set for farmerApplyData and confirmCheckDetails.","data":{"confirmCheckDetails":"yes"},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:23:30.060Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-confirmCheckDetails","message":"Session set for farmerApplyData and confirmCheckDetails.","data":{"confirmCheckDetails":"yes"},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:23:30.060Z"}',
             Status: 'success'
           },
           {
@@ -755,8 +755,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-whichReview',
             EventRaised: '2023-03-09T15:23:32.453Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-whichReview","message":"Session set for farmerApplyData and whichReview.","data":{"whichReview":"pigs"},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:23:32.453Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-whichReview","message":"Session set for farmerApplyData and whichReview.","data":{"whichReview":"pigs"},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:23:32.453Z"}',
             Status: 'success'
           },
           {
@@ -766,8 +766,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-eligibleSpecies',
             EventRaised: '2023-03-09T15:23:34.251Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-eligibleSpecies","message":"Session set for farmerApplyData and eligibleSpecies.","data":{"eligibleSpecies":"yes"},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:23:34.251Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-eligibleSpecies","message":"Session set for farmerApplyData and eligibleSpecies.","data":{"eligibleSpecies":"yes"},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:23:34.251Z"}',
             Status: 'success'
           },
           {
@@ -777,8 +777,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-reference',
             EventRaised: '2023-03-09T15:23:38.483Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-reference","message":"Session set for farmerApplyData and reference.","data":{"reference":null},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:23:38.483Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-reference","message":"Session set for farmerApplyData and reference.","data":{"reference":null},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:23:38.483Z"}',
             Status: 'success'
           },
           {
@@ -788,8 +788,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-declaration',
             EventRaised: '2023-03-09T15:23:41.039Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-declaration","message":"Session set for farmerApplyData and declaration.","data":{"declaration":true},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:23:41.039Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-declaration","message":"Session set for farmerApplyData and declaration.","data":{"declaration":true},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:23:41.039Z"}',
             Status: 'success'
           },
           {
@@ -799,8 +799,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-offerStatus',
             EventRaised: '2023-03-09T15:23:41.040Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-offerStatus","message":"Session set for farmerApplyData and offerStatus.","data":{"offerStatus":"accepted"},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:23:41.040Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-offerStatus","message":"Session set for farmerApplyData and offerStatus.","data":{"offerStatus":"accepted"},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:23:41.040Z"}',
             Status: 'success'
           },
           {
@@ -821,8 +821,8 @@ describe('Parse Events', () => {
             SessionId: '047e3efc-a41a-4205-8f6e-696fd71c4ae6',
             EventType: 'farmerApplyData-reference',
             EventRaised: '2023-03-09T15:23:44.299Z',
-            EventBy: 'christopher.smith@kainos.com',
-            Payload: '{"type":"farmerApplyData-reference","message":"Session set for farmerApplyData and reference.","data":{"reference":"AHWR-8332-F439"},"raisedBy":"christopher.smith@kainos.com","raisedOn":"2023-03-09T15:23:44.299Z"}',
+            EventBy: 'business@email.com',
+            Payload: '{"type":"farmerApplyData-reference","message":"Session set for farmerApplyData and reference.","data":{"reference":"AHWR-8332-F439"},"raisedBy":"business@email.com","raisedOn":"2023-03-09T15:23:44.299Z"}',
             Status: 'success'
           }
         ]
@@ -851,7 +851,7 @@ describe('Parse Events', () => {
             declarationRaisedOn: '09/03/2023 15:00',
             eligibleSpecies: 'yes',
             eligibleSpeciesRaisedOn: '09/03/2023 15:00',
-            email: 'christopher.smith@kainos.com',
+            email: 'business@email.com',
             farmer: 'Chris Smith',
             name: 'Chris Farm',
             sbi: '100000216',
@@ -890,7 +890,7 @@ describe('Parse Events', () => {
             declarationRaisedOn: '09/03/2023 15:23',
             eligibleSpecies: 'yes',
             eligibleSpeciesRaisedOn: '09/03/2023 15:23',
-            email: 'christopher.smith@kainos.com',
+            email: 'business@email.com',
             farmer: 'Chris Smith',
             name: 'Chris Farm',
             sbi: '100000216',
