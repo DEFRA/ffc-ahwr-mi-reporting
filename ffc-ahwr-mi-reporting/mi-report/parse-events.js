@@ -112,7 +112,7 @@ const parseEvents = (events) => {
         ...claimEvents
       ]))
     })
-    if (Object.keys(applicationEvents).length === 0) {
+    if (filteredEvents.length > 0 && Object.keys(applicationEvents).length === 0) {
       miParsedData.push(parseCsvData(
         filteredEvents
       ))
