@@ -2,7 +2,7 @@ const { writeFile } = require('../storage/storage')
 const createFileName = require('../csv/create-filename')
 const { send } = require('../email/notify-send')
 const convertToCSV = require('../csv/convert-to-csv')
-const parseEvents = require('./parse-events')
+const createRows = require('./create-rows')
 
 const saveCsv = async (miParsedData) => {
   if (miParsedData) {
@@ -16,8 +16,8 @@ const saveCsv = async (miParsedData) => {
 }
 
 const buildMiReport = async (events) => {
-  const parsedEvents = parseEvents(events)
-  await saveCsv(parsedEvents)
+  const rows = createRows(events)
+  await saveCsv(rows)
 }
 
 module.exports = buildMiReport
