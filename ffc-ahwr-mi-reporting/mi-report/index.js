@@ -7,6 +7,7 @@ const createRows = require('./create-rows')
 const saveCsv = async (miParsedData) => {
   if (miParsedData) {
     const csvData = convertToCSV(miParsedData)
+    console.log(csvData)
     await writeFile(createFileName('ahwr-mi-report.csv'), csvData)
     await send()
     console.log('CSV saved')
