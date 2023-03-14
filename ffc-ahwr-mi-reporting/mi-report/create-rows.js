@@ -7,6 +7,7 @@ const agreementStatusIdToString = require('./agreement-status-id-to-string')
 
 const applicationStatus = {
   withdrawn: 2,
+  inCheck: 5,
   readyToPay: 9,
   rejected: 10
 }
@@ -107,7 +108,9 @@ const createRows = (events) => {
         .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
         .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
 
-      const claimEvents = applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.readyToPay}` || applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}`
+      const claimEvents = applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.readyToPay}` ||
+      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}` ||
+      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.inCheck}`
         ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim'))
         : []
 
