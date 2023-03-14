@@ -11,7 +11,7 @@ const applicationStatus = {
   rejected: 10
 }
 
-const parseCsvData = (events) => {
+const createRow = (events) => {
   const organisationData = parsePayload(events, 'farmerApplyData-organisation')
   const organisation = organisationData?.data?.organisation
 
@@ -81,44 +81,49 @@ const groupBy = function (xs, key) {
   }, {})
 }
 
-const parseEvents = (events) => {
-  const miParsedData = []
-  const eventByPartitionKey = groupByPartitionKey(events)
-  for (const eventGroup in eventByPartitionKey) {
-    const filteredEvents = eventByPartitionKey[eventGroup]
+const createRows = (events) => {
+  const rows = []
+  const groupedBySbi = groupByPartitionKey(events)
+  for (const sbi in groupedBySbi) {
+    const sbiEvents = groupedBySbi[sbi]
       .filter(event => !`${event.EventType}`.startsWith('auto-eligibility'))
 
-    const applicationEvents = groupBy(
-      filteredEvents.filter(event => `${event.EventType}`.startsWith('application:status-updated')),
+    const statusUpdatedEvents = groupBy(
+      sbiEvents.filter(event => `${event.EventType}`.startsWith('application:status-updated')),
       'SessionId'
     )
-    Object.keys(applicationEvents).forEach(applicationId => {
-      const referenceEvent = filteredEvents.find(e =>
+    Object.keys(statusUpdatedEvents).forEach(applicationId => {
+      const applicationEvents = statusUpdatedEvents[applicationId]
+
+      const referenceEvent = sbiEvents.find(e =>
         `${e.EventType}`.startsWith('farmerApplyData-reference') &&
-        JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[applicationId][0].Payload).data.reference
+        JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[0].Payload).data.reference
       )
       if (typeof referenceEvent === 'undefined') {
         return
       }
-      const applyEvents = filteredEvents
+
+      const applyEvents = sbiEvents
         .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
         .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
-      const claimEvents = filteredEvents
-        .filter(event => `${event.EventType}`.startsWith('claim'))
 
-      miParsedData.push(parseCsvData([
-        ...applicationEvents[applicationId],
+      const claimEvents = applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.readyToPay}` || applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}`
+        ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim'))
+        : []
+
+      rows.push(createRow([
+        ...applicationEvents,
         ...applyEvents,
         ...claimEvents
       ]))
     })
-    if (filteredEvents.length > 0 && Object.keys(applicationEvents).length === 0) {
-      miParsedData.push(parseCsvData(
-        filteredEvents
+    if (sbiEvents.length > 0 && Object.keys(statusUpdatedEvents).length === 0) {
+      rows.push(createRow(
+        sbiEvents
       ))
     }
   }
-  return miParsedData
+  return rows
 }
 
-module.exports = parseEvents
+module.exports = createRows
