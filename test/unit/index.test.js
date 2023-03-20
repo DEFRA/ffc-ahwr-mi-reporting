@@ -79,6 +79,12 @@ describe('report', () => {
       }
     })
 
+    jest.mock('../../ffc-ahwr-mi-reporting/api/applications', () => {
+      return {
+        getApplications: jest.fn().mockReturnValueOnce([{}])
+      }
+    })
+
     generateReport = require('../../ffc-ahwr-mi-reporting')
   })
 
