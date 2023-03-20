@@ -1,6 +1,6 @@
 {
   "name": "ffc-ahwr-mi-reporting",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Azure Function to create MI reports",
   "author": "Defra",
   "contributors": [
@@ -20,6 +20,7 @@
     "@azure/ai-form-recognizer": "^3.2.0",
     "@azure/data-tables": "13.1.2",
     "@azure/storage-blob": "12.10.0",
+    "@hapi/wreck": "^18.0.1",
     "joi": "17.6.0",
     "moment": "2.29.4",
     "notifications-node-client": "^7.0.0"

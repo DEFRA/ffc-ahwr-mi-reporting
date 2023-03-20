@@ -16,8 +16,8 @@ const saveCsv = async (miParsedData) => {
   }
 }
 
-const buildMiReport = async (events) => {
-  const rows = createRows(events)
+const buildMiReport = async (events, applications) => {
+  const rows = createRows(events, applications)
   await saveCsv(rows)
 }
 

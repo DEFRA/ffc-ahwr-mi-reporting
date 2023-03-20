@@ -12,7 +12,22 @@ const applicationStatus = {
   rejected: 10
 }
 
-const createRow = (events) => {
+const getApplicationStatusId = function (applications, applicationReference) {
+  const application = applications.find(application => application.reference === applicationReference)
+  return application?.statusId
+}
+
+const setApplicationStatus = function (statusIdFromEvent, statusIdFromApplicationDb) {
+  const statusTextFromEvent = notApplicableIfUndefined(agreementStatusIdToString(statusIdFromEvent))
+
+  if (statusTextFromEvent === 'n/a') {
+    return notApplicableIfUndefined(agreementStatusIdToString(statusIdFromApplicationDb))
+  } else {
+    return statusTextFromEvent
+  }
+}
+
+const createRow = (events, applications) => {
   const organisationData = parsePayload(events, 'farmerApplyData-organisation')
   const organisation = organisationData?.data?.organisation
 
@@ -32,7 +47,8 @@ const createRow = (events) => {
   const agreementWithdrawn = parseData(events, `application:status-updated:${applicationStatus.withdrawn}`, 'statusId')
   const claimApproved = parseData(events, `application:status-updated:${applicationStatus.readyToPay}`, 'statusId')
   const claimRejected = parseData(events, `application:status-updated:${applicationStatus.rejected}`, 'statusId')
-  const agreementCurrentStatusId = parseData(events, 'application:status-updated', 'statusId')
+  const agreementCurrentStatusIdFromEvent = parseData(events, 'application:status-updated', 'statusId')
+  const agreementCurrentStatusIdFromDb = getApplicationStatusId(applications, agreementReference?.value)
 
   return {
     sbi: organisation?.sbi,
@@ -71,7 +87,7 @@ const createRow = (events) => {
     claimRejected: convertFromBoolean(claimRejected?.value === applicationStatus.rejected),
     claimRejectedOn: notApplicableIfUndefined(claimRejected?.raisedOn),
     claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy),
-    agreementCurrentStatus: notApplicableIfUndefined(agreementStatusIdToString(agreementCurrentStatusId?.value))
+    agreementCurrentStatus: setApplicationStatus(agreementCurrentStatusIdFromEvent?.value, agreementCurrentStatusIdFromDb)
   }
 }
 
@@ -82,7 +98,7 @@ const groupBy = function (xs, key) {
   }, {})
 }
 
-const createRows = (events) => {
+const createRows = (events, applications) => {
   const rows = []
   const groupedBySbi = groupByPartitionKey(events)
   for (const sbi in groupedBySbi) {
@@ -109,8 +125,8 @@ const createRows = (events) => {
         .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
 
       const claimEvents = applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.readyToPay}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.inCheck}`
+        applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}` ||
+        applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.inCheck}`
         ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim'))
         : []
 
@@ -118,11 +134,12 @@ const createRows = (events) => {
         ...applicationEvents,
         ...applyEvents,
         ...claimEvents
-      ]))
+      ], applications))
     })
     if (sbiEvents.length > 0 && Object.keys(statusUpdatedEvents).length === 0) {
       rows.push(createRow(
-        sbiEvents
+        sbiEvents,
+        applications
       ))
     }
   }
