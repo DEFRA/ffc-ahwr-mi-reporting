@@ -41,7 +41,9 @@ describe('report', () => {
         queryEntitiesByTimestamp: jest.fn().mockResolvedValueOnce([{
           foo: 'bar',
           EventType: 'eventType'
-        }]),
+        }])
+          .mockResolvedValueOnce([])
+          .mockResolvedValueOnce([]),
         connect: jest.fn(),
         writeFile: mockWriteFile,
         downloadFile: jest.fn()
@@ -115,5 +117,18 @@ describe('report', () => {
         link_to_file: expect.anything()
       }
     })
+  })
+
+  test('no events found', async () => {
+    const contextLogSpy = jest.spyOn(mockContext, 'log')
+    await generateReport(mockContext, mockTimer)
+    expect(contextLogSpy).toHaveBeenCalledWith('No events found')
+  })
+
+  test('timer past', async () => {
+    const contextLogSpy = jest.spyOn(mockContext, 'log')
+    mockTimer.isPastDue = true
+    await generateReport(mockContext, mockTimer)
+    expect(contextLogSpy).toHaveBeenCalledWith('Node is running late')
   })
 })
