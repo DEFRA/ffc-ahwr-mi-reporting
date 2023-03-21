@@ -13,7 +13,7 @@ const applicationStatus = {
 }
 
 const getApplicationStatusId = function (applications, applicationReference) {
-  const application = applications.find(application => application.reference === applicationReference)
+  const application = applications?.find(application => application.reference === applicationReference)
   return application?.statusId
 }
 
