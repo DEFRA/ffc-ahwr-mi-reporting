@@ -1108,7 +1108,7 @@ describe('createRows', () => {
               "type":"application:status-updated",
               "message":"Application has been updated",
               "data":{"reference":"AHWR-9D11-0EAA","statusId":2},
-              "raisedBy":"Christopher",
+              "raisedBy":"Firstname1, LastName1",
               "raisedOn":"2023-03-07T08:20:24.031Z"
             }`,
             Status: 'success'
@@ -1125,7 +1125,7 @@ describe('createRows', () => {
               "type":"application:status-updated",
               "message":"Application has been updated",
               "data":{"reference":"AHWR-9D11-0EAA","statusId":9},
-              "raisedBy":"Christopher",
+              "raisedBy":"Firstname2, LastName2",
               "raisedOn":"2023-03-07T08:21:24.031Z"
             }`,
             Status: 'success'
@@ -1142,7 +1142,7 @@ describe('createRows', () => {
               "type":"application:status-updated",
               "message":"Application has been updated",
               "data":{"reference":"AHWR-9D11-0EAA","statusId":10},
-              "raisedBy":"Marcin",
+              "raisedBy":"Firstname3, LastName3",
               "raisedOn":"2023-03-07T08:22:24.031Z"
             }`,
             Status: 'success'
@@ -1219,13 +1219,13 @@ describe('createRows', () => {
             whichReview: 'pigs',
             whichReviewRaisedOn: '22/02/2023 15:22',
             applicationWithdrawn: 'yes',
-            applicationWithdrawnBy: 'Christopher',
+            applicationWithdrawnBy: 'Firstname1 LastName1',
             applicationWithdrawnOn: '07/03/2023 08:20',
             claimApproved: 'yes',
-            claimApprovedBy: 'Christopher',
+            claimApprovedBy: 'Firstname2 LastName2',
             claimApprovedOn: '07/03/2023 08:21',
             claimRejected: 'yes',
-            claimRejectedBy: 'Marcin',
+            claimRejectedBy: 'Firstname3 LastName3',
             claimRejectedOn: '07/03/2023 08:22',
             agreementCurrentStatus: 'REJECTED'
           }
