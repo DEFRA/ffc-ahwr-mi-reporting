@@ -64,13 +64,13 @@ const createRow = (events) => {
     claimClaimedRaisedOn: claimClaimed?.raisedOn,
     applicationWithdrawn: convertFromBoolean(agreementWithdrawn?.value === applicationStatus.withdrawn),
     applicationWithdrawnOn: notApplicableIfUndefined(agreementWithdrawn?.raisedOn),
-    applicationWithdrawnBy: notApplicableIfUndefined(agreementWithdrawn?.raisedBy),
+    applicationWithdrawnBy: notApplicableIfUndefined(agreementWithdrawn?.raisedBy.replace(/,/g, '')),
     claimApproved: convertFromBoolean(claimApproved?.value === applicationStatus.readyToPay),
     claimApprovedOn: notApplicableIfUndefined(claimApproved?.raisedOn),
-    claimApprovedBy: notApplicableIfUndefined(claimApproved?.raisedBy),
+    claimApprovedBy: notApplicableIfUndefined(claimApproved?.raisedBy.replace(/,/g, '')),
     claimRejected: convertFromBoolean(claimRejected?.value === applicationStatus.rejected),
     claimRejectedOn: notApplicableIfUndefined(claimRejected?.raisedOn),
-    claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy),
+    claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy.replace(/,/g, '')),
     agreementCurrentStatus: notApplicableIfUndefined(agreementStatusIdToString(agreementCurrentStatusId?.value))
   }
 }
