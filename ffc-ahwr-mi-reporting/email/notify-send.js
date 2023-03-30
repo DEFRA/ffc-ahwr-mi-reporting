@@ -4,29 +4,11 @@ const { downloadFile } = require('../storage/storage')
 const { templateMiReport, templateEligibilityMiReport, miEmailAddress, environment } = require('../config/config')
 
 const send = async () => {
-  if (miEmailAddress) {
-    const contents = await downloadFile(createFileName('ahwr-mi-report.csv'))
-    const personalisation = { environment, link_to_file: notifyClient.prepareUpload(contents, true) }
-    console.log(`Sending MI report to email ${miEmailAddress} for environment ${environment}`)
-    return notifyClient.sendEmail(
-      templateMiReport,
-      miEmailAddress,
-      { personalisation }
-    )
-  }
+  // Removed code for not sending email, this function will replace to store file in Sharepoint
 }
 
-const sendEligibilityReport = async () => {
-  if (miEmailAddress) {
-    const contents = await downloadFile(createFileName('ahwr-eligibility-mi-report.csv'))
-    const personalisation = { environment, link_to_file: notifyClient.prepareUpload(contents, true) }
-    console.log(`Sending Eligibility MI report to email ${miEmailAddress} for environment ${environment}`)
-    return notifyClient.sendEmail(
-      templateEligibilityMiReport,
-      miEmailAddress,
-      { personalisation }
-    )
-  }
+const sendEligibilityReport = async () => {  
+  // Removed code for not sending email, this function will replace to store file in Sharepoint
 }
 
 module.exports = {
