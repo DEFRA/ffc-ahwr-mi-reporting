@@ -6,5 +6,6 @@ module.exports = {
   templateMiReport: process.env.MI_TEMPLATE_REPORT,
   templateEligibilityMiReport: process.env.ELIGIBILITY_MI_TEMPLATE_REPORT,
   miEmailAddress: process.env.MI_EMAIL_ADDRESS,
-  environment: process.env.ENVIRONMENT ?? 'unknown'
+  environment: process.env.ENVIRONMENT ?? 'unknown',
+  sharePoint: require('../sharepoint/config')
 }
