@@ -26,6 +26,11 @@
     "moment": "2.29.4",
     "notifications-node-client": "^7.0.0"
   },
+  "overrides": {
+    "@azure/identity": {
+      "jsonwebtoken": "9.0.0"
+    }
+  },
   "devDependencies": {
     "@types/jest": "28.1.6",
     "jest": "28.1.3",
