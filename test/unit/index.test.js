@@ -48,10 +48,10 @@ describe('report', () => {
       }
     })
 
+    jest.mock('../../ffc-ahwr-mi-reporting/sharepoint/config', () => {})
     jest.mock('../../ffc-ahwr-mi-reporting/config/config', () => {
-      const originalModule = jest.requireActual('../../ffc-ahwr-mi-reporting/config/config')
       return {
-        ...originalModule,
+        ...jest.requireActual('../../ffc-ahwr-mi-reporting/config/config'),
         templateMiReport: mockTemplateId,
         environment: mockEnvironment,
         miEmailAddress: mockMiEmailAddress

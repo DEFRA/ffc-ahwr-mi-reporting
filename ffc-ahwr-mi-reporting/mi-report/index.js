@@ -1,24 +1,20 @@
-const { writeFile } = require('../storage/storage')
-const createFileName = require('../csv/create-filename')
-const { send } = require('../email/notify-send')
-const convertToCSV = require('../csv/convert-to-csv')
 const createRows = require('./create-rows')
-
-const saveCsv = async (miParsedData) => {
-  if (miParsedData) {
-    const csvData = convertToCSV(miParsedData)
-    console.log(csvData)
-    await writeFile(createFileName('ahwr-mi-report.csv'), csvData)
-    await send()
-    console.log('CSV saved')
-  } else {
-    console.log('No data to create CSV')
-  }
-}
+const convertToCSV = require('../csv/convert-to-csv')
+const createFileName = require('../csv/create-filename')
+const storage = require('../storage/storage')
+const msGraph = require('../sharepoint/ms-graph')
 
 const buildMiReport = async (events) => {
   const rows = createRows(events)
-  await saveCsv(rows)
+  if (rows.length === 0) {
+    console.log('No data to create CSV')
+    return
+  }
+  const csvData = convertToCSV(rows)
+  await storage.writeFile(createFileName('ahwr-mi-report.csv'), csvData)
+  const fileContent = await storage.downloadFile(createFileName('ahwr-mi-report.csv'))
+  await msGraph.uploadFile('/test-dir', 'ahwr-mi-report.csv', fileContent)
+  console.log('CSV saved')
 }
 
 module.exports = buildMiReport
