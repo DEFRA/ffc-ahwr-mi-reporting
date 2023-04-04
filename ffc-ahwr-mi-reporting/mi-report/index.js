@@ -13,7 +13,7 @@ const buildMiReport = async (events) => {
   const csvData = convertToCSV(rows)
   await storage.writeFile(createFileName('ahwr-mi-report.csv'), csvData)
   const fileContent = await storage.downloadFile(createFileName('ahwr-mi-report.csv'))
-  await msGraph.uploadFile('/test-dir', 'ahwr-mi-report.csv', fileContent)
+  await msGraph.uploadFile('AHWR/2023/05', 'ahwr-mi-report.csv', fileContent)
   console.log('CSV saved')
 }
 

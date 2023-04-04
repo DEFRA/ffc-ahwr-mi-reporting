@@ -7,7 +7,8 @@ const schema = Joi.object({
   clientSecret: Joi.string().required(),
   hostname: Joi.string().required(),
   sitePath: Joi.string().required(),
-  documentLibrary: Joi.string().required()
+  documentLibrary: Joi.string().required(),
+  dstFolder: Joi.string().required()
 })
 
 // Build config
@@ -17,7 +18,8 @@ const config = {
   clientSecret: process.env.SHAREPOINT_CLIENT_SECRET,
   hostname: process.env.SHAREPOINT_HOSTNAME,
   sitePath: process.env.SHAREPOINT_SITE_PATH,
-  documentLibrary: process.env.SHAREPOINT_DOCUMENT_LIBRARY
+  documentLibrary: process.env.SHAREPOINT_DOCUMENT_LIBRARY,
+  dstFolder: process.env.SHAREPOINT_DST_FOLDER
 }
 
 // Validate config

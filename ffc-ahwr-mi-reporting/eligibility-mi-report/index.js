@@ -1,20 +1,30 @@
-const convertToCSV = require('../csv/convert-to-csv')
+const config = require('../config/config')
 const createFileName = require('../csv/create-filename')
-const { writeFile } = require('../storage/storage')
-const { sendEligibilityReport } = require('../email/notify-send')
 const parseEvents = require('./parse-events')
+const convertToCSV = require('../csv/convert-to-csv')
+const storage = require('../storage/storage')
+const msGraph = require('../sharepoint/ms-graph')
 
 const buildEligibilityMiReport = async (events) => {
-  const parsedEvents = parseEvents(events)
-  if (parsedEvents.length === 0) {
-    console.log('No data to create CSV')
+  const fileName = createFileName('AHWR-Eligibility-MI-Report.csv')
+  const dstFolder = `${config.sharePoint.dstFolder}/${config.environment}/${new Date().getFullYear()}/${new Date().getMonth() + 1}`
+  console.log(`${new Date().toISOString()} Creating and uploading AHWR Eligibility MI Report: ${JSON.stringify({
+    dstFolder,
+    fileName
+  })}`)
+  const rows = parseEvents(events)
+  if (rows.length === 0) {
+    console.log(`${new Date().toISOString()} No data found to create: ${JSON.stringify({ fileName })}`)
     return
   }
-  const csvData = convertToCSV(parsedEvents)
-  const csvFilename = createFileName('ahwr-eligibility-mi-report.csv')
-  await writeFile(csvFilename, csvData)
-  await sendEligibilityReport()
-  console.log('CSV saved')
+  const csvData = convertToCSV(rows)
+  await storage.writeFile(fileName, csvData)
+  const fileContent = await storage.downloadFile(fileName)
+  await msGraph.uploadFile(dstFolder, fileName, fileContent)
+  console.log(`${new Date().toISOString()} AHWR Eligibility MI Report has been uploaded: ${JSON.stringify({
+    dstFolder,
+    fileName
+  })}`)
 }
 
 module.exports = buildEligibilityMiReport

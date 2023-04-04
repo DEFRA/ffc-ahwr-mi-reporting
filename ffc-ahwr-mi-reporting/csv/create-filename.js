@@ -2,7 +2,7 @@ const month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', '
 
 const createFilename = (filename) => {
   const createdDate = new Date()
-  return `${createdDate.getYear()}/${month[createdDate.getMonth()]}/${createdDate.getDay()}/${filename}`
+  return `${createdDate.getFullYear()}/${month[createdDate.getMonth()]}/${createdDate.getDay()}/${filename}`
 }
 
 module.exports = createFilename
