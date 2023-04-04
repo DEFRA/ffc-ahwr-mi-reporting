@@ -24,6 +24,8 @@ const mockTemplateId = '133333'
 const mockEnvironment = 'test'
 const mockMiEmailAddress = 'test@email.com'
 
+const MOCK_UPLOAD_FILE = jest.fn()
+
 describe('report', () => {
   beforeAll(() => {
     mockContext = require('../mock/mock-context')
@@ -48,7 +50,13 @@ describe('report', () => {
       }
     })
 
-    jest.mock('../../ffc-ahwr-mi-reporting/sharepoint/config', () => {})
+    jest.mock('../../ffc-ahwr-mi-reporting/sharepoint/ms-graph', () => ({
+      uploadFile: MOCK_UPLOAD_FILE
+    }))
+
+    jest.mock('../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
+      sharePoint: {}
+    }))
     jest.mock('../../ffc-ahwr-mi-reporting/config/config', () => {
       return {
         ...jest.requireActual('../../ffc-ahwr-mi-reporting/config/config'),
@@ -103,11 +111,6 @@ describe('report', () => {
   test('should write file to share', async () => {
     await generateReport(mockContext, mockTimer)
     expect(mockWriteFile).toHaveBeenCalled()
-    expect(mockSendEmail).toHaveBeenCalledWith(mockTemplateId, mockMiEmailAddress, {
-      personalisation: {
-        environment: mockEnvironment,
-        link_to_file: expect.anything()
-      }
-    })
+    expect(MOCK_UPLOAD_FILE).toBeCalledTimes(1)
   })
 })
