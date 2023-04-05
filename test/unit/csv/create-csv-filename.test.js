@@ -18,7 +18,7 @@ describe('create-csv-filename', () => {
 
   test.each([
     {
-      toString: () => 'returns a filename',
+      toString: () => 'returns a CSV filename',
       given: {
         name: 'ahwr-mi-report'
       },
