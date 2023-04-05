@@ -42,7 +42,11 @@ const getDriveId = async (siteId, accessToken) => {
   if (response.res.statusCode !== 200) {
     throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
   }
-  return response.payload.value.find(drive => drive.name === config.sharePoint.documentLibrary).id
+  const drive = response.payload.value.find(drive => drive.name === config.sharePoint.documentLibrary)
+  if (typeof drive === 'undefined') {
+    throw new Error(`No drive found: ${JSON.stringify({ name: config.sharePoint.documentLibrary })}`)
+  }
+  return drive.id
 }
 
 const uploadFile = async (pathToFile, fileName, fileContent) => {
@@ -69,7 +73,6 @@ const uploadFile = async (pathToFile, fileName, fileContent) => {
   } catch (error) {
     console.log(`${new Date().toISOString()} Error while uploading file: ${error.message}`)
     console.error(error)
-    throw error
   }
 }
 

@@ -121,6 +121,288 @@ describe('msGraph', () => {
           })}`
         ]
       }
+    },
+    {
+      toString: () => 'uploadFile - getSiteId - Bad Request',
+      given: {
+        pathToFile: 'folder/sub_folder',
+        fileName: 'file_name',
+        fileContent: 'file_content'
+      },
+      when: {
+        aadToken: {
+          accessToken: 'access_token'
+        },
+        getSiteId: {
+          Wreck: {
+            get: {
+              response: {
+                res: {
+                  statusCode: 400,
+                  statusMessage: 'Bad Request'
+                }
+              }
+            }
+          }
+        },
+        getDriveId: {
+          Wreck: {
+            get: {
+              response: {
+                res: {
+                  statusCode: 200
+                },
+                payload: {
+                  value: [
+                    {
+                      id: MOCK_DRIVE_ID,
+                      name: 'document_lib'
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        uploadFile: {
+          Wreck: {
+            put: {
+              response: {
+                res: {
+                  statusCode: 201
+                }
+              }
+            }
+          }
+        }
+      },
+      expect: {
+        consoleLogs: [
+          `${MOCK_NOW.toISOString()} Uploading file: ${JSON.stringify({
+            fileName: 'file_name',
+            pathToFile: 'folder/sub_folder'
+          })}`,
+          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
+            accessToken: 'acces...token'
+          })}`,
+          `${MOCK_NOW.toISOString()} Error while uploading file: HTTP 400 (Bad Request)`
+        ]
+      }
+    },
+    {
+      toString: () => 'uploadFile - getDriveId - Bad Request',
+      given: {
+        pathToFile: 'folder/sub_folder',
+        fileName: 'file_name',
+        fileContent: 'file_content'
+      },
+      when: {
+        aadToken: {
+          accessToken: 'access_token'
+        },
+        getSiteId: {
+          Wreck: {
+            get: {
+              response: {
+                res: {
+                  statusCode: 200
+                },
+                payload: {
+                  id: MOCK_SITE_ID
+                }
+              }
+            }
+          }
+        },
+        getDriveId: {
+          Wreck: {
+            get: {
+              response: {
+                res: {
+                  statusCode: 400,
+                  statusMessage: 'Bad Request'
+                }
+              }
+            }
+          }
+        },
+        uploadFile: {
+          Wreck: {
+            put: {
+              response: {
+                res: {
+                  statusCode: 201
+                }
+              }
+            }
+          }
+        }
+      },
+      expect: {
+        consoleLogs: [
+          `${MOCK_NOW.toISOString()} Uploading file: ${JSON.stringify({
+            fileName: 'file_name',
+            pathToFile: 'folder/sub_folder'
+          })}`,
+          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
+            accessToken: 'acces...token'
+          })}`,
+          `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
+            siteId: 'mock_...te_id',
+            accessToken: 'acces...token'
+          })}`,
+          `${MOCK_NOW.toISOString()} Error while uploading file: HTTP 400 (Bad Request)`
+        ]
+      }
+    },
+    {
+      toString: () => 'uploadFile - getDriveId - no drive found',
+      given: {
+        pathToFile: 'folder/sub_folder',
+        fileName: 'file_name',
+        fileContent: 'file_content'
+      },
+      when: {
+        aadToken: {
+          accessToken: 'access_token'
+        },
+        getSiteId: {
+          Wreck: {
+            get: {
+              response: {
+                res: {
+                  statusCode: 200
+                },
+                payload: {
+                  id: MOCK_SITE_ID
+                }
+              }
+            }
+          }
+        },
+        getDriveId: {
+          Wreck: {
+            get: {
+              response: {
+                res: {
+                  statusCode: 200
+                },
+                payload: {
+                  value: [
+                    {
+                      id: MOCK_DRIVE_ID,
+                      name: 'NOT_A_document_lib'
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        uploadFile: {
+          Wreck: {
+            put: {
+              response: {
+                res: {
+                  statusCode: 201
+                }
+              }
+            }
+          }
+        }
+      },
+      expect: {
+        consoleLogs: [
+          `${MOCK_NOW.toISOString()} Uploading file: ${JSON.stringify({
+            fileName: 'file_name',
+            pathToFile: 'folder/sub_folder'
+          })}`,
+          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
+            accessToken: 'acces...token'
+          })}`,
+          `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
+            siteId: 'mock_...te_id',
+            accessToken: 'acces...token'
+          })}`,
+          `${MOCK_NOW.toISOString()} Error while uploading file: No drive found: ${JSON.stringify({
+            name: 'document_lib'
+          })}`
+        ]
+      }
+    },
+    {
+      toString: () => 'uploadFile - HTTP 500',
+      given: {
+        pathToFile: 'folder/sub_folder',
+        fileName: 'file_name',
+        fileContent: 'file_content'
+      },
+      when: {
+        aadToken: {
+          accessToken: 'access_token'
+        },
+        getSiteId: {
+          Wreck: {
+            get: {
+              response: {
+                res: {
+                  statusCode: 200
+                },
+                payload: {
+                  id: MOCK_SITE_ID
+                }
+              }
+            }
+          }
+        },
+        getDriveId: {
+          Wreck: {
+            get: {
+              response: {
+                res: {
+                  statusCode: 200
+                },
+                payload: {
+                  value: [
+                    {
+                      id: MOCK_DRIVE_ID,
+                      name: 'document_lib'
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        uploadFile: {
+          Wreck: {
+            put: {
+              response: {
+                res: {
+                  statusCode: 500,
+                  statusMessage: 'Internal Error'
+                }
+              }
+            }
+          }
+        }
+      },
+      expect: {
+        consoleLogs: [
+          `${MOCK_NOW.toISOString()} Uploading file: ${JSON.stringify({
+            fileName: 'file_name',
+            pathToFile: 'folder/sub_folder'
+          })}`,
+          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
+            accessToken: 'acces...token'
+          })}`,
+          `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
+            siteId: 'mock_...te_id',
+            accessToken: 'acces...token'
+          })}`,
+          `${MOCK_NOW.toISOString()} Error while uploading file: HTTP 500 (Internal Error)`
+        ]
+      }
     }
   ])('%s', async (testCase) => {
     when(MOCK_ACQUIRE_TOKEN)
@@ -169,5 +451,6 @@ describe('msGraph', () => {
     testCase.expect.consoleLogs.forEach(
       (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, consoleLog)
     )
+    expect(logSpy).toHaveBeenCalledTimes(testCase.expect.consoleLogs.length)
   })
 })
