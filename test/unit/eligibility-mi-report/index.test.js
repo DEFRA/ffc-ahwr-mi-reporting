@@ -21,7 +21,7 @@ jest.mock('../../../ffc-ahwr-mi-reporting/config/config', () => ({
   environment: 'environment'
 }))
 
-jest.mock('../../../ffc-ahwr-mi-reporting/csv/create-filename', () => jest.fn(() => 'fileName'))
+jest.mock('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename', () => jest.fn(() => 'fileName'))
 jest.mock('../../../ffc-ahwr-mi-reporting/csv/convert-to-csv', (rows) => jest.fn((rows) => 'value1,value2,value3'))
 
 jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage', () => {
@@ -42,7 +42,6 @@ jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph', () => {
 jest.mock('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/parse-events')
 const parseEvents = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/parse-events')
 parseEvents.mockImplementationOnce(() => []).mockImplementation(() => [{ value1: 'value1', value2: 'value2', value3: 'value3' }])
-const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/index')
 const { resetAllWhenMocks } = require('jest-when')
 
 const MOCK_NOW = new Date()
@@ -67,6 +66,7 @@ describe('Build Eligibility Mi Report', () => {
   })
 
   test('No events found', async () => {
+    const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/index')
     buildEligibilityMiReport(null)
     expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating and uploading AHWR Eligibility MI Report: ${JSON.stringify({
       dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1),
@@ -75,6 +75,7 @@ describe('Build Eligibility Mi Report', () => {
     expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} No data found to create: ${JSON.stringify({ fileName: 'fileName' })}`)
   })
   test('Events found', async () => {
+    const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/index')
     buildEligibilityMiReport('value1,value2,value3')
     expect(logSpy).toHaveBeenCalledTimes(2)
     expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating and uploading AHWR Eligibility MI Report: ${JSON.stringify({
