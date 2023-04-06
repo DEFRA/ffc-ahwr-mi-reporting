@@ -76,7 +76,7 @@ describe('Build Eligibility Mi Report', () => {
   })
   test('Events found', async () => {
     const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/index')
-    buildEligibilityMiReport('value1,value2,value3')
+    await buildEligibilityMiReport('value1,value2,value3')
     expect(logSpy).toHaveBeenCalledTimes(2)
     expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating and uploading AHWR Eligibility MI Report: ${JSON.stringify({
       dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1),
