@@ -20,9 +20,7 @@ let mockTimer
 const mockSendEmail = jest.fn()
 const mockUpload = jest.fn()
 const mockWriteFile = jest.fn()
-const mockTemplateId = '133333'
 const mockEnvironment = 'test'
-const mockMiEmailAddress = 'test@email.com'
 
 const MOCK_UPLOAD_FILE = jest.fn()
 
@@ -60,9 +58,7 @@ describe('report', () => {
     jest.mock('../../ffc-ahwr-mi-reporting/config/config', () => {
       return {
         ...jest.requireActual('../../ffc-ahwr-mi-reporting/config/config'),
-        templateMiReport: mockTemplateId,
-        environment: mockEnvironment,
-        miEmailAddress: mockMiEmailAddress
+        environment: mockEnvironment
       }
     })
 
