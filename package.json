@@ -20,7 +20,7 @@
     "@azure/ai-form-recognizer": "^3.2.0",
     "@azure/data-tables": "13.1.2",
     "@azure/storage-blob": "12.10.0",
-    "joi": "17.6.0",
+    "joi": "17.8.4",
     "moment": "2.29.4",
     "notifications-node-client": "^7.0.0"
   },
