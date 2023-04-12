@@ -73,6 +73,7 @@ const uploadFile = async (pathToFile, fileName, fileContent) => {
   } catch (error) {
     console.log(`${new Date().toISOString()} Error while uploading file: ${error.message}`)
     console.error(error)
+    throw error
   }
 }
 
