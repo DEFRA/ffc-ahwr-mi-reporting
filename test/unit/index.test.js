@@ -55,6 +55,11 @@ describe('report', () => {
     jest.mock('../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
       sharePoint: {}
     }))
+    jest.mock('../../ffc-ahwr-mi-reporting/feature-toggle/config', () => ({
+      sharePoint: {
+        enabled: true
+      }
+    }))
     jest.mock('../../ffc-ahwr-mi-reporting/config/config', () => {
       return {
         ...jest.requireActual('../../ffc-ahwr-mi-reporting/config/config'),

@@ -1,90 +1,186 @@
-jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
-  dstFolder: 'dstFolder',
-  tenantId: 'tenantId',
-  clientId: 'clientId',
-  clientSecret: 'clientSecret',
-  hostname: 'hostname',
-  sitePath: 'sitePath',
-  documentLibrary: 'documentLibrary'
-}))
+describe('AHWR Eligibility MI Report', () => {
+  describe('Build Eligibility Mi Report - config.featureToggle.sharePoint.disabled', () => {
+    const MOCK_NOW = new Date()
 
-jest.mock('../../../ffc-ahwr-mi-reporting/config/config', () => ({
-  sharePoint: {
-    dstFolder: 'dstFolder',
-    tenantId: 'tenantId',
-    clientId: 'clientId',
-    clientSecret: 'clientSecret',
-    hostname: 'hostname',
-    sitePath: 'sitePath',
-    documentLibrary: 'documentLibrary'
-  },
-  environment: 'environment'
-}))
+    let logSpy
 
-jest.mock('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename', () => jest.fn(() => 'fileName'))
-jest.mock('../../../ffc-ahwr-mi-reporting/csv/convert-to-csv', (rows) => jest.fn((rows) => 'value1,value2,value3'))
+    beforeAll(() => {
+      jest.useFakeTimers('modern')
+      jest.setSystemTime(MOCK_NOW)
 
-jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage', () => {
-  return {
-    __esModule: true,
-    writeFile: jest.fn(),
-    downloadFile: jest.fn(() => 'value1,value2,value3')
-  }
-})
+      jest.resetModules()
+      jest.resetAllMocks()
 
-jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph', () => {
-  return {
-    __esModule: true,
-    uploadFile: jest.fn()
-  }
-})
+      jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
+        dstFolder: 'dstFolder',
+        tenantId: 'tenantId',
+        clientId: 'clientId',
+        clientSecret: 'clientSecret',
+        hostname: 'hostname',
+        sitePath: 'sitePath',
+        documentLibrary: 'documentLibrary'
+      }))
 
-jest.mock('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/parse-events')
-const parseEvents = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/parse-events')
-parseEvents.mockImplementationOnce(() => []).mockImplementation(() => [{ value1: 'value1', value2: 'value2', value3: 'value3' }])
-const { resetAllWhenMocks } = require('jest-when')
+      jest.mock('../../../ffc-ahwr-mi-reporting/feature-toggle/config', () => ({
+        sharePoint: {
+          enabled: false
+        }
+      }))
 
-const MOCK_NOW = new Date()
+      jest.mock('../../../ffc-ahwr-mi-reporting/config/config', () => ({
+        ...jest.requireActual('../../../ffc-ahwr-mi-reporting/config/config'),
+        environment: 'environment'
+      }))
 
-describe('Build Eligibility Mi Report', () => {
-  let logSpy
+      jest.mock('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename', () => jest.fn(() => 'fileName'))
+      jest.mock('../../../ffc-ahwr-mi-reporting/csv/convert-to-csv', (rows) => jest.fn((rows) => 'value1,value2,value3'))
 
-  beforeAll(() => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(MOCK_NOW)
+      jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage', () => {
+        return {
+          __esModule: true,
+          writeFile: jest.fn(),
+          downloadFile: jest.fn(() => 'value1,value2,value3')
+        }
+      })
 
-    logSpy = jest.spyOn(console, 'log')
+      jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph', () => {
+        return {
+          __esModule: true,
+          uploadFile: jest.fn()
+        }
+      })
+
+      jest.mock('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/parse-events')
+      const parseEvents = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/parse-events')
+      parseEvents.mockImplementationOnce(() => []).mockImplementation(() => [{ value1: 'value1', value2: 'value2', value3: 'value3' }])
+
+      logSpy = jest.spyOn(console, 'log')
+    })
+
+    afterAll(() => {
+      jest.useRealTimers()
+
+      jest.resetAllMocks()
+      jest.resetModules()
+    })
+
+    afterEach(() => {
+      jest.clearAllMocks()
+    })
+
+    test('No events found', async () => {
+      const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/index')
+      buildEligibilityMiReport(null)
+      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating, storing but not uploading AHWR Eligibility MI Report: ${JSON.stringify({
+          fileName: 'fileName'
+        })}`)
+      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} No data found to create: ${JSON.stringify({ fileName: 'fileName' })}`)
+    })
+
+    test('Events found', async () => {
+      const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/index')
+      await buildEligibilityMiReport('value1,value2,value3')
+      expect(logSpy).toHaveBeenCalledTimes(2)
+      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating, storing but not uploading AHWR Eligibility MI Report: ${JSON.stringify({
+          fileName: 'fileName'
+        })}`)
+      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} AHWR Eligibility MI Report has been stored but not uploaded: ${JSON.stringify({
+          fileName: 'fileName'
+        })}`)
+    })
   })
 
-  afterAll(() => {
-    jest.useRealTimers()
-  })
+  describe('Build Eligibility Mi Report - config.featureToggle.sharePoint.enabled', () => {
+    const MOCK_NOW = new Date()
 
-  afterEach(() => {
-    jest.clearAllMocks()
-    resetAllWhenMocks()
-  })
+    let logSpy
 
-  test('No events found', async () => {
-    const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/index')
-    buildEligibilityMiReport(null)
-    expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating and uploading AHWR Eligibility MI Report: ${JSON.stringify({
-      dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1),
-      fileName: 'fileName'
-    })}`)
-    expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} No data found to create: ${JSON.stringify({ fileName: 'fileName' })}`)
-  })
-  test('Events found', async () => {
-    const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/index')
-    await buildEligibilityMiReport('value1,value2,value3')
-    expect(logSpy).toHaveBeenCalledTimes(2)
-    expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating and uploading AHWR Eligibility MI Report: ${JSON.stringify({
-      dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1),
-      fileName: 'fileName'
-    })}`)
-    expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} AHWR Eligibility MI Report has been uploaded: ${JSON.stringify({
-      dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1),
-      fileName: 'fileName'
-    })}`)
+    beforeAll(() => {
+      jest.useFakeTimers('modern')
+      jest.setSystemTime(MOCK_NOW)
+
+      jest.resetModules()
+      jest.resetAllMocks()
+
+      jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
+        dstFolder: 'dstFolder',
+        tenantId: 'tenantId',
+        clientId: 'clientId',
+        clientSecret: 'clientSecret',
+        hostname: 'hostname',
+        sitePath: 'sitePath',
+        documentLibrary: 'documentLibrary'
+      }))
+
+      jest.mock('../../../ffc-ahwr-mi-reporting/feature-toggle/config', () => ({
+        sharePoint: {
+          enabled: true
+        }
+      }))
+
+      jest.mock('../../../ffc-ahwr-mi-reporting/config/config', () => ({
+        ...jest.requireActual('../../../ffc-ahwr-mi-reporting/config/config'),
+        environment: 'environment'
+      }))
+
+      jest.mock('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename', () => jest.fn(() => 'fileName'))
+      jest.mock('../../../ffc-ahwr-mi-reporting/csv/convert-to-csv', (rows) => jest.fn((rows) => 'value1,value2,value3'))
+
+      jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage', () => {
+        return {
+          __esModule: true,
+          writeFile: jest.fn(),
+          downloadFile: jest.fn(() => 'value1,value2,value3')
+        }
+      })
+
+      jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph', () => {
+        return {
+          __esModule: true,
+          uploadFile: jest.fn()
+        }
+      })
+
+      jest.mock('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/parse-events')
+      const parseEvents = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/parse-events')
+      parseEvents.mockImplementationOnce(() => []).mockImplementation(() => [{ value1: 'value1', value2: 'value2', value3: 'value3' }])
+
+      logSpy = jest.spyOn(console, 'log')
+    })
+
+    afterAll(() => {
+      jest.useRealTimers()
+
+      jest.resetAllMocks()
+      jest.resetModules()
+    })
+
+    afterEach(() => {
+      jest.clearAllMocks()
+    })
+
+    test('No events found', async () => {
+      const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/index')
+      buildEligibilityMiReport(null)
+      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating, storing and uploading AHWR Eligibility MI Report: ${JSON.stringify({
+        dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1),
+        fileName: 'fileName'
+      })}`)
+      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} No data found to create: ${JSON.stringify({ fileName: 'fileName' })}`)
+    })
+
+    test('Events found', async () => {
+      const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/index')
+      await buildEligibilityMiReport('value1,value2,value3')
+      expect(logSpy).toHaveBeenCalledTimes(2)
+      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating, storing and uploading AHWR Eligibility MI Report: ${JSON.stringify({
+        dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1),
+        fileName: 'fileName'
+      })}`)
+      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} AHWR Eligibility MI Report has been stored and uploaded: ${JSON.stringify({
+        dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1),
+        fileName: 'fileName'
+      })}`)
+    })
   })
 })

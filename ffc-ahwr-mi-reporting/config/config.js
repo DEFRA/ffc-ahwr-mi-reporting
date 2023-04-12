@@ -3,5 +3,6 @@ module.exports = {
   connectionString: process.env.STORAGE_CONNECTION_STRING,
   containerName: 'reports',
   tableName: 'ahwreventstore',
-  sharePoint: require('../sharepoint/config')
+  sharePoint: require('../sharepoint/config'),
+  featureToggle: require('../feature-toggle/config')
 }
