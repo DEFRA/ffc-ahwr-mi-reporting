@@ -14,6 +14,12 @@ describe('msGraph', () => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(MOCK_NOW)
 
+    jest.mock('../../../ffc-ahwr-mi-reporting/feature-toggle/config', () => ({
+      sharePoint: {
+        enabled: true
+      }
+    }))
+
     jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
       tenantId: 'tenant_id',
       clientId: 'client_id',
