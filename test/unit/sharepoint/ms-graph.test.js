@@ -177,6 +177,7 @@ describe('msGraph', () => {
         }
       },
       expect: {
+        error: new Error('HTTP 400 (Bad Request)'),
         consoleLogs: [
           `${MOCK_NOW.toISOString()} Uploading file: ${JSON.stringify({
             fileName: 'file_name',
@@ -239,6 +240,7 @@ describe('msGraph', () => {
         }
       },
       expect: {
+        error: new Error('HTTP 400 (Bad Request)'),
         consoleLogs: [
           `${MOCK_NOW.toISOString()} Uploading file: ${JSON.stringify({
             fileName: 'file_name',
@@ -312,6 +314,9 @@ describe('msGraph', () => {
         }
       },
       expect: {
+        error: new Error(`No drive found: ${JSON.stringify({
+          name: 'document_lib'
+        })}`),
         consoleLogs: [
           `${MOCK_NOW.toISOString()} Uploading file: ${JSON.stringify({
             fileName: 'file_name',
@@ -388,6 +393,7 @@ describe('msGraph', () => {
         }
       },
       expect: {
+        error: new Error('HTTP 500 (Internal Error)'),
         consoleLogs: [
           `${MOCK_NOW.toISOString()} Uploading file: ${JSON.stringify({
             fileName: 'file_name',
@@ -442,11 +448,21 @@ describe('msGraph', () => {
       )
       .mockResolvedValue(testCase.when.uploadFile.Wreck.put.response)
 
-    await msGraph.uploadFile(
-      testCase.given.pathToFile,
-      testCase.given.fileName,
-      testCase.given.fileContent
-    )
+    if (testCase.expect.error) {
+      await expect(
+        msGraph.uploadFile(
+          testCase.given.pathToFile,
+          testCase.given.fileName,
+          testCase.given.fileContent
+        )
+      ).rejects.toEqual(testCase.expect.error)
+    } else {
+      await msGraph.uploadFile(
+        testCase.given.pathToFile,
+        testCase.given.fileName,
+        testCase.given.fileContent
+      )
+    }
 
     testCase.expect.consoleLogs.forEach(
       (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, consoleLog)
