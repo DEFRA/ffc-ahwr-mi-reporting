@@ -23,7 +23,7 @@ describe('create-csv-filename', () => {
         name: 'ahwr-mi-report'
       },
       expect: {
-        csvFilename: `ahwr-mi-report ${MOCK_NOW.getFullYear()}-${('0' + (MOCK_NOW.getMonth() + 1)).slice(-2)}-${('0' + MOCK_NOW.getDay()).slice(-2)} ${('0' + MOCK_NOW.getHours()).slice(-2)}${('0' + MOCK_NOW.getMinutes()).slice(-2)}${('0' + MOCK_NOW.getSeconds()).slice(-2)}.csv`
+        csvFilename: `ahwr-mi-report ${MOCK_NOW.getFullYear()}-${('0' + (MOCK_NOW.getMonth() + 1)).slice(-2)}-${('0' + MOCK_NOW.getDate()).slice(-2)} ${('0' + MOCK_NOW.getHours()).slice(-2)}${('0' + MOCK_NOW.getMinutes()).slice(-2)}${('0' + MOCK_NOW.getSeconds()).slice(-2)}.csv`
       }
     }
   ])('%s', async (testCase) => {
