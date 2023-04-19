@@ -8,7 +8,6 @@ module.exports = async (context, miReportTimer) => {
   context.log('Sourcing report data')
   const events = await queryEntitiesByTimestamp()
   if (events.length) {
-    context.log('Report creation started', timeStamp)
     await buildMiReport(events)
     await buildEligibilityMiReport(events)
   } else {
