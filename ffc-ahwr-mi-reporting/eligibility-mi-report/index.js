@@ -7,7 +7,7 @@ const msGraph = require('../sharepoint/ms-graph')
 
 const buildAhwrEligibilityMiReport = async (events) => {
   const fileName = createFileName('ahwr-eligibility-mi-report')
-  const dstFolder = `${config.sharePoint.dstFolder}/${config.environment}/${new Date().getFullYear()}/${new Date().getMonth() + 1}`
+  const dstFolder = `${config.sharePoint.dstFolder}/${config.environment}/${new Date().getFullYear()}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}`
   if (config.featureToggle.sharePoint.enabled) {
     console.log(`${new Date().toISOString()} Creating, storing and uploading AHWR Eligibility MI Report: ${JSON.stringify({
       dstFolder,

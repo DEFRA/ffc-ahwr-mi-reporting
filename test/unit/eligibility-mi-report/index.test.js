@@ -163,7 +163,7 @@ describe('AHWR Eligibility MI Report', () => {
       const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/index')
       buildEligibilityMiReport(null)
       expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating, storing and uploading AHWR Eligibility MI Report: ${JSON.stringify({
-        dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1),
+        dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1).toString().padStart(2, '0'),
         fileName: 'fileName'
       })}`)
       expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} No data found to create: ${JSON.stringify({ fileName: 'fileName' })}`)
@@ -174,11 +174,11 @@ describe('AHWR Eligibility MI Report', () => {
       await buildEligibilityMiReport('value1,value2,value3')
       expect(logSpy).toHaveBeenCalledTimes(2)
       expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating, storing and uploading AHWR Eligibility MI Report: ${JSON.stringify({
-        dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1),
+        dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1).toString().padStart(2, '0'),
         fileName: 'fileName'
       })}`)
       expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} AHWR Eligibility MI Report has been stored and uploaded: ${JSON.stringify({
-        dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1),
+        dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1).toString().padStart(2, '0'),
         fileName: 'fileName'
       })}`)
     })
