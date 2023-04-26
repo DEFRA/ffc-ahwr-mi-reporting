@@ -118,8 +118,8 @@ describe('msGraph', () => {
             fileName: 'file_name',
             pathToFile: 'folder/sub_folder'
           })}`,
-          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
-            accessToken: 'acces...token'
+          `${MOCK_NOW.toISOString()} sharepoint:getSiteId: ${JSON.stringify({
+            attempt: 1
           })}`,
           `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
             siteId: 'mock_...te_id',
@@ -189,8 +189,8 @@ describe('msGraph', () => {
             fileName: 'file_name',
             pathToFile: 'folder/sub_folder'
           })}`,
-          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
-            accessToken: 'acces...token'
+          `${MOCK_NOW.toISOString()} sharepoint:getSiteId: ${JSON.stringify({
+            attempt: 1
           })}`,
           `${MOCK_NOW.toISOString()} Error while uploading file: HTTP 400 (Bad Request)`
         ]
@@ -252,8 +252,8 @@ describe('msGraph', () => {
             fileName: 'file_name',
             pathToFile: 'folder/sub_folder'
           })}`,
-          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
-            accessToken: 'acces...token'
+          `${MOCK_NOW.toISOString()} sharepoint:getSiteId: ${JSON.stringify({
+            attempt: 1
           })}`,
           `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
             siteId: 'mock_...te_id',
@@ -328,8 +328,8 @@ describe('msGraph', () => {
             fileName: 'file_name',
             pathToFile: 'folder/sub_folder'
           })}`,
-          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
-            accessToken: 'acces...token'
+          `${MOCK_NOW.toISOString()} sharepoint:getSiteId: ${JSON.stringify({
+            attempt: 1
           })}`,
           `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
             siteId: 'mock_...te_id',
@@ -405,8 +405,8 @@ describe('msGraph', () => {
             fileName: 'file_name',
             pathToFile: 'folder/sub_folder'
           })}`,
-          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
-            accessToken: 'acces...token'
+          `${MOCK_NOW.toISOString()} sharepoint:getSiteId: ${JSON.stringify({
+            attempt: 1
           })}`,
           `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
             siteId: 'mock_...te_id',

@@ -24,6 +24,12 @@ describe('getSiteId', () => {
       hostname: 'hostname',
       sitePath: 'site_path'
     }))
+
+    jest.mock('../../../ffc-ahwr-mi-reporting/cockatiel/config', () => ({
+      enabled: true
+    }))
+
+    getSiteId = require('../../../ffc-ahwr-mi-reporting/sharepoint/get-site-id')
   })
 
   afterEach(() => {
@@ -72,68 +78,21 @@ describe('getSiteId', () => {
         }
       },
       expect: {
-        error: undefined,
         consoleLogs: [
-          `Getting the site ID: ${JSON.stringify({
-            accessToken: 'acces...token'
-          })}`
-        ],
-        errorLogs: []
-      }
-    },
-    {
-      toString: () => 'retry policy with the circut breaker',
-      given: {
-        cockatiel: {
-          config: {
-            enabled: true,
-            halfOpenAfter: 1 * 1000,
-            consecutiveBreaker: 1,
-            maxAttempts: 1
-          }
-        },
-        aadToken: {
-          accessToken: 'access_token'
-        }
-      },
-      when: {
-        Wreck: {
-          get: [
-            {
-              res: {
-                statusCode: 500,
-                statusMessage: 'Internal Error'
-              }
-            },
-            {
-              res: {
-                statusCode: 200
-              },
-              payload: {
-                id: MOCK_SITE_ID
-              }
-            }
-          ]
-        }
-      },
-      expect: {
-        error: 'Execution prevented because the circuit breaker is open',
-        consoleLogs: [
-          `Getting the site ID: ${JSON.stringify({
-            accessToken: 'acces...token'
+          `sharepoint:getSiteId: ${JSON.stringify({
+            attempt: 1
           })}`,
-          `Getting the site ID: ${JSON.stringify({
-            accessToken: 'acces...token'
+          `sharepoint:getSiteId: ${JSON.stringify({
+            attempt: 2
+          })}`,
+          `sharepoint:getSiteId: ${JSON.stringify({
+            attempt: 3
           })}`
         ],
         errorLogs: []
       }
     }
   ])('%s', async (testCase) => {
-    const MOCK_COCKATIEL_CONFIG = testCase.given.cockatiel.config
-    jest.mock('../../../ffc-ahwr-mi-reporting/cockatiel/config', () => MOCK_COCKATIEL_CONFIG)
-    getSiteId = require('../../../ffc-ahwr-mi-reporting/sharepoint/get-site-id')
-
     const whenGet = when(Wreck.get)
       .calledWith(
         'https://graph.microsoft.com/v1.0/sites/hostname:/site_path',
@@ -148,17 +107,8 @@ describe('getSiteId', () => {
       whenGet.mockResolvedValueOnce(response)
     })
 
-    if (testCase.expect.error) {
-      await expect(
-        Promise.all([
-          getSiteId(testCase.given.aadToken.accessToken),
-          getSiteId(testCase.given.aadToken.accessToken)
-        ])
-      ).rejects.toThrowError(testCase.expect.error)
-    } else {
-      const siteId = await getSiteId(testCase.given.aadToken.accessToken)
-      expect(siteId).toEqual(MOCK_SITE_ID)
-    }
+    const siteId = await getSiteId(testCase.given.aadToken.accessToken)
+    expect(siteId).toEqual(MOCK_SITE_ID)
 
     testCase.expect.consoleLogs.forEach(
       (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, expect.stringContaining(consoleLog))

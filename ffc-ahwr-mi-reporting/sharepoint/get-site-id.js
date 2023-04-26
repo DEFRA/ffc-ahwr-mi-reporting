@@ -7,10 +7,11 @@ const graphUrl = {
 }
 
 const getSiteId = async (accessToken) => {
-  console.log(`${new Date().toISOString()} Getting the site ID: ${JSON.stringify({
-      accessToken: `${accessToken.slice(0, 5)}...${accessToken.slice(-5)}`
-    })}`)
+  let attempt = 0
   return await cockatiel.execute(async () => {
+    console.log(`${new Date().toISOString()} sharepoint:getSiteId: ${JSON.stringify({
+      attempt: ++attempt
+    })}`)
     const response = await Wreck.get(
         `${graphUrl.sites}/${config.sharePoint.hostname}:/${config.sharePoint.sitePath}`,
         {
