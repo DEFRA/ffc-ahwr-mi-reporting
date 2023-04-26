@@ -1,64 +1,66 @@
 const { when, resetAllWhenMocks } = require('jest-when')
 const Wreck = require('@hapi/wreck')
-const getSiteId = require('../../../ffc-ahwr-mi-reporting/sharepoint/get-site-id')
 
 jest.mock('@hapi/wreck')
-
-jest.mock('../../../ffc-ahwr-mi-reporting/feature-toggle/config', () => ({
-  sharePoint: {
-    enabled: true
-  }
-}))
-
-jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
-  hostname: 'hostname',
-  sitePath: 'site_path'
-}))
-
-jest.mock('../../../ffc-ahwr-mi-reporting/cockatiel/config', () => ({
-  enabled: true
-}))
 
 const MOCK_SITE_ID = 'mock_site_id'
 
 describe('getSiteId', () => {
   let logSpy
   let errorSpy
+  let getSiteId
 
-  beforeAll(() => {
+  beforeEach(() => {
     logSpy = jest.spyOn(console, 'log')
     errorSpy = jest.spyOn(console, 'error')
+
+    jest.mock('../../../ffc-ahwr-mi-reporting/feature-toggle/config', () => ({
+      sharePoint: {
+        enabled: true
+      }
+    }))
+
+    jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
+      hostname: 'hostname',
+      sitePath: 'site_path'
+    }))
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
     resetAllWhenMocks()
+    jest.clearAllMocks()
+    jest.resetModules()
   })
 
   test.each([
     {
       toString: () => 'retry policy applied',
       given: {
+        cockatiel: {
+          config: {
+            enabled: true
+          }
+        },
         aadToken: {
           accessToken: 'access_token'
         }
       },
       when: {
         Wreck: {
-          get: {
-            response1: {
+          get: [
+            {
               res: {
                 statusCode: 500,
                 statusMessage: 'Internal Error'
               }
             },
-            response2: {
+            {
               res: {
                 statusCode: 500,
                 statusMessage: 'Internal Error'
               }
             },
-            response3: {
+            {
               res: {
                 statusCode: 200
               },
@@ -66,11 +68,60 @@ describe('getSiteId', () => {
                 id: MOCK_SITE_ID
               }
             }
-          }
+          ]
         }
       },
       expect: {
+        error: undefined,
         consoleLogs: [
+          `Getting the site ID: ${JSON.stringify({
+            accessToken: 'acces...token'
+          })}`
+        ],
+        errorLogs: []
+      }
+    },
+    {
+      toString: () => 'retry policy with the circut breaker',
+      given: {
+        cockatiel: {
+          config: {
+            enabled: true,
+            halfOpenAfter: 1 * 1000,
+            consecutiveBreaker: 1,
+            maxAttempts: 1
+          }
+        },
+        aadToken: {
+          accessToken: 'access_token'
+        }
+      },
+      when: {
+        Wreck: {
+          get: [
+            {
+              res: {
+                statusCode: 500,
+                statusMessage: 'Internal Error'
+              }
+            },
+            {
+              res: {
+                statusCode: 200
+              },
+              payload: {
+                id: MOCK_SITE_ID
+              }
+            }
+          ]
+        }
+      },
+      expect: {
+        error: 'Execution prevented because the circuit breaker is open',
+        consoleLogs: [
+          `Getting the site ID: ${JSON.stringify({
+            accessToken: 'acces...token'
+          })}`,
           `Getting the site ID: ${JSON.stringify({
             accessToken: 'acces...token'
           })}`
@@ -79,7 +130,11 @@ describe('getSiteId', () => {
       }
     }
   ])('%s', async (testCase) => {
-    when(Wreck.get)
+    const MOCK_COCKATIEL_CONFIG = testCase.given.cockatiel.config
+    jest.mock('../../../ffc-ahwr-mi-reporting/cockatiel/config', () => MOCK_COCKATIEL_CONFIG)
+    getSiteId = require('../../../ffc-ahwr-mi-reporting/sharepoint/get-site-id')
+
+    const whenGet = when(Wreck.get)
       .calledWith(
         'https://graph.microsoft.com/v1.0/sites/hostname:/site_path',
         {
@@ -89,13 +144,21 @@ describe('getSiteId', () => {
           json: true
         }
       )
-      .mockResolvedValueOnce(testCase.when.Wreck.get.response1)
-      .mockResolvedValueOnce(testCase.when.Wreck.get.response2)
-      .mockResolvedValueOnce(testCase.when.Wreck.get.response3)
+    testCase.when.Wreck.get.forEach(response => {
+      whenGet.mockResolvedValueOnce(response)
+    })
 
-    const siteId = await getSiteId(testCase.given.aadToken.accessToken)
-
-    expect(siteId).toEqual(MOCK_SITE_ID)
+    if (testCase.expect.error) {
+      await expect(
+        Promise.all([
+          getSiteId(testCase.given.aadToken.accessToken),
+          getSiteId(testCase.given.aadToken.accessToken)
+        ])
+      ).rejects.toThrowError(testCase.expect.error)
+    } else {
+      const siteId = await getSiteId(testCase.given.aadToken.accessToken)
+      expect(siteId).toEqual(MOCK_SITE_ID)
+    }
 
     testCase.expect.consoleLogs.forEach(
       (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, expect.stringContaining(consoleLog))
