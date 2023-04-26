@@ -9,4 +9,12 @@ const retryPolicy = cockatiel.retry(
   }
 )
 
-module.exports = config.enabled ? retryPolicy : cockatiel.noop
+const circuitBreakerPolicy = cockatiel.circuitBreaker(
+  cockatiel.handleAll,
+  {
+    halfOpenAfter: config.halfOpenAfter,
+    breaker: new cockatiel.ConsecutiveBreaker(config.consecutiveBreaker)
+  }
+)
+
+module.exports = config.enabled ? cockatiel.wrap(retryPolicy, circuitBreakerPolicy) : cockatiel.noop
