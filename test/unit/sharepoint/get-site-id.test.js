@@ -42,11 +42,6 @@ describe('getSiteId', () => {
     {
       toString: () => 'retry policy applied',
       given: {
-        cockatiel: {
-          config: {
-            enabled: true
-          }
-        },
         aadToken: {
           accessToken: 'access_token'
         }
