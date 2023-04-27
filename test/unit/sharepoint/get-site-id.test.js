@@ -26,7 +26,10 @@ describe('getSiteId', () => {
     }))
 
     jest.mock('../../../ffc-ahwr-mi-reporting/cockatiel-wreck/config', () => ({
-      enabled: true
+      enabled: true,
+      maxAttempts: 3,
+      halfOpenAfter: 10 * 1000,
+      consecutiveBreaker: 4
     }))
 
     getSiteId = require('../../../ffc-ahwr-mi-reporting/sharepoint/get-site-id')
@@ -40,7 +43,7 @@ describe('getSiteId', () => {
 
   test.each([
     {
-      toString: () => 'retry policy applied',
+      toString: () => 'both retry policy and circuit breaker applied',
       given: {
         aadToken: {
           accessToken: 'access_token'
@@ -68,6 +71,60 @@ describe('getSiteId', () => {
               payload: {
                 id: MOCK_SITE_ID
               }
+            },
+            {
+              res: {
+                statusCode: 500,
+                statusMessage: 'Internal Error'
+              }
+            },
+            {
+              res: {
+                statusCode: 500,
+                statusMessage: 'Internal Error'
+              }
+            },
+            {
+              res: {
+                statusCode: 500,
+                statusMessage: 'Internal Error'
+              }
+            },
+            {
+              res: {
+                statusCode: 500,
+                statusMessage: 'Internal Error'
+              }
+            },
+            {
+              res: {
+                statusCode: 500,
+                statusMessage: 'Internal Error'
+              }
+            },
+            {
+              res: {
+                statusCode: 500,
+                statusMessage: 'Internal Error'
+              }
+            },
+            {
+              res: {
+                statusCode: 500,
+                statusMessage: 'Internal Error'
+              }
+            },
+            {
+              res: {
+                statusCode: 500,
+                statusMessage: 'Internal Error'
+              }
+            },
+            {
+              res: {
+                statusCode: 500,
+                statusMessage: 'Internal Error'
+              }
             }
           ]
         }
@@ -82,6 +139,19 @@ describe('getSiteId', () => {
           })}`,
           `sharepoint:getSiteId: ${JSON.stringify({
             attempt: 3
+          })}`,
+
+          `sharepoint:getSiteId: ${JSON.stringify({
+            attempt: 1
+          })}`,
+          `sharepoint:getSiteId: ${JSON.stringify({
+            attempt: 2
+          })}`,
+          `sharepoint:getSiteId: ${JSON.stringify({
+            attempt: 3
+          })}`,
+          `sharepoint:getSiteId: ${JSON.stringify({
+            attempt: 4
           })}`
         ],
         errorLogs: []
@@ -102,8 +172,19 @@ describe('getSiteId', () => {
       whenGet.mockResolvedValueOnce(response)
     })
 
+    // 3 attempts - 2 failures + 1 success
     const siteId = await getSiteId(testCase.given.aadToken.accessToken)
     expect(siteId).toEqual(MOCK_SITE_ID)
+
+    // 4 attemps - 3 retries + 1 final failure
+    await expect(
+      () => getSiteId(testCase.given.aadToken.accessToken)
+    ).rejects.toThrowError('HTTP 500 (Internal Error)')
+
+    // No further attempt was made as circuit breaker stopped it
+    await expect(
+      () => getSiteId(testCase.given.aadToken.accessToken)
+    ).rejects.toThrowError('Execution prevented because the circuit breaker is open')
 
     testCase.expect.consoleLogs.forEach(
       (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, expect.stringContaining(consoleLog))
