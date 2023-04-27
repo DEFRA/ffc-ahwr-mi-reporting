@@ -1,6 +1,6 @@
 const Wreck = require('@hapi/wreck')
 const config = require('../config/config')
-const cockatiel = require('../cockatiel')
+const cockatielWreck = require('../cockatiel-wreck')
 
 const graphUrl = {
   sites: 'https://graph.microsoft.com/v1.0/sites'
@@ -8,7 +8,7 @@ const graphUrl = {
 
 const getSiteId = async (accessToken) => {
   let attempt = 0
-  return await cockatiel.execute(async () => {
+  return await cockatielWreck.execute(async () => {
     console.log(`${new Date().toISOString()} sharepoint:getSiteId: ${JSON.stringify({
       attempt: ++attempt
     })}`)

@@ -25,7 +25,7 @@ describe('getSiteId', () => {
       sitePath: 'site_path'
     }))
 
-    jest.mock('../../../ffc-ahwr-mi-reporting/cockatiel/config', () => ({
+    jest.mock('../../../ffc-ahwr-mi-reporting/cockatiel-wreck/config', () => ({
       enabled: true
     }))
 
