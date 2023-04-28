@@ -123,6 +123,9 @@ describe('msGraph', () => {
           })}`,
           `${MOCK_NOW.toISOString()} sharepoint:getDriveId: ${JSON.stringify({
             attempt: 1
+          })}`,
+          `${MOCK_NOW.toISOString()} sharepoint:putContent: ${JSON.stringify({
+            attempt: 1
           })}`
         ]
       }
@@ -406,6 +409,9 @@ describe('msGraph', () => {
             attempt: 1
           })}`,
           `${MOCK_NOW.toISOString()} sharepoint:getDriveId: ${JSON.stringify({
+            attempt: 1
+          })}`,
+          `${MOCK_NOW.toISOString()} sharepoint:putContent: ${JSON.stringify({
             attempt: 1
           })}`,
           `${MOCK_NOW.toISOString()} Error while uploading file: HTTP 500 (Internal Error)`
