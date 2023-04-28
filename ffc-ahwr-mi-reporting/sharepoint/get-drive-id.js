@@ -6,14 +6,14 @@ const graphUrl = {
   sites: 'https://graph.microsoft.com/v1.0/sites'
 }
 
-const getSiteId = async (accessToken) => {
+const getDriveId = async (siteId, accessToken) => {
   let attempt = 0
   return await cockatielWreck.execute(async () => {
-    console.log(`${new Date().toISOString()} sharepoint:getSiteId: ${JSON.stringify({
+    console.log(`${new Date().toISOString()} sharepoint:getDriveId: ${JSON.stringify({
       attempt: ++attempt
     })}`)
     const response = await Wreck.get(
-      `${graphUrl.sites}/${config.sharePoint.hostname}:/${config.sharePoint.sitePath}`,
+      `${graphUrl.sites}/${siteId}/drives`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`
@@ -24,8 +24,12 @@ const getSiteId = async (accessToken) => {
     if (response.res.statusCode !== 200) {
       throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
     }
-    return response.payload.id
+    const drive = response.payload.value.find(drive => drive.name === config.sharePoint.documentLibrary)
+    if (typeof drive === 'undefined') {
+      throw new Error(`No drive found: ${JSON.stringify({ name: config.sharePoint.documentLibrary })}`)
+    }
+    return drive.id
   })
 }
 
-module.exports = getSiteId
+module.exports = getDriveId

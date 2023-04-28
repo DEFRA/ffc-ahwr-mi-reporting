@@ -1,34 +1,10 @@
 const Wreck = require('@hapi/wreck')
-const config = require('../config/config')
 const azureAD = require('./azure-ad')
 const getSiteId = require('./get-site-id')
+const getDriveId = require('./get-drive-id')
 
 const graphUrl = {
   sites: 'https://graph.microsoft.com/v1.0/sites'
-}
-
-const getDriveId = async (siteId, accessToken) => {
-  console.log(`${new Date().toISOString()} Getting the drive ID: ${JSON.stringify({
-    siteId: `${siteId.slice(0, 5)}...${siteId.slice(-5)}`,
-    accessToken: `${accessToken.slice(0, 5)}...${accessToken.slice(-5)}`
-  })}`)
-  const response = await Wreck.get(
-      `${graphUrl.sites}/${siteId}/drives`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        },
-        json: true
-      }
-  )
-  if (response.res.statusCode !== 200) {
-    throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
-  }
-  const drive = response.payload.value.find(drive => drive.name === config.sharePoint.documentLibrary)
-  if (typeof drive === 'undefined') {
-    throw new Error(`No drive found: ${JSON.stringify({ name: config.sharePoint.documentLibrary })}`)
-  }
-  return drive.id
 }
 
 const uploadFile = async (pathToFile, fileName, fileContent) => {

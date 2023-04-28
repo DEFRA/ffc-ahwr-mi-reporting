@@ -121,9 +121,8 @@ describe('msGraph', () => {
           `${MOCK_NOW.toISOString()} sharepoint:getSiteId: ${JSON.stringify({
             attempt: 1
           })}`,
-          `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
-            siteId: 'mock_...te_id',
-            accessToken: 'acces...token'
+          `${MOCK_NOW.toISOString()} sharepoint:getDriveId: ${JSON.stringify({
+            attempt: 1
           })}`
         ]
       }
@@ -255,9 +254,8 @@ describe('msGraph', () => {
           `${MOCK_NOW.toISOString()} sharepoint:getSiteId: ${JSON.stringify({
             attempt: 1
           })}`,
-          `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
-            siteId: 'mock_...te_id',
-            accessToken: 'acces...token'
+          `${MOCK_NOW.toISOString()} sharepoint:getDriveId: ${JSON.stringify({
+            attempt: 1
           })}`,
           `${MOCK_NOW.toISOString()} Error while uploading file: HTTP 400 (Bad Request)`
         ]
@@ -331,9 +329,8 @@ describe('msGraph', () => {
           `${MOCK_NOW.toISOString()} sharepoint:getSiteId: ${JSON.stringify({
             attempt: 1
           })}`,
-          `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
-            siteId: 'mock_...te_id',
-            accessToken: 'acces...token'
+          `${MOCK_NOW.toISOString()} sharepoint:getDriveId: ${JSON.stringify({
+            attempt: 1
           })}`,
           `${MOCK_NOW.toISOString()} Error while uploading file: No drive found: ${JSON.stringify({
             name: 'document_lib'
@@ -408,9 +405,8 @@ describe('msGraph', () => {
           `${MOCK_NOW.toISOString()} sharepoint:getSiteId: ${JSON.stringify({
             attempt: 1
           })}`,
-          `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
-            siteId: 'mock_...te_id',
-            accessToken: 'acces...token'
+          `${MOCK_NOW.toISOString()} sharepoint:getDriveId: ${JSON.stringify({
+            attempt: 1
           })}`,
           `${MOCK_NOW.toISOString()} Error while uploading file: HTTP 500 (Internal Error)`
         ]
