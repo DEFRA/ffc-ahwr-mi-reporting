@@ -20,9 +20,12 @@ const connect = async () => {
   tableClient = TableClient.fromConnectionString(connectionString, tableName, { allowInsecureConnection: true })
 }
 
-const queryEntitiesByTimestamp = async () => {
+const queryEntitiesByTimestamp = async (tableName) => {
   const events = []
-  const eventResults = tableClient.listEntities({ queryOptions: { filter: odata`Timestamp ge datetime'${new Date(2022, 1, 1).toISOString()}'` } })
+  const eventResults = (tableName
+    ? TableClient.fromConnectionString(connectionString, tableName, { allowInsecureConnection: true })
+    : tableClient
+  ).listEntities({ queryOptions: { filter: odata`Timestamp ge datetime'${new Date(2022, 1, 1).toISOString()}'` } })
   for await (const event of eventResults) {
     events.push(event)
   }
