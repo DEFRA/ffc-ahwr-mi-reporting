@@ -17,10 +17,26 @@ const createRows = (events) => {
     rows.push({
       businessEmail: notApplicableIfUndefined(registrationOfInterest?.businessEmail),
       interestRegisteredAt: notApplicableIfUndefined(formatDate(registrationOfInterest?.createdAt, moment.ISO_8601)),
+      eligibility: convertFromBoolean(true),
+      ineligibilityReason: notApplicableIfUndefined(undefined),
       accessGranted: convertFromBoolean(gainedAccessToTheApplyJourney?.accessGranted),
       accessGrantedAt: notApplicableIfUndefined(formatDate(gainedAccessToTheApplyJourney?.accessGrantedAt, moment.ISO_8601))
     })
+    rows.push(...groupedByPartitionKey[businessEmail]
+      .filter(event => event.EventType === 'duplicate_submission')
+      .map(event => JSON.parse(event.Payload))
+      .map(payload => ({
+        businessEmail: notApplicableIfUndefined(payload?.businessEmail),
+        interestRegisteredAt: notApplicableIfUndefined(formatDate(payload?.createdAt, moment.ISO_8601)),
+        eligibility: convertFromBoolean(false),
+        ineligibilityReason: 'duplicate submission',
+        accessGranted: convertFromBoolean(false),
+        accessGrantedAt: notApplicableIfUndefined(undefined)
+      })))
   }
+  rows.sort((a, b) => {
+    return moment(b.interestRegisteredAt, 'DD/MM/YYYY HH:mm').valueOf() - moment(a.interestRegisteredAt, 'DD/MM/YYYY HH:mm').valueOf()
+  })
   return rows
 }
 

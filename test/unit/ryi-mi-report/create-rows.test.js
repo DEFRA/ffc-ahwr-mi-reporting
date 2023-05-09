@@ -119,15 +119,43 @@ describe('createRows', () => {
         rows: [
           {
             businessEmail: 'm.mogiela@kainos.com',
+            eligibility: 'no',
+            ineligibilityReason: 'duplicate submission',
+            interestRegisteredAt: '08/05/2023 10:33',
+            accessGranted: 'no',
+            accessGrantedAt: 'n/a'
+          },
+          {
+            businessEmail: 'm.mogiela@kainos.com',
+            eligibility: 'no',
+            ineligibilityReason: 'duplicate submission',
+            interestRegisteredAt: '08/05/2023 10:32',
+            accessGranted: 'no',
+            accessGrantedAt: 'n/a'
+          },
+          {
+            businessEmail: 'm.mogiela@kainos.com',
             interestRegisteredAt: '08/05/2023 10:31',
+            eligibility: 'yes',
+            ineligibilityReason: 'n/a',
             accessGranted: 'yes',
             accessGrantedAt: '08/05/2023 10:32'
           },
           {
             businessEmail: 'n/a',
             interestRegisteredAt: 'n/a',
+            eligibility: 'yes',
+            ineligibilityReason: 'n/a',
             accessGranted: 'yes',
             accessGrantedAt: '05/05/2023 14:37'
+          },
+          {
+            businessEmail: 'marcinmo@kainos.com',
+            interestRegisteredAt: '08/05/2023 10:29',
+            eligibility: 'no',
+            ineligibilityReason: 'duplicate submission',
+            accessGranted: 'no',
+            accessGrantedAt: 'n/a'
           }
         ]
       }
