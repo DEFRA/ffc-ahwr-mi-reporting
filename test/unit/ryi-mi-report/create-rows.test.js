@@ -178,7 +178,7 @@ describe('createRows', () => {
       }
     },
     {
-      toString: () => 'no events',
+      toString: () => 'given no events',
       given: {
         events: []
       },
