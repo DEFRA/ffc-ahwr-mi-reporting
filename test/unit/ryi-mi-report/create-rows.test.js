@@ -129,7 +129,7 @@ describe('createRows', () => {
                   '}',
             ChangedBy: 'marcinmo@kainos.com',
             ChangedOn: '2023-05-03T10:00:43.294Z'
-          },
+          }
         ]
       },
       expect: {
