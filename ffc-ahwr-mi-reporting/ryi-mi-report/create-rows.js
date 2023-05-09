@@ -18,7 +18,7 @@ const createRows = (events) => {
       businessEmail: notApplicableIfUndefined(registrationOfInterest?.businessEmail),
       interestRegisteredAt: notApplicableIfUndefined(formatDate(registrationOfInterest?.createdAt, moment.ISO_8601)),
       eligibility: convertFromBoolean(true),
-      ineligibilityReason: notApplicableIfUndefined(undefined),
+      ineligibleReason: notApplicableIfUndefined(undefined),
       accessGranted: convertFromBoolean(gainedAccessToTheApplyJourney?.accessGranted),
       accessGrantedAt: notApplicableIfUndefined(formatDate(gainedAccessToTheApplyJourney?.accessGrantedAt, moment.ISO_8601))
     })
@@ -29,7 +29,7 @@ const createRows = (events) => {
         businessEmail: notApplicableIfUndefined(payload?.businessEmail),
         interestRegisteredAt: notApplicableIfUndefined(formatDate(payload?.createdAt, moment.ISO_8601)),
         eligibility: convertFromBoolean(false),
-        ineligibilityReason: 'duplicate submission',
+        ineligibleReason: 'duplicate submission',
         accessGranted: convertFromBoolean(false),
         accessGrantedAt: notApplicableIfUndefined(undefined)
       })))

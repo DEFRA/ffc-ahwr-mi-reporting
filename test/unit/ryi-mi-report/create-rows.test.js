@@ -120,7 +120,7 @@ describe('createRows', () => {
           {
             businessEmail: 'm.mogiela@kainos.com',
             eligibility: 'no',
-            ineligibilityReason: 'duplicate submission',
+            ineligibleReason: 'duplicate submission',
             interestRegisteredAt: '08/05/2023 10:33',
             accessGranted: 'no',
             accessGrantedAt: 'n/a'
@@ -128,7 +128,7 @@ describe('createRows', () => {
           {
             businessEmail: 'm.mogiela@kainos.com',
             eligibility: 'no',
-            ineligibilityReason: 'duplicate submission',
+            ineligibleReason: 'duplicate submission',
             interestRegisteredAt: '08/05/2023 10:32',
             accessGranted: 'no',
             accessGrantedAt: 'n/a'
@@ -137,7 +137,7 @@ describe('createRows', () => {
             businessEmail: 'm.mogiela@kainos.com',
             interestRegisteredAt: '08/05/2023 10:31',
             eligibility: 'yes',
-            ineligibilityReason: 'n/a',
+            ineligibleReason: 'n/a',
             accessGranted: 'yes',
             accessGrantedAt: '08/05/2023 10:32'
           },
@@ -145,7 +145,7 @@ describe('createRows', () => {
             businessEmail: 'n/a',
             interestRegisteredAt: 'n/a',
             eligibility: 'yes',
-            ineligibilityReason: 'n/a',
+            ineligibleReason: 'n/a',
             accessGranted: 'yes',
             accessGrantedAt: '05/05/2023 14:37'
           },
@@ -153,7 +153,7 @@ describe('createRows', () => {
             businessEmail: 'marcinmo@kainos.com',
             interestRegisteredAt: '08/05/2023 10:29',
             eligibility: 'no',
-            ineligibilityReason: 'duplicate submission',
+            ineligibleReason: 'duplicate submission',
             accessGranted: 'no',
             accessGrantedAt: 'n/a'
           }
