@@ -164,25 +164,26 @@ describe('AHWR RYI MI Report', () => {
 
       await buildAhwrRyiMiReport(null)
 
-      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating, storing and uploading AHWR RYI MI Report: ${JSON.stringify({
-          dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1).toString().padStart(2, '0'),
+      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-ryi-mi-report: Creating a CSV file: ${JSON.stringify({
           fileName: 'fileName'
         })}`)
-      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} No data found to create: ${JSON.stringify({ fileName: 'fileName' })}`)
+      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} ahwr-ryi-mi-report: No data found to create a CSV file: ${JSON.stringify({ fileName: 'fileName' })}`)
     })
 
     test('Events found', async () => {
       const buildAhwrRyiMiReport = require('../../../ffc-ahwr-mi-reporting/ryi-mi-report/index')
       await buildAhwrRyiMiReport('value1,value2,value3')
-      expect(logSpy).toHaveBeenCalledTimes(2)
-      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating, storing and uploading AHWR RYI MI Report: ${JSON.stringify({
-          dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1).toString().padStart(2, '0'),
-          fileName: 'fileName'
-        })}`)
-      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} AHWR RYI MI Report has been stored and uploaded: ${JSON.stringify({
-          dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1).toString().padStart(2, '0'),
-          fileName: 'fileName'
-        })}`)
+      expect(logSpy).toHaveBeenCalledTimes(3)
+      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-ryi-mi-report: Creating a CSV file: ${JSON.stringify({
+        fileName: 'fileName'
+      })}`)
+      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} ahwr-ryi-mi-report: CSV file has been uploaded to Azure Storage: ${JSON.stringify({
+        fileName: 'fileName'
+      })}`)
+      expect(logSpy).toHaveBeenNthCalledWith(3, `${MOCK_NOW.toISOString()} ahwr-ryi-mi-report: CSV file has been uploaded to SharePoint: ${JSON.stringify({
+        dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1).toString().padStart(2, '0'),
+        fileName: 'fileName'
+      })}`)
     })
   })
 })
