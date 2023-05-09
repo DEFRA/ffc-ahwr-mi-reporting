@@ -112,7 +112,24 @@ describe('createRows', () => {
                   '}',
             ChangedBy: 'marcinmo@kainos.com',
             ChangedOn: '2023-05-08T10:29:36.419Z'
-          }
+          },
+          {
+            etag: 'W/"datetime\'2023-05-03T10%3A00%3A45.3368258Z\'"',
+            partitionKey: 'marcinmo@kainos.com',
+            rowKey: 'marcinmo@kainos.com_1683541903294',
+            timestamp: '2023-05-03T10:00:45.3368258Z',
+            EventId: 'marcinmo@kainos.com',
+            EventType: 'registration_of_interest',
+            Status: 'success',
+            Payload: '{' +
+                  '  "businessEmail": "marcinmo@kainos.com",' +
+                  '  "createdAt": "2023-05-03T10:00:43.289Z",' +
+                  '  "accessGranted": false,' +
+                  '  "accessGrantedAt": "n/a"' +
+                  '}',
+            ChangedBy: 'marcinmo@kainos.com',
+            ChangedOn: '2023-05-03T10:00:43.294Z'
+          },
         ]
       },
       expect: {
@@ -142,20 +159,20 @@ describe('createRows', () => {
             accessGrantedAt: '08/05/2023 10:32'
           },
           {
-            businessEmail: 'n/a',
-            interestRegisteredAt: 'n/a',
-            eligibility: 'yes',
-            ineligibleReason: 'n/a',
-            accessGranted: 'yes',
-            accessGrantedAt: '05/05/2023 14:37'
-          },
-          {
             businessEmail: 'marcinmo@kainos.com',
             interestRegisteredAt: '08/05/2023 10:29',
             eligibility: 'no',
             ineligibleReason: 'duplicate submission',
             accessGranted: 'no',
             accessGrantedAt: 'n/a'
+          },
+          {
+            businessEmail: 'marcinmo@kainos.com',
+            interestRegisteredAt: '03/05/2023 10:00',
+            eligibility: 'yes',
+            ineligibleReason: 'n/a',
+            accessGranted: 'yes',
+            accessGrantedAt: '05/05/2023 14:37'
           }
         ]
       }
