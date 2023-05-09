@@ -181,8 +181,8 @@ describe('AHWR RYI MI Report', () => {
         fileName: 'fileName'
       })}`)
       expect(logSpy).toHaveBeenNthCalledWith(3, `${MOCK_NOW.toISOString()} ahwr-ryi-mi-report: CSV file has been uploaded to SharePoint: ${JSON.stringify({
-        dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1).toString().padStart(2, '0'),
-        fileName: 'fileName'
+        fileName: 'fileName',
+        dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1).toString().padStart(2, '0')
       })}`)
     })
   })
