@@ -1,8 +1,8 @@
 const convertFromBoolean = (value) => {
-  if (typeof value === 'boolean') {
-    return value === true ? 'yes' : 'no'
+  if (typeof value !== 'boolean') {
+    return 'no'
   }
-  return value
+  return value === true ? 'yes' : 'no'
 }
 
 module.exports = convertFromBoolean
