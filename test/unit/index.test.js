@@ -38,7 +38,7 @@ describe('report', () => {
 
     jest.mock('../../ffc-ahwr-mi-reporting/storage/storage', () => {
       return {
-        queryEntitiesByTimestamp: jest.fn().mockResolvedValueOnce([{
+        queryEntitiesByTimestamp: jest.fn().mockResolvedValue([{
           foo: 'bar',
           EventType: 'eventType'
         }]),
@@ -112,6 +112,6 @@ describe('report', () => {
   test('should write file to share', async () => {
     await generateReport(mockContext, mockTimer)
     expect(mockWriteFile).toHaveBeenCalled()
-    expect(MOCK_UPLOAD_FILE).toBeCalledTimes(1)
+    expect(MOCK_UPLOAD_FILE).toBeCalledTimes(2)
   })
 })
