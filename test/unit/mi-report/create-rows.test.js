@@ -1799,7 +1799,7 @@ describe('createRows', () => {
             confirmCheckDetails: '',
             confirmCheckDetailsRaisedOn: '',
             cph: undefined,
-            declaration: '',
+            declaration: 'no',
             declarationRaisedOn: '',
             eligibleSpecies: '',
             eligibleSpeciesRaisedOn: '',
