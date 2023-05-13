@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@azure/ai-form-recognizer": "^4.0.0",
-    "@azure/data-tables": "13.1.2",
+    "@azure/data-tables": "13.2.2",
     "@azure/storage-blob": "^12.13.0",
     "@hapi/wreck": "^18.0.1",
     "@pnp/nodejs-commonjs": "^2.15.0",
