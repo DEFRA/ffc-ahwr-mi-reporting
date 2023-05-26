@@ -1646,6 +1646,28 @@ describe('createRows', () => {
               "raisedOn":"2023-03-07T08:21:24.031Z"
             }`,
             Status: 'success'
+          },
+          {
+            partitionKey: '205000202',
+            rowKey: '205000202_1678177224031',
+            timestamp: '2023-03-07T08:20:25.8923912Z',
+            SessionId: 'fb6518a0-c6bf-4f21-93c1-9de5ad7a5f93',
+            EventType: 'application:status-updated:5',
+            EventRaised: '2023-03-07T08:21:25.031Z',
+            EventBy: 'Developer',
+            Payload: `{
+              "type":"application:status-updated:5",
+              "message":"New stage execution has been created",
+              "data":{
+                "reference":"AHWR-9D11-0EAA",
+                "statusId":5,
+                "subStatus":"Recommend to pay"
+              },
+              "raisedBy":"Developer",
+              "raisedOn":"2023-05-24T15:12:08.966Z",
+              "timestamp":"2023-05-24T15:12:09.009Z"
+            }`,
+            Status: 'success'
           }
         ]
       },
@@ -1732,10 +1754,10 @@ describe('createRows', () => {
             claimRejectedBy: 'n/a',
             claimRejectedOn: 'n/a',
             agreementCurrentStatus: 'IN CHECK',
-            recommendedToPay: '',
-            recommendedToReject: '',
-            recommendedOn: '',
-            recommendedBy: ''
+            recommendedToPay: 'yes',
+            recommendedToReject: 'no',
+            recommendedOn: '24/05/2023 15:12',
+            recommendedBy: 'Developer'
           }
         ]
       }
