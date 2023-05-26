@@ -67,13 +67,6 @@ const createRow = (events) => {
     applicationWithdrawn: convertFromBoolean(agreementWithdrawn?.value === applicationStatus.withdrawn),
     applicationWithdrawnOn: notApplicableIfUndefined(agreementWithdrawn?.raisedOn),
     applicationWithdrawnBy: notApplicableIfUndefined(agreementWithdrawn?.raisedBy.replace(/,/g, '')),
-    claimApproved: convertFromBoolean(claimApproved?.value === applicationStatus.readyToPay),
-    claimApprovedOn: notApplicableIfUndefined(claimApproved?.raisedOn),
-    claimApprovedBy: notApplicableIfUndefined(claimApproved?.raisedBy.replace(/,/g, '')),
-    claimRejected: convertFromBoolean(claimRejected?.value === applicationStatus.rejected),
-    claimRejectedOn: notApplicableIfUndefined(claimRejected?.raisedOn),
-    claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy.replace(/,/g, '')),
-    agreementCurrentStatus: notApplicableIfUndefined(agreementStatusIdToString(agreementCurrentStatusId?.value)),
     recommendedToPay: claimRecommendation?.value
       ? (claimRecommendation?.value === 'Recommend to pay' ? 'yes' : 'no')
       : '',
@@ -81,7 +74,14 @@ const createRow = (events) => {
       ? (claimRecommendation?.value === 'Recommend to reject' ? 'yes' : 'no')
       : '',
     recommendedOn: claimRecommendation?.value ? claimRecommendation?.raisedOn : '',
-    recommendedBy: claimRecommendation?.value ? claimRecommendation?.raisedBy : ''
+    recommendedBy: claimRecommendation?.value ? claimRecommendation?.raisedBy.replace(/,/g, '","') : '',
+    claimApproved: convertFromBoolean(claimApproved?.value === applicationStatus.readyToPay),
+    claimApprovedOn: notApplicableIfUndefined(claimApproved?.raisedOn),
+    claimApprovedBy: notApplicableIfUndefined(claimApproved?.raisedBy.replace(/,/g, '')),
+    claimRejected: convertFromBoolean(claimRejected?.value === applicationStatus.rejected),
+    claimRejectedOn: notApplicableIfUndefined(claimRejected?.raisedOn),
+    claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy.replace(/,/g, '')),
+    agreementCurrentStatus: notApplicableIfUndefined(agreementStatusIdToString(agreementCurrentStatusId?.value))
   }
 }
 
