@@ -34,6 +34,8 @@ const createRow = (events) => {
   const claimRejected = parseData(events, `application:status-updated:${applicationStatus.rejected}`, 'statusId')
   const agreementCurrentStatusId = parseData(events, 'application:status-updated', 'statusId')
 
+  const claimRecommendation = parseData(events, `application:status-updated:${applicationStatus.inCheck}`, 'subStatus')
+
   return {
     sbi: organisation?.sbi,
     cph: organisation?.cph,
@@ -71,7 +73,15 @@ const createRow = (events) => {
     claimRejected: convertFromBoolean(claimRejected?.value === applicationStatus.rejected),
     claimRejectedOn: notApplicableIfUndefined(claimRejected?.raisedOn),
     claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy.replace(/,/g, '')),
-    agreementCurrentStatus: notApplicableIfUndefined(agreementStatusIdToString(agreementCurrentStatusId?.value))
+    agreementCurrentStatus: notApplicableIfUndefined(agreementStatusIdToString(agreementCurrentStatusId?.value)),
+    recommendedToPay: claimRecommendation?.value
+      ? (claimRecommendation?.value === 'Recommend to pay' ? 'yes' : 'no')
+      : '',
+    recommendedToReject: claimRecommendation?.value
+      ? (claimRecommendation?.value === 'Recommend to reject' ? 'yes' : 'no')
+      : '',
+    recommendedOn: claimRecommendation?.value ? claimRecommendation?.raisedOn : '',
+    recommendedBy: claimRecommendation?.value ? claimRecommendation?.raisedBy : ''
   }
 }
 
