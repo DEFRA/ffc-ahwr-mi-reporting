@@ -634,7 +634,11 @@ describe('createRows', () => {
             claimRejected: 'no',
             claimRejectedOn: 'n/a',
             claimRejectedBy: 'n/a',
-            agreementCurrentStatus: 'NOT AGREED'
+            agreementCurrentStatus: 'NOT AGREED',
+            recommendedToPay: '',
+            recommendedToReject: '',
+            recommendedOn: '',
+            recommendedBy: ''
           },
           {
             sbi: '105110010',
@@ -673,7 +677,11 @@ describe('createRows', () => {
             claimRejected: 'no',
             claimRejectedOn: 'n/a',
             claimRejectedBy: 'n/a',
-            agreementCurrentStatus: 'WITHDRAWN'
+            agreementCurrentStatus: 'WITHDRAWN',
+            recommendedToPay: '',
+            recommendedToReject: '',
+            recommendedOn: '',
+            recommendedBy: ''
           },
           {
             sbi: '105110010',
@@ -712,7 +720,11 @@ describe('createRows', () => {
             claimRejected: 'no',
             claimRejectedOn: 'n/a',
             claimRejectedBy: 'n/a',
-            agreementCurrentStatus: 'READY TO PAY'
+            agreementCurrentStatus: 'READY TO PAY',
+            recommendedToPay: '',
+            recommendedToReject: '',
+            recommendedOn: '',
+            recommendedBy: ''
           }
         ]
 
@@ -1188,7 +1200,11 @@ describe('createRows', () => {
             claimRejected: 'no',
             claimRejectedBy: 'n/a',
             claimRejectedOn: 'n/a',
-            agreementCurrentStatus: 'n/a'
+            agreementCurrentStatus: 'n/a',
+            recommendedToPay: '',
+            recommendedToReject: '',
+            recommendedOn: '',
+            recommendedBy: ''
           },
           {
             address: '125 Main Road"," Covenham St. Bartholomew"," Louth"," LN11 0PF"," United Kingdom',
@@ -1227,7 +1243,11 @@ describe('createRows', () => {
             claimRejected: 'yes',
             claimRejectedBy: 'Firstname3 LastName3',
             claimRejectedOn: '07/03/2023 08:22',
-            agreementCurrentStatus: 'REJECTED'
+            agreementCurrentStatus: 'REJECTED',
+            recommendedToPay: '',
+            recommendedToReject: '',
+            recommendedOn: '',
+            recommendedBy: ''
           }
         ]
       }
@@ -1626,6 +1646,28 @@ describe('createRows', () => {
               "raisedOn":"2023-03-07T08:21:24.031Z"
             }`,
             Status: 'success'
+          },
+          {
+            partitionKey: '205000202',
+            rowKey: '205000202_1678177224031',
+            timestamp: '2023-03-07T08:20:25.8923912Z',
+            SessionId: 'fb6518a0-c6bf-4f21-93c1-9de5ad7a5f93',
+            EventType: 'application:status-updated:5',
+            EventRaised: '2023-03-07T08:21:25.031Z',
+            EventBy: 'Developer',
+            Payload: `{
+              "type":"application:status-updated:5",
+              "message":"New stage execution has been created",
+              "data":{
+                "reference":"AHWR-9D11-0EAA",
+                "statusId":5,
+                "subStatus":"Recommend to pay"
+              },
+              "raisedBy":"Developer",
+              "raisedOn":"2023-05-24T15:12:08.966Z",
+              "timestamp":"2023-05-24T15:12:09.009Z"
+            }`,
+            Status: 'success'
           }
         ]
       },
@@ -1668,7 +1710,11 @@ describe('createRows', () => {
             claimRejected: 'no',
             claimRejectedBy: 'n/a',
             claimRejectedOn: 'n/a',
-            agreementCurrentStatus: 'n/a'
+            agreementCurrentStatus: 'n/a',
+            recommendedToPay: '',
+            recommendedToReject: '',
+            recommendedOn: '',
+            recommendedBy: ''
           },
           {
             address: '125 Main Road"," Covenham St. Bartholomew"," Louth"," LN11 0PF"," United Kingdom',
@@ -1707,7 +1753,11 @@ describe('createRows', () => {
             claimRejected: 'no',
             claimRejectedBy: 'n/a',
             claimRejectedOn: 'n/a',
-            agreementCurrentStatus: 'IN CHECK'
+            agreementCurrentStatus: 'IN CHECK',
+            recommendedToPay: 'yes',
+            recommendedToReject: 'no',
+            recommendedOn: '24/05/2023 15:12',
+            recommendedBy: 'Developer'
           }
         ]
       }
@@ -1818,7 +1868,11 @@ describe('createRows', () => {
             claimRejected: 'no',
             claimRejectedBy: 'n/a',
             claimRejectedOn: 'n/a',
-            agreementCurrentStatus: 'n/a'
+            agreementCurrentStatus: 'n/a',
+            recommendedToPay: '',
+            recommendedToReject: '',
+            recommendedOn: '',
+            recommendedBy: ''
           }
         ]
       }
@@ -2077,7 +2131,11 @@ describe('createRows', () => {
             applicationWithdrawn: 'yes',
             applicationWithdrawnBy: 'Christopher Smith (Kainos)',
             applicationWithdrawnOn: '09/03/2023 15:02',
-            agreementCurrentStatus: 'WITHDRAWN'
+            agreementCurrentStatus: 'WITHDRAWN',
+            recommendedToPay: '',
+            recommendedToReject: '',
+            recommendedOn: '',
+            recommendedBy: ''
           },
           {
             address: 'Some Road"," London"," MK45 9ES',
@@ -2116,7 +2174,11 @@ describe('createRows', () => {
             applicationWithdrawn: 'no',
             applicationWithdrawnBy: 'n/a',
             applicationWithdrawnOn: 'n/a',
-            agreementCurrentStatus: 'AGREED'
+            agreementCurrentStatus: 'AGREED',
+            recommendedToPay: '',
+            recommendedToReject: '',
+            recommendedOn: '',
+            recommendedBy: ''
           }
         ]
       }
