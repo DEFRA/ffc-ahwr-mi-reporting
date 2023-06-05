@@ -51,7 +51,7 @@ describe('AHWR Exception MI Report', () => {
       })
 
       jest.mock('../../../ffc-ahwr-mi-reporting/exception-mi-report/create-rows')
-      const createRows = require('../../../ffc-ahwr-mi-reporting/exception-mi-report/create-rows')
+      const createRows = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/create-rows')
       createRows.mockImplementationOnce(() => []).mockImplementation(() => [{ value1: 'value1', value2: 'value2', value3: 'value3' }])
 
       logSpy = jest.spyOn(console, 'log')
@@ -69,7 +69,7 @@ describe('AHWR Exception MI Report', () => {
     })
 
     test('No events found', async () => {
-      const buildExceptionMiReport = require('../../../ffc-ahwr-mi-reporting/exception-mi-report/index')
+      const buildExceptionMiReport = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/index')
       buildExceptionMiReport(null)
       expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-exception-mi-report: Creating a CSV file: ${JSON.stringify({
             fileName: 'fileName'
@@ -78,7 +78,7 @@ describe('AHWR Exception MI Report', () => {
     })
 
     test('Events found', async () => {
-      const buildExceptionMiReport = require('../../../ffc-ahwr-mi-reporting/exception-mi-report/index')
+      const buildExceptionMiReport = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/index')
       await buildExceptionMiReport('value1,value2,value3')
       expect(logSpy).toHaveBeenCalledTimes(3)
       expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-exception-mi-report: Creating a CSV file: ${JSON.stringify({
@@ -145,7 +145,7 @@ describe('AHWR Exception MI Report', () => {
       })
 
       jest.mock('../../../ffc-ahwr-mi-reporting/exception-mi-report/create-rows')
-      const createRows = require('../../../ffc-ahwr-mi-reporting/exception-mi-report/create-rows')
+      const createRows = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/create-rows')
       createRows.mockImplementationOnce(() => []).mockImplementation(() => [{ value1: 'value1', value2: 'value2', value3: 'value3' }])
 
       logSpy = jest.spyOn(console, 'log')
@@ -163,7 +163,7 @@ describe('AHWR Exception MI Report', () => {
     })
 
     test('No events found', async () => {
-      const buildAhwrExceptionMiReport = require('../../../ffc-ahwr-mi-reporting/exception-mi-report/index')
+      const buildAhwrExceptionMiReport = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/index')
 
       await buildAhwrExceptionMiReport(null)
 
@@ -174,7 +174,7 @@ describe('AHWR Exception MI Report', () => {
     })
 
     test('Events found', async () => {
-      const buildAhwrExceptionMiReport = require('../../../ffc-ahwr-mi-reporting/exception-mi-report/index')
+      const buildAhwrExceptionMiReport = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/index')
       await buildAhwrExceptionMiReport('value1,value2,value3')
       expect(logSpy).toHaveBeenCalledTimes(3)
       expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-exception-mi-report: Creating a CSV file: ${JSON.stringify({

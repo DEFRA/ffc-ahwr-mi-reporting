@@ -1,4 +1,4 @@
-const createRows = require('../../../ffc-ahwr-mi-reporting/exception-mi-report/create-rows')
+const createRows = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/create-rows')
 
 describe('createRows', () => {
   afterEach(() => {
@@ -8,7 +8,7 @@ describe('createRows', () => {
 
   test.each([
     {
-      toString: () => 'Exception MI Report',
+      toString: () => 'Ineligibility MI Report',
       given: {
         events: [
           {
@@ -17,7 +17,7 @@ describe('createRows', () => {
             rowKey: '12345678_1683541903294',
             timestamp: '2023-05-08T10:31:45.3368258Z',
             EventId: 'sessionID',
-            EventType: 'exception-event',
+            EventType: 'ineligibility-event',
             Status: 'alert',
             Payload: '{' +
                   '  "sbi": "12345678",' +
@@ -35,7 +35,7 @@ describe('createRows', () => {
             rowKey: '12345678_1683541920750',
             timestamp: '2023-05-08T10:32:02.5990399Z',
             EventId: 'sessionID',
-            EventType: 'exception-event',
+            EventType: 'ineligibility-event',
             Status: 'alert',
             Payload: '{' +
                   '  "sbi": "12345678",' +
@@ -71,15 +71,15 @@ describe('createRows', () => {
         rows: [
           {
             crn: 12345678,
-            exceptionRaisedAt: '08/05/2023 10:31',
-            exceptionReason: 'Test Exception',
+            raisedAt: '08/05/2023 10:31',
+            ineligibilityReason: 'Test Exception',
             journey: 'apply',
             sbi: '12345678'
           },
           {
             crn: 12345678,
-            exceptionRaisedAt: '08/05/2023 10:31',
-            exceptionReason: 'Test Exception',
+            raisedAt: '08/05/2023 10:31',
+            ineligibilityReason: 'Test Exception',
             journey: 'claim',
             sbi: '12345678'
           }

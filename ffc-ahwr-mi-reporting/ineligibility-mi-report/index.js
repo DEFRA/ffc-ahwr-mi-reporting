@@ -6,9 +6,9 @@ const createDstFoldername = require('../sharepoint/create-dst-foldername')
 const createRows = require('./create-rows')
 const convertToCSV = require('../csv/convert-to-csv')
 
-const REPORT_NAME = 'ahwr-exception-mi-report'
+const REPORT_NAME = 'ahwr-ineligiblity-mi-report'
 
-const buildAhwrExceptionMiReport = async (events) => {
+const buildAhwrIneligibilityMiReport = async (events) => {
   const fileName = createFileName(REPORT_NAME)
   console.log(`${new Date().toISOString()} ${REPORT_NAME}: Creating a CSV file: ${JSON.stringify({ fileName })}`)
   const rows = createRows(events)
@@ -29,4 +29,4 @@ const buildAhwrExceptionMiReport = async (events) => {
   }
 }
 
-module.exports = buildAhwrExceptionMiReport
+module.exports = buildAhwrIneligibilityMiReport
