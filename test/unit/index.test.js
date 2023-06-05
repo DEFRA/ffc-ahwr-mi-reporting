@@ -112,6 +112,6 @@ describe('report', () => {
   test('should write file to share', async () => {
     await generateReport(mockContext, mockTimer)
     expect(mockWriteFile).toHaveBeenCalled()
-    expect(MOCK_UPLOAD_FILE).toBeCalledTimes(2)
+    expect(MOCK_UPLOAD_FILE).toBeCalledTimes(3)
   })
 })

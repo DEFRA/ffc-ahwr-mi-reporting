@@ -1,7 +1,6 @@
 const moment = require('moment')
 const groupByPartitionKey = require('../storage/group-by-partition-key')
 const notApplicableIfUndefined = require('../csv/not-applicable-if-undefined')
-const convertFromBoolean = require('../csv/convert-from-boolean')
 const formatDate = require('../csv/format-date')
 
 const createRows = (events) => {
@@ -14,7 +13,7 @@ const createRows = (events) => {
     rows.push({
       sbi: notApplicableIfUndefined(payload?.sbi),
       crn: notApplicableIfUndefined(payload?.crn),
-      exceptionRaisedAt: notApplicableIfUndefined(formatDate(registrationOfInterest?.createdAt, moment.ISO_8601)),
+      exceptionRaisedAt: notApplicableIfUndefined(formatDate(payload?.createdAt, moment.ISO_8601)),
       exceptionReason: notApplicableIfUndefined(payload?.exception),
       journey: notApplicableIfUndefined(payload?.journey)
     })
