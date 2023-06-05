@@ -7,15 +7,17 @@ const createRows = (events) => {
   const rows = []
   const groupedByPartitionKey = groupByPartitionKey(events)
   for (const sbi in groupedByPartitionKey) {
-    const payload = JSON.parse(groupedByPartitionKey[sbi].find(
+    const exceptionEvents = groupedByPartitionKey[sbi].filter(
       event => event.EventType.startsWith('exception-event')
-    )?.Payload ?? '{}')
-    rows.push({
-      sbi: notApplicableIfUndefined(payload?.sbi),
-      crn: notApplicableIfUndefined(payload?.crn),
-      exceptionRaisedAt: notApplicableIfUndefined(formatDate(payload?.createdAt, moment.ISO_8601)),
-      exceptionReason: notApplicableIfUndefined(payload?.exception),
-      journey: notApplicableIfUndefined(payload?.journey)
+    ).map(event => JSON.parse(event.Payload || '{}'))
+    exceptionEvents.forEach(payload => {
+      rows.push({
+        sbi: notApplicableIfUndefined(payload?.sbi),
+        crn: notApplicableIfUndefined(payload?.crn),
+        exceptionRaisedAt: notApplicableIfUndefined(formatDate(payload?.raisedAt, moment.ISO_8601)),
+        exceptionReason: notApplicableIfUndefined(payload?.exception),
+        journey: notApplicableIfUndefined(payload?.journey)
+      })
     })
   }
   rows.sort((a, b) => {
