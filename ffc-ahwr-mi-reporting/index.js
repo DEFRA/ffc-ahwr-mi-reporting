@@ -2,6 +2,7 @@ const { queryEntitiesByTimestamp, connect } = require('./storage/storage')
 const buildMiReport = require('./mi-report')
 const buildEligibilityMiReport = require('./eligibility-mi-report')
 const buildAhwrRyiMiReport = require('./ryi-mi-report')
+const buildAhwrIneligibilityMiReport = require('./ineligibility-mi-report')
 
 module.exports = async (context, miReportTimer) => {
   await connect()
@@ -16,6 +17,7 @@ module.exports = async (context, miReportTimer) => {
   }
 
   await buildAhwrRyiMiReport(await queryEntitiesByTimestamp('ffcahwrregisteryourinterest'))
+  await buildAhwrIneligibilityMiReport(await queryEntitiesByTimestamp('ffcahwrineligibility'))
 
   if (miReportTimer.isPastDue) {
     context.log('Node is running late')
