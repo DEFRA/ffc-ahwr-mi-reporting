@@ -1,4 +1,4 @@
-describe('AHWR Ineligiblity MI Report', () => {
+describe('AHWR Ineligibility MI Report', () => {
   describe('Build Ineligibility Mi Report - config.featureToggle.sharePoint.disabled', () => {
     const MOCK_NOW = new Date()
 
@@ -69,31 +69,31 @@ describe('AHWR Ineligiblity MI Report', () => {
     })
 
     test('No events found', async () => {
-      const buildineligiblityMiReport = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/index')
-      buildineligiblityMiReport(null)
-      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-ineligiblity-mi-report: Creating a CSV file: ${JSON.stringify({
+      const buildineligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/index')
+      buildineligibilityMiReport(null)
+      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-ineligibility-mi-report: Creating a CSV file: ${JSON.stringify({
             fileName: 'fileName'
           })}`)
-      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} ahwr-ineligiblity-mi-report: No data found to create a CSV file: ${JSON.stringify({ fileName: 'fileName' })}`)
+      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} ahwr-ineligibility-mi-report: No data found to create a CSV file: ${JSON.stringify({ fileName: 'fileName' })}`)
     })
 
     test('Events found', async () => {
-      const buildineligiblityMiReport = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/index')
-      await buildineligiblityMiReport('value1,value2,value3')
+      const buildineligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/index')
+      await buildineligibilityMiReport('value1,value2,value3')
       expect(logSpy).toHaveBeenCalledTimes(3)
-      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-ineligiblity-mi-report: Creating a CSV file: ${JSON.stringify({
+      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-ineligibility-mi-report: Creating a CSV file: ${JSON.stringify({
             fileName: 'fileName'
           })}`)
-      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} ahwr-ineligiblity-mi-report: CSV file has been uploaded to Azure Storage: ${JSON.stringify({
+      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} ahwr-ineligibility-mi-report: CSV file has been uploaded to Azure Storage: ${JSON.stringify({
             fileName: 'fileName'
           })}`)
-      expect(logSpy).toHaveBeenNthCalledWith(3, `${MOCK_NOW.toISOString()} ahwr-ineligiblity-mi-report: SharePoint upload disabled ${JSON.stringify({
+      expect(logSpy).toHaveBeenNthCalledWith(3, `${MOCK_NOW.toISOString()} ahwr-ineligibility-mi-report: SharePoint upload disabled ${JSON.stringify({
             fileName: 'fileName'
           })}`)
     })
   })
 
-  describe('Build ineligiblity Mi Report - config.featureToggle.sharePoint.enabled', () => {
+  describe('Build ineligibility Mi Report - config.featureToggle.sharePoint.enabled', () => {
     const MOCK_NOW = new Date()
 
     let logSpy
@@ -163,27 +163,27 @@ describe('AHWR Ineligiblity MI Report', () => {
     })
 
     test('No events found', async () => {
-      const buildAhwrineligiblityMiReport = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/index')
+      const buildAhwrineligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/index')
 
-      await buildAhwrineligiblityMiReport(null)
+      await buildAhwrineligibilityMiReport(null)
 
-      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-ineligiblity-mi-report: Creating a CSV file: ${JSON.stringify({
+      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-ineligibility-mi-report: Creating a CSV file: ${JSON.stringify({
           fileName: 'fileName'
         })}`)
-      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} ahwr-ineligiblity-mi-report: No data found to create a CSV file: ${JSON.stringify({ fileName: 'fileName' })}`)
+      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} ahwr-ineligibility-mi-report: No data found to create a CSV file: ${JSON.stringify({ fileName: 'fileName' })}`)
     })
 
     test('Events found', async () => {
-      const buildAhwrineligiblityMiReport = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/index')
-      await buildAhwrineligiblityMiReport('value1,value2,value3')
+      const buildAhwrineligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/ineligibility-mi-report/index')
+      await buildAhwrineligibilityMiReport('value1,value2,value3')
       expect(logSpy).toHaveBeenCalledTimes(3)
-      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-ineligiblity-mi-report: Creating a CSV file: ${JSON.stringify({
+      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-ineligibility-mi-report: Creating a CSV file: ${JSON.stringify({
         fileName: 'fileName'
       })}`)
-      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} ahwr-ineligiblity-mi-report: CSV file has been uploaded to Azure Storage: ${JSON.stringify({
+      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} ahwr-ineligibility-mi-report: CSV file has been uploaded to Azure Storage: ${JSON.stringify({
         fileName: 'fileName'
       })}`)
-      expect(logSpy).toHaveBeenNthCalledWith(3, `${MOCK_NOW.toISOString()} ahwr-ineligiblity-mi-report: CSV file has been uploaded to SharePoint: ${JSON.stringify({
+      expect(logSpy).toHaveBeenNthCalledWith(3, `${MOCK_NOW.toISOString()} ahwr-ineligibility-mi-report: CSV file has been uploaded to SharePoint: ${JSON.stringify({
         fileName: 'fileName',
         dstFolder: 'dstFolder/environment/' + MOCK_NOW.getFullYear() + '/' + (MOCK_NOW.getMonth() + 1).toString().padStart(2, '0')
       })}`)

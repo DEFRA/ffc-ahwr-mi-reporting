@@ -6,7 +6,7 @@ const createDstFoldername = require('../sharepoint/create-dst-foldername')
 const createRows = require('./create-rows')
 const convertToCSV = require('../csv/convert-to-csv')
 
-const REPORT_NAME = 'ahwr-ineligiblity-mi-report'
+const REPORT_NAME = 'ahwr-ineligibility-mi-report'
 
 const buildAhwrIneligibilityMiReport = async (events) => {
   const fileName = createFileName(REPORT_NAME)
