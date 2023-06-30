@@ -178,6 +178,36 @@ describe('createRows', () => {
       }
     },
     {
+      toString: () => 'gained_access_to_the_apply_journey only',
+      given: {
+        events: [
+          {
+            partitionKey: 'willy@email.co.uk',
+            rowKey: 'willy@email.co.uk_1686819637768',
+            timestamp: '2023-06-15T09:00:38.2967671Z',
+            EventId: 'willy@email.co.uk',
+            EventType: 'gained_access_to_the_apply_journey',
+            Status: 'success',
+            Payload: '{\n  "businessEmail": "willy@email.co.uk",\n  "createdAt": "2023-06-08T14:01:00.427Z",\n  "accessGranted": true,\n  "accessGrantedAt": "2023-06-15T09:00:01.140Z"\n}',
+            ChangedBy: 'willy@email.co.uk',
+            ChangedOn: '2023-06-15T09:00:37.768Z'
+          }
+        ]
+      },
+      expect: {
+        rows: [
+          {
+            businessEmail: 'willy@email.co.uk',
+            interestRegisteredAt: '15/06/2023 09:00',
+            eligibility: 'yes',
+            ineligibleReason: 'n/a',
+            accessGranted: 'yes',
+            accessGrantedAt: '15/06/2023 09:00'
+          }
+        ]
+      }
+    },
+    {
       toString: () => 'given no events',
       given: {
         events: []
