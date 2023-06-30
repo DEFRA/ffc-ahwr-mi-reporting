@@ -15,8 +15,13 @@ const createRows = (events) => {
       event => event.EventType.startsWith('gained_access_to_the_apply_journey')
     )?.Payload ?? '{}')
     rows.push({
-      businessEmail: notApplicableIfUndefined(registrationOfInterest?.businessEmail),
-      interestRegisteredAt: notApplicableIfUndefined(formatDate(registrationOfInterest?.createdAt, moment.ISO_8601)),
+      businessEmail: notApplicableIfUndefined(businessEmail),
+      interestRegisteredAt: notApplicableIfUndefined(
+        formatDate(registrationOfInterest?.createdAt
+          ? registrationOfInterest?.createdAt
+          : gainedAccessToTheApplyJourney?.accessGrantedAt,
+        moment.ISO_8601)
+      ),
       eligibility: convertFromBoolean(true),
       ineligibleReason: notApplicableIfUndefined(undefined),
       accessGranted: convertFromBoolean(gainedAccessToTheApplyJourney?.accessGranted),
