@@ -50,8 +50,8 @@ describe('AHWR RYI MI Report', () => {
         }
       })
 
-      jest.mock('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/parse-events')
-      const parseEvents = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/parse-events')
+      jest.mock('../../../ffc-ahwr-mi-reporting/ryi-mi-report/create-rows')
+      const parseEvents = require('../../../ffc-ahwr-mi-reporting/ryi-mi-report/create-rows')
       parseEvents.mockImplementationOnce(() => []).mockImplementation(() => [{ value1: 'value1', value2: 'value2', value3: 'value3' }])
 
       logSpy = jest.spyOn(console, 'log')
@@ -69,22 +69,22 @@ describe('AHWR RYI MI Report', () => {
     })
 
     test('No events found', async () => {
-      const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/index')
+      const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/ryi-mi-report/index')
       buildEligibilityMiReport(null)
-      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating, storing but not uploading AHWR Eligibility MI Report: ${JSON.stringify({
+      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-ryi-mi-report: Creating a CSV file: ${JSON.stringify({
             fileName: 'fileName'
           })}`)
-      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} No data found to create: ${JSON.stringify({ fileName: 'fileName' })}`)
+      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} ahwr-ryi-mi-report: No data found to create a CSV file: ${JSON.stringify({ fileName: 'fileName' })}`)
     })
 
     test('Events found', async () => {
-      const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/eligibility-mi-report/index')
+      const buildEligibilityMiReport = require('../../../ffc-ahwr-mi-reporting/ryi-mi-report/index')
       await buildEligibilityMiReport('value1,value2,value3')
-      expect(logSpy).toHaveBeenCalledTimes(2)
-      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} Creating, storing but not uploading AHWR Eligibility MI Report: ${JSON.stringify({
+      expect(logSpy).toHaveBeenCalledTimes(3)
+      expect(logSpy).toHaveBeenNthCalledWith(1, `${MOCK_NOW.toISOString()} ahwr-ryi-mi-report: Creating a CSV file: ${JSON.stringify({
             fileName: 'fileName'
           })}`)
-      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} AHWR Eligibility MI Report has been stored but not uploaded: ${JSON.stringify({
+      expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} ahwr-ryi-mi-report: CSV file has been uploaded to Azure Storage: ${JSON.stringify({
             fileName: 'fileName'
           })}`)
     })
