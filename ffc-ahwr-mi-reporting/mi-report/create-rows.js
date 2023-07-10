@@ -95,21 +95,55 @@ const groupBy = function (xs, key) {
 
 const createRows = (events) => {
   const rows = []
-  const groupedBySbi = groupByPartitionKey(events)
-  const groupedByWhichReview = groupByWhichReview(groupedBySbi)
 
-  for (const sbi in groupedBySbi) {
-    const sbiEvents = groupedBySbi[sbi]
+  // preprocess
+
+  let groupedBySessionId = groupBy(
+    events.filter(event => `${event.EventType}`.startsWith('farmerApplyData')),
+    'SessionId'
+  )
+  for (const sessionId in groupedBySessionId) {
+    const whichReview = groupedBySessionId[sessionId]
+      .filter(e => `${e.EventType}`.startsWith('farmerApplyData-whichReview'))
+      .sort((a, b) => new Date(JSON.parse(b.Payload).data.raisedBy).getTime() - new Date(JSON.parse(a.Payload).data.raisedBy).getTime())
+
+    groupedBySessionId[sessionId].forEach(event => {
+      event.pk = whichReview.length > 0 ? `${event.partitionKey}_${JSON.parse(whichReview[0].Payload).data.whichReview}` : event.partitionKey
+    })
+  }
+
+  groupedBySessionId = groupBy(
+    events.filter(event => `${event.EventType}`.startsWith('claim')),
+    'SessionId'
+  )
+  for (const sessionId in groupedBySessionId) {
+    const whichReview = groupedBySessionId[sessionId]
+      .filter(e => `${e.EventType}`.startsWith('claim-data'))
+      .sort((a, b) => new Date(JSON.parse(b.Payload).data.raisedBy).getTime() - new Date(JSON.parse(a.Payload).data.raisedBy).getTime())
+
+    groupedBySessionId[sessionId].forEach(event => {
+      event.pk = whichReview.length > 0 ? `${event.partitionKey}_${JSON.parse(whichReview[0].Payload).data.data.whichReview}` : event.partitionKey
+    })
+  }
+
+  // create rows
+
+  const groupedByPk = groupBy(
+    events,
+    'pk'
+  )
+  for (const pk in groupedByPk) {
+    const eventList = groupedByPk[pk]
       .filter(event => !`${event.EventType}`.startsWith('auto-eligibility'))
 
     const statusUpdatedEvents = groupBy(
-      sbiEvents.filter(event => `${event.EventType}`.startsWith('application:status-updated')),
+      eventList.filter(event => `${event.EventType}`.startsWith('application:status-updated')),
       'SessionId'
     )
     Object.keys(statusUpdatedEvents).forEach(applicationId => {
       const applicationEvents = statusUpdatedEvents[applicationId]
 
-      const referenceEvent = sbiEvents.find(e =>
+      const referenceEvent = eventList.find(e =>
         `${e.EventType}`.startsWith('farmerApplyData-reference') &&
         JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[0].Payload).data.reference
       )
@@ -117,14 +151,14 @@ const createRows = (events) => {
         return
       }
 
-      const applyEvents = sbiEvents
+      const applyEvents = eventList
         .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
         .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
 
       const claimEvents = applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.readyToPay}` ||
       applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}` ||
       applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.inCheck}`
-        ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim'))
+        ? eventList.filter(event => `${event.EventType}`.startsWith('claim'))
         : []
 
       rows.push(createRow([
@@ -133,9 +167,9 @@ const createRows = (events) => {
         ...claimEvents
       ]))
     })
-    if (sbiEvents.length > 0 && Object.keys(statusUpdatedEvents).length === 0) {
+    if (eventList.length > 0 && Object.keys(statusUpdatedEvents).length === 0) {
       rows.push(createRow(
-        sbiEvents
+        eventList
       ))
     }
   }
