@@ -1,5 +1,6 @@
 const moment = require('moment')
 const groupByPartitionKey = require('../storage/group-by-partition-key')
+const groupBySessionId = require('../storage/group-by-session-id')
 const { parseData, parsePayload, formatDate } = require('../parse-data')
 const convertFromBoolean = require('../csv/convert-from-boolean')
 const notApplicableIfUndefined = require('../csv/not-applicable-if-undefined')
@@ -94,9 +95,45 @@ const groupBy = function (xs, key) {
 
 const createRows = (events) => {
   const rows = []
-  const groupedBySbi = groupByPartitionKey(events)
-  for (const sbi in groupedBySbi) {
-    const sbiEvents = groupedBySbi[sbi]
+
+  // preprocess
+
+  let groupedBySessionId = groupBy(
+    events.filter(event => `${event.EventType}`.startsWith('farmerApplyData')),
+    'SessionId'
+  )
+  for (const sessionId in groupedBySessionId) {
+    const whichReview = groupedBySessionId[sessionId]
+      .filter(e => `${e.EventType}`.startsWith('farmerApplyData-whichReview'))
+      .sort((a, b) => new Date(JSON.parse(b.Payload).data.raisedBy).getTime() - new Date(JSON.parse(a.Payload).data.raisedBy).getTime())
+
+    groupedBySessionId[sessionId].forEach(event => {
+      event.pk = whichReview.length > 0 ? `${event.partitionKey}_${JSON.parse(whichReview[0].Payload).data.whichReview}` : event.partitionKey
+    })
+  }
+
+  groupedBySessionId = groupBy(
+    events.filter(event => `${event.EventType}`.startsWith('claim')),
+    'SessionId'
+  )
+  for (const sessionId in groupedBySessionId) {
+    const whichReview = groupedBySessionId[sessionId]
+      .filter(e => `${e.EventType}`.startsWith('claim-data'))
+      .sort((a, b) => new Date(JSON.parse(b.Payload).data.raisedBy).getTime() - new Date(JSON.parse(a.Payload).data.raisedBy).getTime())
+
+    groupedBySessionId[sessionId].forEach(event => {
+      event.pk = whichReview.length > 0 ? `${event.partitionKey}_${JSON.parse(whichReview[0].Payload).data.data.whichReview}` : event.partitionKey
+    })
+  }
+
+  // create rows
+
+  const groupedByPk = groupBy(
+    events,
+    'pk'
+  )
+  for (const sbi in groupedByPk) {
+    const sbiEvents = groupedByPk[sbi]
       .filter(event => !`${event.EventType}`.startsWith('auto-eligibility'))
 
     const statusUpdatedEvents = groupBy(
