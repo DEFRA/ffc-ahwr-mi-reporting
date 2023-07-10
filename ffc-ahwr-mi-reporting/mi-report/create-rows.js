@@ -101,7 +101,7 @@ const createRows = (events) => {
   // Iterate over the keys of the groupedBySbi object
   for (const key in groupedBySbi) {
     if (key.startsWith(prefix)) {
-      console.log(`groupedBySbi[${key}]`, groupedBySbi[key][0])
+      console.log(`groupedBySbi[${key}]`, groupedBySbi[key])
     }
   }
   process.exit(0)
