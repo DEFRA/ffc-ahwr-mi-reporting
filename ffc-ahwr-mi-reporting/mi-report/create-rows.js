@@ -4,7 +4,7 @@ const { parseData, parsePayload, formatDate } = require('../parse-data')
 const convertFromBoolean = require('../csv/convert-from-boolean')
 const notApplicableIfUndefined = require('../csv/not-applicable-if-undefined')
 const agreementStatusIdToString = require('./agreement-status-id-to-string')
-const util = require('util')
+const groupByWhichReview = require('../storage/group-by-which-review')
 
 const applicationStatus = {
   withdrawn: 2,
@@ -96,15 +96,8 @@ const groupBy = function (xs, key) {
 const createRows = (events) => {
   const rows = []
   const groupedBySbi = groupByPartitionKey(events)
-  const prefix = '113772548'
+  const groupedByWhichReview = groupByWhichReview(groupedBySbi)
 
-  // Iterate over the keys of the groupedBySbi object
-  for (const key in groupedBySbi) {
-    if (key.startsWith(prefix)) {
-      console.log(`groupedBySbi[${key}]`, groupedBySbi[key])
-    }
-  }
-  process.exit(0)
   for (const sbi in groupedBySbi) {
     const sbiEvents = groupedBySbi[sbi]
       .filter(event => !`${event.EventType}`.startsWith('auto-eligibility'))
