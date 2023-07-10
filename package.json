@@ -24,12 +24,13 @@
     "@pnp/nodejs-commonjs": "^2.15.0",
     "joi": "17.6.0",
     "moment": "2.29.4",
-    "notifications-node-client": "^7.0.0"
+    "notifications-node-client": "^7.0.0",
+    "util": "^0.12.5"
   },
   "overrides": {
     "jsonwebtoken": "9.0.0",
     "node-fetch": "2.6.7",
-    "semver" : "7.5.2"
+    "semver": "7.5.2"
   },
   "devDependencies": {
     "@types/jest": "28.1.6",
