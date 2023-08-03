@@ -121,11 +121,18 @@ const createRows = (events) => {
         .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
         .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
 
-      const claimEvents = applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.readyToPay}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.inCheck}`
-        ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim'))
-        : []
+      let claimEvents = []
+      if (
+        applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.readyToPay}` ||
+        applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}` ||
+        applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.inCheck}`
+      ) {
+        const claimReferenceEvent = sbiEvents.find(e =>
+          `${e.EventType}`.startsWith('claim-reference') &&
+          JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[applicationEvents.length - 1].Payload).data.reference
+        )
+        claimEvents = sbiEvents.filter(event => `${event.EventType}`.startsWith('claim') && event.SessionId === claimReferenceEvent.SessionId)
+      }
 
       rows.push(createRow([
         ...applicationEvents,
