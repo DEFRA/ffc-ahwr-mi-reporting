@@ -1072,6 +1072,17 @@ describe('createRows', () => {
           },
           {
             partitionKey: '105000202',
+            rowKey: '105000202_1677079360463',
+            timestamp: '2023-02-22T15:22:41.4935051Z',
+            SessionId: 'a59f7225-24f2-498c-be2e-2de408c15d03',
+            EventType: 'claim-dateOfTesting',
+            EventRaised: '2023-02-22T15:22:40.463Z',
+            EventBy: '1100000212@email.com',
+            Payload: '{"type":"claim-dateOfTesting","message":"Session set for claim and dateOfTesting.","data":{"dateOfTesting":"2023-08-03T00:00:00.000Z"},"raisedBy":"automation.business28@test.com","raisedOn":"2023-08-03T09:29:16.631Z"}',
+            Status: 'success'
+          },
+          {
+            partitionKey: '105000202',
             rowKey: '105000202_1677079362767',
             timestamp: '2023-02-22T15:22:44.2239407Z',
             SessionId: 'a59f7225-24f2-498c-be2e-2de408c15d03',
@@ -1219,8 +1230,8 @@ describe('createRows', () => {
             applicationNumber: 'AHWR-9D11-0EAA',
             claimClaimed: 'success',
             claimClaimedRaisedOn: '22/02/2023 15:22',
-            claimDateOfTesting: 'Unknown',
-            claimDateOfTestingRaisedOn: '',
+            claimDateOfTesting: '03/08/2023',
+            claimDateOfTestingRaisedOn: '03/08/2023 09:29',
             claimDetailsCorrect: 'yes',
             claimDetailsCorrectRaisedOn: '22/02/2023 15:22',
             claimUrnResult: 'URNURN',
