@@ -24,6 +24,7 @@ const createRow = (events) => {
 
   const claimDetailsCorrect = parseData(events, 'claim-detailsCorrect', 'detailsCorrect')
   const claimVisitDate = parseData(events, 'claim-visitDate', 'visitDate')
+  const claimDateOfTesting = parseData(events, 'claim-dateOfTesting', 'dateOfTesting')
   const claimVetName = parseData(events, 'claim-vetName', 'vetName')
   const claimVetRcvs = parseData(events, 'claim-vetRcvs', 'vetRcvs')
   const claimUrnResult = parseData(events, 'claim-urnResult', 'urnResult')
@@ -56,6 +57,8 @@ const createRow = (events) => {
     claimDetailsCorrectRaisedOn: claimDetailsCorrect?.raisedOn,
     claimVisitDate: formatDate(claimVisitDate?.value, moment.ISO_8601, 'DD/MM/YYYY'),
     claimVisitDateRaisedOn: claimVisitDate?.raisedOn,
+    claimDateOfTesting: formatDate(claimDateOfTesting?.value, moment.ISO_8601, 'DD/MM/YYYY'),
+    claimDateOfTestingRaisedOn: claimDateOfTesting?.raisedOn,
     claimVetName: claimVetName?.value.replace(/,/g, ''),
     claimVetNameRaisedOn: claimVetName?.raisedOn,
     claimVetRcvs: claimVetRcvs?.value,
