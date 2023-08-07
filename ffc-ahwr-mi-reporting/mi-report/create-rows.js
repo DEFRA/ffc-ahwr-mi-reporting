@@ -20,7 +20,10 @@ const createRow = (events) => {
   const whichReview = parseData(events, 'farmerApplyData-whichReview', 'whichReview')
   const eligibleSpecies = parseData(events, 'farmerApplyData-eligibleSpecies', 'eligibleSpecies')
   const confirmCheckDetails = parseData(events, 'farmerApplyData-confirmCheckDetails', 'confirmCheckDetails')
-  const agreementReference = parseData(events, 'farmerApplyData-reference', 'reference')
+  let agreementReference = parseData(events, 'application:status-updated', 'reference')
+  if (!agreementReference?.value) {
+    agreementReference = parseData(events, 'farmerApplyData-reference', 'reference')
+  }
   const agreementDeclaration = parseData(events, 'farmerApplyData-declaration', 'declaration')
 
   const claimDetailsCorrect = parseData(events, 'claim-detailsCorrect', 'detailsCorrect')
