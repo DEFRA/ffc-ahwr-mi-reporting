@@ -87,9 +87,7 @@ describe('AHWR Ineligibility MI Report', () => {
       expect(logSpy).toHaveBeenNthCalledWith(2, `${MOCK_NOW.toISOString()} ahwr-ineligibility-mi-report: CSV file has been uploaded to Azure Storage: ${JSON.stringify({
             fileName: 'fileName'
           })}`)
-      expect(logSpy).toHaveBeenNthCalledWith(3, `${MOCK_NOW.toISOString()} ahwr-ineligibility-mi-report: SharePoint upload disabled ${JSON.stringify({
-            fileName: 'fileName'
-          })}`)
+      expect(logSpy).toHaveBeenNthCalledWith(3, `${MOCK_NOW.toISOString()} ahwr-ineligibility-mi-report: SharePoint disabled`)
     })
   })
 
