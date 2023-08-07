@@ -116,12 +116,13 @@ const createRows = (events) => {
       )
       if (typeof referenceEvent === 'undefined') {
         console.log(`${new Date().toISOString()} ${reportName}: 'farmerApplyData-reference' event not found: ${JSON.stringify({ reference: JSON.parse(applicationEvents[0].Payload).data.reference })}`)
-        return
       }
 
-      const applyEvents = sbiEvents
-        .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
-        .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
+      const applyEvents = referenceEvent
+        ? sbiEvents
+          .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
+          .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
+        : []
 
       let claimEvents = []
       if (
