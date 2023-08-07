@@ -148,27 +148,6 @@ describe('buildAhwrMiReport', () => {
       expect(mockAzureStorageWriteFile).not.toHaveBeenCalled()
       expect(mockSharepointUploadFile).not.toHaveBeenCalled()
     })
-  /*
-    test('should not upload to SharePoint when feature toggle is disabled', async () => {
-      const events = [{ }]
-      const reportName = 'testReport'
-      const fileName = `${reportName}.csv`
-
-      const disabledSharePointConfig = {
-        featureToggle: {
-          sharePoint: {
-            enabled: false
-          }
-        }
-      }
-
-      await buildAhwrMiReport(events, reportName, disabledSharePointConfig)
-
-      expect(mockWriteFile).toHaveBeenCalledWith(fileName, 'csvData')
-      expect(mockUploadFile).not.toHaveBeenCalled()
-    })
-  */
-    // Add more test cases as needed
   })
 
   describe('buildAhwrMiReport - sharepoint off', () => {
