@@ -14,7 +14,8 @@ describe('createRows', () => {
     require('./create-rows.scenario.5'),
     require('./create-rows.scenario.6'),
     require('./create-rows.scenario.7'),
-    require('./create-rows.scenario.8')
+    require('./create-rows.scenario.8'),
+    require('./create-rows.scenario.9')
   ])('%s', async (testCase) => {
     const parsedEvents = createRows(testCase.given.events)
     expect(parsedEvents).toEqual(testCase.expect.parsedEvents)
