@@ -115,7 +115,7 @@ const createRows = (events) => {
         JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[0].Payload).data.reference
       )
       if (typeof referenceEvent === 'undefined') {
-        console.log(`${new Date().toISOString()} ${reportName}: 'farmerApplyData-reference' event found: ${JSON.stringify({ reference: JSON.parse(applicationEvents[0].Payload).data.reference })}`)
+        console.log(`${new Date().toISOString()} ${reportName}: 'farmerApplyData-reference' event not found: ${JSON.stringify({ reference: JSON.parse(applicationEvents[0].Payload).data.reference })}`)
         return
       }
 
@@ -134,7 +134,7 @@ const createRows = (events) => {
           JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[applicationEvents.length - 1].Payload).data.reference
         )
         if (typeof claimReferenceEvent === 'undefined') {
-          console.log(`${new Date().toISOString()} ${reportName}: 'claim-reference' event found: ${JSON.stringify({ reference: JSON.parse(applicationEvents[applicationEvents.length - 1].Payload).data.reference })}`)
+          console.log(`${new Date().toISOString()} ${reportName}: 'claim-reference' event not found: ${JSON.stringify({ reference: JSON.parse(applicationEvents[applicationEvents.length - 1].Payload).data.reference })}`)
         }
 
         claimEvents = claimReferenceEvent
