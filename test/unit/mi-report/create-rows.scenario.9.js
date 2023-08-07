@@ -21,7 +21,7 @@ module.exports = {
         EventType: 'application:status-updated:9',
         EventRaised: '2023-03-14T10:52:04.665Z',
         EventBy: 'admin',
-        Payload: '{"type":"application:status-updated:9","message":"New application has been updated","data":{"reference":"AHWR-43FB-F5A2","statusId":9},"raisedBy":"admin","raisedOn":"2023-03-14T10:52:04.665Z","timestamp":"2023-03-14T10:52:04.695Z"}',
+        Payload: '{"type":"application:status-updated:9","message":"Application has been updated","data":{"reference":"AHWR-43FB-F5A2","statusId":9},"raisedBy":"admin","raisedOn":"2023-03-14T10:52:04.665Z","timestamp":"2023-03-14T10:52:04.695Z"}',
         Status: 'success'
       }
     ]
