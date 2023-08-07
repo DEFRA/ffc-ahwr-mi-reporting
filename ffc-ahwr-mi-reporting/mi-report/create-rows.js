@@ -4,6 +4,7 @@ const { parseData, parsePayload, formatDate } = require('../parse-data')
 const convertFromBoolean = require('../csv/convert-from-boolean')
 const notApplicableIfUndefined = require('../csv/not-applicable-if-undefined')
 const agreementStatusIdToString = require('./agreement-status-id-to-string')
+const reportName = require('./report-name')
 
 const applicationStatus = {
   withdrawn: 2,
@@ -19,7 +20,10 @@ const createRow = (events) => {
   const whichReview = parseData(events, 'farmerApplyData-whichReview', 'whichReview')
   const eligibleSpecies = parseData(events, 'farmerApplyData-eligibleSpecies', 'eligibleSpecies')
   const confirmCheckDetails = parseData(events, 'farmerApplyData-confirmCheckDetails', 'confirmCheckDetails')
-  const agreementReference = parseData(events, 'farmerApplyData-reference', 'reference')
+  let agreementReference = parseData(events, 'application:status-updated', 'reference')
+  if (!agreementReference?.value) {
+    agreementReference = parseData(events, 'farmerApplyData-reference', 'reference')
+  }
   const agreementDeclaration = parseData(events, 'farmerApplyData-declaration', 'declaration')
 
   const claimDetailsCorrect = parseData(events, 'claim-detailsCorrect', 'detailsCorrect')
@@ -114,12 +118,14 @@ const createRows = (events) => {
         JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[0].Payload).data.reference
       )
       if (typeof referenceEvent === 'undefined') {
-        return
+        console.log(`${new Date().toISOString()} ${reportName}: 'farmerApplyData-reference' event not found: ${JSON.stringify({ reference: JSON.parse(applicationEvents[0].Payload).data.reference })}`)
       }
 
-      const applyEvents = sbiEvents
-        .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
-        .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
+      const applyEvents = referenceEvent
+        ? sbiEvents
+          .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
+          .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
+        : []
 
       let claimEvents = []
       if (
@@ -131,7 +137,13 @@ const createRows = (events) => {
           `${e.EventType}`.startsWith('claim-reference') &&
           JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[applicationEvents.length - 1].Payload).data.reference
         )
-        claimEvents = sbiEvents.filter(event => `${event.EventType}`.startsWith('claim') && event.SessionId === claimReferenceEvent.SessionId)
+        if (typeof claimReferenceEvent === 'undefined') {
+          console.log(`${new Date().toISOString()} ${reportName}: 'claim-reference' event not found: ${JSON.stringify({ reference: JSON.parse(applicationEvents[applicationEvents.length - 1].Payload).data.reference })}`)
+        }
+
+        claimEvents = claimReferenceEvent
+          ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim') && event.SessionId === claimReferenceEvent.SessionId)
+          : []
       }
 
       rows.push(createRow([
