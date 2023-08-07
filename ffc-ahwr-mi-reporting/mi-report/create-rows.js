@@ -4,6 +4,7 @@ const { parseData, parsePayload, formatDate } = require('../parse-data')
 const convertFromBoolean = require('../csv/convert-from-boolean')
 const notApplicableIfUndefined = require('../csv/not-applicable-if-undefined')
 const agreementStatusIdToString = require('./agreement-status-id-to-string')
+const reportName = require('./report-name')
 
 const applicationStatus = {
   withdrawn: 2,
@@ -114,6 +115,7 @@ const createRows = (events) => {
         JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[0].Payload).data.reference
       )
       if (typeof referenceEvent === 'undefined') {
+        console.log(`${new Date().toISOString()} ${reportName}: No 'farmerApplyData-reference' event found: ${JSON.stringify({ reference: JSON.parse(applicationEvents[0].Payload).data.reference })}`)
         return
       }
 
@@ -131,7 +133,13 @@ const createRows = (events) => {
           `${e.EventType}`.startsWith('claim-reference') &&
           JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[applicationEvents.length - 1].Payload).data.reference
         )
-        claimEvents = sbiEvents.filter(event => `${event.EventType}`.startsWith('claim') && event.SessionId === claimReferenceEvent.SessionId)
+        if (typeof claimReferenceEvent === 'undefined') {
+          console.log(`${new Date().toISOString()} ${reportName}: No 'claim-reference' event found: ${JSON.stringify({ reference: JSON.parse(applicationEvents[applicationEvents.length - 1].Payload).data.reference })}`)
+        }
+
+        claimEvents = claimReferenceEvent
+          ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim') && event.SessionId === claimReferenceEvent.SessionId)
+          : []
       }
 
       rows.push(createRow([
