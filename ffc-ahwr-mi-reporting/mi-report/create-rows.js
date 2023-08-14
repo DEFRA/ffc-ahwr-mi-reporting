@@ -4,6 +4,7 @@ const { parseData, parsePayload, formatDate } = require('../parse-data')
 const convertFromBoolean = require('../csv/convert-from-boolean')
 const notApplicableIfUndefined = require('../csv/not-applicable-if-undefined')
 const agreementStatusIdToString = require('./agreement-status-id-to-string')
+const reportName = require('./report-name')
 
 const applicationStatus = {
   withdrawn: 2,
@@ -19,11 +20,15 @@ const createRow = (events) => {
   const whichReview = parseData(events, 'farmerApplyData-whichReview', 'whichReview')
   const eligibleSpecies = parseData(events, 'farmerApplyData-eligibleSpecies', 'eligibleSpecies')
   const confirmCheckDetails = parseData(events, 'farmerApplyData-confirmCheckDetails', 'confirmCheckDetails')
-  const agreementReference = parseData(events, 'farmerApplyData-reference', 'reference')
+  let agreementReference = parseData(events, 'application:status-updated', 'reference')
+  if (!agreementReference?.value) {
+    agreementReference = parseData(events, 'farmerApplyData-reference', 'reference')
+  }
   const agreementDeclaration = parseData(events, 'farmerApplyData-declaration', 'declaration')
 
   const claimDetailsCorrect = parseData(events, 'claim-detailsCorrect', 'detailsCorrect')
   const claimVisitDate = parseData(events, 'claim-visitDate', 'visitDate')
+  const claimDateOfTesting = parseData(events, 'claim-dateOfTesting', 'dateOfTesting')
   const claimVetName = parseData(events, 'claim-vetName', 'vetName')
   const claimVetRcvs = parseData(events, 'claim-vetRcvs', 'vetRcvs')
   const claimUrnResult = parseData(events, 'claim-urnResult', 'urnResult')
@@ -56,6 +61,8 @@ const createRow = (events) => {
     claimDetailsCorrectRaisedOn: claimDetailsCorrect?.raisedOn,
     claimVisitDate: formatDate(claimVisitDate?.value, moment.ISO_8601, 'DD/MM/YYYY'),
     claimVisitDateRaisedOn: claimVisitDate?.raisedOn,
+    claimDateOfTesting: formatDate(claimDateOfTesting?.value, moment.ISO_8601, 'DD/MM/YYYY'),
+    claimDateOfTestingRaisedOn: claimDateOfTesting?.raisedOn,
     claimVetName: claimVetName?.value.replace(/,/g, ''),
     claimVetNameRaisedOn: claimVetName?.raisedOn,
     claimVetRcvs: claimVetRcvs?.value,
@@ -111,18 +118,33 @@ const createRows = (events) => {
         JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[0].Payload).data.reference
       )
       if (typeof referenceEvent === 'undefined') {
-        return
+        console.log(`${new Date().toISOString()} ${reportName}: 'farmerApplyData-reference' event not found: ${JSON.stringify({ reference: JSON.parse(applicationEvents[0].Payload).data.reference })}`)
       }
 
-      const applyEvents = sbiEvents
-        .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
-        .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
-
-      const claimEvents = applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.readyToPay}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.inCheck}`
-        ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim'))
+      const applyEvents = referenceEvent
+        ? sbiEvents
+          .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
+          .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
         : []
+
+      let claimEvents = []
+      if (
+        applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.readyToPay}` ||
+        applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}` ||
+        applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.inCheck}`
+      ) {
+        const claimReferenceEvent = sbiEvents.find(e =>
+          `${e.EventType}`.startsWith('claim-reference') &&
+          JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[applicationEvents.length - 1].Payload).data.reference
+        )
+        if (typeof claimReferenceEvent === 'undefined') {
+          console.log(`${new Date().toISOString()} ${reportName}: 'claim-reference' event not found: ${JSON.stringify({ reference: JSON.parse(applicationEvents[applicationEvents.length - 1].Payload).data.reference })}`)
+        }
+
+        claimEvents = claimReferenceEvent
+          ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim') && event.SessionId === claimReferenceEvent.SessionId)
+          : []
+      }
 
       rows.push(createRow([
         ...applicationEvents,
