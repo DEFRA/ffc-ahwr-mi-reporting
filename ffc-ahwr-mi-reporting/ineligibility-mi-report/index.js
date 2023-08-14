@@ -25,7 +25,7 @@ const buildAhwrIneligibilityMiReport = async (events) => {
     await msGraph.uploadFile(dstFolder, fileName, fileContent)
     console.log(`${new Date().toISOString()} ${REPORT_NAME}: CSV file has been uploaded to SharePoint: ${JSON.stringify({ fileName, dstFolder })}`)
   } else {
-    console.log(`${new Date().toISOString()} ${REPORT_NAME}: SharePoint disabled`)
+    console.log(`${new Date().toISOString()} ${REPORT_NAME}: SharePoint upload disabled ${JSON.stringify({ fileName })}`)
   }
 }
 
