@@ -18,7 +18,7 @@ const buildAhwrMiReport = async (events) => {
       fileName
     })}`)
   }
-  const rows = createRows(events)
+  const rows = await createRows(events)
   if (rows.length === 0) {
     console.log(`${new Date().toISOString()} No data found to create: ${JSON.stringify({ fileName })}`)
     return

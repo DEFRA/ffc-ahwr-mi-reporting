@@ -3,7 +3,7 @@
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "node",
     "AzureWebJobsStorage": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10005/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10006/devstoreaccount1;TableEndpoint=http://127.0.0.1:10007/devstoreaccount1;",
-    "STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10005/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10006/devstoreaccount1;TableEndpoint=http://127.0.0.1:10007/devstoreaccount1;",
+    "STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=https;AccountName=devffcahwrst1001;AccountKey=Wa37r4yMstHv/sp6BopNq+c6eA7kB6sEp/D2+w0rMqTLYs8Wf6zWVHGzbVmZdBCOg2aAKIwkE69u+AStfmRFEw==;EndpointSuffix=core.windows.net",
     "MI_EMAIL_ADDRESS": "test@test.com",
     "MI_TEMPLATE_REPORT": "TEST-6bda-4d55-9c79-5b075dfbcc27",
     "NOTIFY_API_KEY": "examplekey-644a2a30-7487-4e98-a908-b5ecd82d5225-644a2a30-7487-4e98-a908-b5ecd82d5225"
