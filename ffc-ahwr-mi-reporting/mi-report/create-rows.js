@@ -9,7 +9,8 @@ const applicationStatus = {
   withdrawn: 2,
   inCheck: 5,
   readyToPay: 9,
-  rejected: 10
+  rejected: 10,
+  onHold: 10
 }
 
 const createRow = (events) => {
@@ -123,7 +124,8 @@ const createRows = (events) => {
 
       const claimEvents = applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.readyToPay}` ||
       applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.inCheck}`
+      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.inCheck}` ||
+      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.onHold}`
         ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim'))
         : []
 
