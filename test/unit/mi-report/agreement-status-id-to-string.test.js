@@ -93,9 +93,18 @@ describe('agreementStatusIdToString', () => {
       }
     },
     {
-      toString: () => 'OTHER',
+      toString: () => 'ON HOLD',
       given: {
         statusId: 11
+      },
+      expect: {
+        status: 'ON HOLD'
+      }
+    },
+    {
+      toString: () => 'OTHER',
+      given: {
+        statusId: 12
       },
       expect: {
         status: ''
