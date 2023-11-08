@@ -10,7 +10,7 @@ const applicationStatus = {
   inCheck: 5,
   readyToPay: 9,
   rejected: 10,
-  onHold: 10
+  onHold: 11
 }
 
 const createRow = (events) => {
