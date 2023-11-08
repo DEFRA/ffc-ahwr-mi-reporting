@@ -19,6 +19,8 @@ module.exports = (statusId) => {
     return 'READY TO PAY'
   } else if (statusId === 10) {
     return 'REJECTED'
+  } else if (statusId === 11) {
+    return 'ON HOLD'
   } else {
     return ''
   }
