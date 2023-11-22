@@ -20,7 +20,9 @@ const createRow = (events) => {
   const whichReview = parseData(events, 'farmerApplyData-whichReview', 'whichReview')
   const eligibleSpecies = parseData(events, 'farmerApplyData-eligibleSpecies', 'eligibleSpecies')
   const confirmCheckDetails = parseData(events, 'farmerApplyData-confirmCheckDetails', 'confirmCheckDetails')
-  const agreementReference = parseData(events, 'farmerApplyData-reference', 'reference')
+
+  const agreementReferenceFromFarmerApplyData = parseData(events, 'farmerApplyData-reference', 'reference')
+  const agreementReference = agreementReferenceFromFarmerApplyData.value !== '' ? agreementReferenceFromFarmerApplyData : parseData(events, 'application:status-updated', 'reference')
   const agreementDeclaration = parseData(events, 'farmerApplyData-declaration', 'declaration')
 
   const claimDetailsCorrect = parseData(events, 'claim-detailsCorrect', 'detailsCorrect')
@@ -128,7 +130,9 @@ const createRows = (events) => {
       applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.onHold}`
         ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim'))
         : []
-
+      if (applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.onHold}`) {
+        sbiEvents.filter(event => `${event.EventType}`.startsWith('claim')).forEach(s => console.log(s))
+      }
       rows.push(createRow([
         ...applicationEvents,
         ...applyEvents,
