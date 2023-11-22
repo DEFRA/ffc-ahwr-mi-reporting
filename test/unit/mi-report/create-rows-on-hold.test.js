@@ -18,7 +18,7 @@ describe('createRows', () => {
           {
             address: undefined,
             agreementCurrentStatus: 'AGREED',
-            applicationNumber: '',
+            applicationNumber: 'AHWR-0333-DA52',
             applicationWithdrawn: 'no',
             applicationWithdrawnBy: 'n/a',
             applicationWithdrawnOn: 'n/a',
