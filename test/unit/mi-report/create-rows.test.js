@@ -1673,16 +1673,15 @@ describe('createRows', () => {
             rowKey: '205000202_1678177224031',
             timestamp: '2023-03-07T08:20:25.8923912Z',
             SessionId: 'fb6518a0-c6bf-4f21-93c1-9de5ad7a5f93',
-            EventType: 'application:status-updated:5',
+            EventType: 'application:status-updated:12',
             EventRaised: '2023-03-07T08:21:25.031Z',
             EventBy: 'Developer',
             Payload: `{
-              "type":"application:status-updated:5",
-              "message":"New stage execution has been created",
+              "type":"application:status-updated:12",
+              "message":"Application has been updated",
               "data":{
                 "reference":"AHWR-9D11-0EAA",
-                "statusId":5,
-                "subStatus":"Recommend to pay"
+                "statusId":12
               },
               "raisedBy":"Developer",
               "raisedOn":"2023-05-24T15:12:08.966Z",
@@ -1778,9 +1777,9 @@ describe('createRows', () => {
             claimRejected: 'no',
             claimRejectedBy: 'n/a',
             claimRejectedOn: 'n/a',
-            agreementCurrentStatus: 'IN CHECK',
+            agreementCurrentStatus: 'RECOMMENDED TO PAY',
             recommendedToPay: 'yes',
-            recommendedToReject: 'no',
+            recommendedToReject: '',
             recommendedOn: '24/05/2023 15:12',
             recommendedBy: 'Developer'
           }

@@ -10,7 +10,9 @@ const applicationStatus = {
   inCheck: 5,
   readyToPay: 9,
   rejected: 10,
-  onHold: 11
+  onHold: 11,
+  recommendedToPay: 12,
+  recommendedToReject: 13
 }
 
 const createRow = (events) => {
@@ -38,7 +40,42 @@ const createRow = (events) => {
   const claimRejected = parseData(events, `application:status-updated:${applicationStatus.rejected}`, 'statusId')
   const agreementCurrentStatusId = parseData(events, 'application:status-updated', 'statusId')
 
-  const claimRecommendation = parseData(events, `application:status-updated:${applicationStatus.inCheck}`, 'subStatus')
+  // To handle previously submitted claims without statuses of recommended to pay or reject:
+  const claimRecommendationWithInCheckSubStatus = parseData(events, `application:status-updated:${applicationStatus.inCheck}`, 'subStatus')
+
+  const claimRecommendedToPay = parseData(events, `application:status-updated:${applicationStatus.recommendedToPay}`, 'statusId')
+  const recommendedToPayTrue = (claimRecommendedToPay?.value === applicationStatus.recommendedToPay) || (claimRecommendationWithInCheckSubStatus?.value === 'Recommend to pay')
+  const claimRecommendedToReject = parseData(events, `application:status-updated:${applicationStatus.recommendedToReject}`, 'statusId')
+  const recommendedToRejectTrue = (claimRecommendedToReject?.value === applicationStatus.recommendedToReject) || (claimRecommendationWithInCheckSubStatus?.value === 'Recommend to reject')
+
+  const claimRecommendedOn = () => {
+    if (claimRecommendedToPay.value) {
+      return claimRecommendedToPay.raisedOn
+    } else if (claimRecommendedToReject.value) {
+      return claimRecommendedToReject.raisedOn
+    } else {
+      return ''
+    }
+  }
+  const claimRecommendedBy = () => {
+    if (claimRecommendedToPay.value) {
+      return claimRecommendedToPay.raisedBy.replace(/,/g, '","')
+    } else if (claimRecommendedToReject.value) {
+      return claimRecommendedToReject.raisedBy.replace(/,/g, '","')
+    } else {
+      return ''
+    }
+  }
+
+  const currentStatus = () => {
+    if (recommendedToPayTrue) {
+      return 'RECOMMENDED TO PAY'
+    } else if (recommendedToRejectTrue) {
+      return 'RECOMMENDED TO REJECT'
+    } else {
+      return agreementStatusIdToString(agreementCurrentStatusId.value)
+    }
+  }
 
   return {
     sbi: organisation?.sbi,
@@ -73,21 +110,17 @@ const createRow = (events) => {
     applicationWithdrawn: convertFromBoolean(agreementWithdrawn?.value === applicationStatus.withdrawn),
     applicationWithdrawnOn: notApplicableIfUndefined(agreementWithdrawn?.raisedOn),
     applicationWithdrawnBy: notApplicableIfUndefined(agreementWithdrawn?.raisedBy.replace(/,/g, '')),
-    recommendedToPay: claimRecommendation?.value
-      ? (claimRecommendation?.value === 'Recommend to pay' ? 'yes' : 'no')
-      : '',
-    recommendedToReject: claimRecommendation?.value
-      ? (claimRecommendation?.value === 'Recommend to reject' ? 'yes' : 'no')
-      : '',
-    recommendedOn: claimRecommendation?.value ? claimRecommendation?.raisedOn : '',
-    recommendedBy: claimRecommendation?.value ? claimRecommendation?.raisedBy.replace(/,/g, '","') : '',
+    recommendedToPay: convertFromBoolean(recommendedToPayTrue) === 'yes' ? 'yes' : '',
+    recommendedToReject: convertFromBoolean(recommendedToRejectTrue) === 'yes' ? 'yes' : '',
+    recommendedOn: claimRecommendedOn(),
+    recommendedBy: claimRecommendedBy(),
     claimApproved: convertFromBoolean(claimApproved?.value === applicationStatus.readyToPay),
     claimApprovedOn: notApplicableIfUndefined(claimApproved?.raisedOn),
     claimApprovedBy: notApplicableIfUndefined(claimApproved?.raisedBy.replace(/,/g, '')),
     claimRejected: convertFromBoolean(claimRejected?.value === applicationStatus.rejected),
     claimRejectedOn: notApplicableIfUndefined(claimRejected?.raisedOn),
     claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy.replace(/,/g, '')),
-    agreementCurrentStatus: notApplicableIfUndefined(agreementStatusIdToString(agreementCurrentStatusId?.value))
+    agreementCurrentStatus: notApplicableIfUndefined(currentStatus())
   }
 }
 
@@ -124,10 +157,13 @@ const createRows = (events) => {
         .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
         .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
 
+      // TODO Should be refactored
       const claimEvents = applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.readyToPay}` ||
       applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}` ||
       applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.inCheck}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.onHold}`
+      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.onHold}` ||
+      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.recommendedToPay}` ||
+      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.recommendedToReject}`
         ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim'))
         : []
       if (applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.onHold}`) {
