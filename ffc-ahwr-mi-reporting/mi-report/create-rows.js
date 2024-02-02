@@ -68,9 +68,9 @@ const createRow = (events) => {
   }
 
   const currentStatus = () => {
-    if (recommendedToPayTrue) {
+    if (!claimApproved && !claimRejected && recommendedToPayTrue) {
       return 'RECOMMENDED TO PAY'
-    } else if (recommendedToRejectTrue) {
+    } else if (!claimApproved && !claimRejected && recommendedToRejectTrue) {
       return 'RECOMMENDED TO REJECT'
     } else {
       return agreementStatusIdToString(agreementCurrentStatusId.value)
