@@ -40,7 +40,7 @@ const createRow = (events) => {
   const claimRejected = parseData(events, `application:status-updated:${applicationStatus.rejected}`, 'statusId')
   const agreementCurrentStatusId = parseData(events, 'application:status-updated', 'statusId')
 
-  // To handle previously submitted claims without statuses of recommended to pay or reject:
+  // To handle previously submitted claims with In Check status & sub-status of recommended to pay or reject:
   const claimRecommendationWithInCheckSubStatus = parseData(events, `application:status-updated:${applicationStatus.inCheck}`, 'subStatus')
 
   const claimRecommendedToPay = parseData(events, `application:status-updated:${applicationStatus.recommendedToPay}`, 'statusId')
