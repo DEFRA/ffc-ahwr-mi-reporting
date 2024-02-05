@@ -42,35 +42,35 @@ const createRow = (events) => {
 
   // To handle previously submitted claims with In Check status & sub-status of recommended to pay or reject:
   const claimRecommendationWithInCheckSubStatus = parseData(events, `application:status-updated:${applicationStatus.inCheck}`, 'subStatus')
-
   const claimRecommendedToPay = parseData(events, `application:status-updated:${applicationStatus.recommendedToPay}`, 'statusId')
   const recommendedToPayTrue = (claimRecommendedToPay?.value === applicationStatus.recommendedToPay) || (claimRecommendationWithInCheckSubStatus?.value === 'Recommend to pay')
+
   const claimRecommendedToReject = parseData(events, `application:status-updated:${applicationStatus.recommendedToReject}`, 'statusId')
   const recommendedToRejectTrue = (claimRecommendedToReject?.value === applicationStatus.recommendedToReject) || (claimRecommendationWithInCheckSubStatus?.value === 'Recommend to reject')
 
   const claimRecommendedOn = () => {
-    if (claimRecommendedToPay.value) {
-      return claimRecommendedToPay.raisedOn
-    } else if (claimRecommendedToReject.value) {
-      return claimRecommendedToReject.raisedOn
+    if (recommendedToPayTrue) {
+      return claimRecommendedToPay.raisedOn || claimRecommendationWithInCheckSubStatus.raisedOn
+    } else if (recommendedToRejectTrue) {
+      return claimRecommendedToReject.raisedOn || claimRecommendationWithInCheckSubStatus.raisedOn
     } else {
       return ''
     }
   }
   const claimRecommendedBy = () => {
-    if (claimRecommendedToPay.value) {
-      return claimRecommendedToPay.raisedBy.replace(/,/g, '","')
-    } else if (claimRecommendedToReject.value) {
-      return claimRecommendedToReject.raisedBy.replace(/,/g, '","')
+    if (recommendedToPayTrue) {
+      return claimRecommendedToPay.raisedBy.replace(/,/g, '","') || claimRecommendationWithInCheckSubStatus.raisedBy.replace(/,/g, '","')
+    } else if (recommendedToRejectTrue) {
+      return claimRecommendedToReject.raisedBy.replace(/,/g, '","') || claimRecommendationWithInCheckSubStatus.raisedBy.replace(/,/g, '","')
     } else {
       return ''
     }
   }
 
   const currentStatus = () => {
-    if (!claimApproved && !claimRejected && recommendedToPayTrue) {
+    if (!claimApproved.value && !claimRejected.value && recommendedToPayTrue) {
       return 'RECOMMENDED TO PAY'
-    } else if (!claimApproved && !claimRejected && recommendedToRejectTrue) {
+    } else if (!claimApproved.value && !claimRejected.value && recommendedToRejectTrue) {
       return 'RECOMMENDED TO REJECT'
     } else {
       return agreementStatusIdToString(agreementCurrentStatusId.value)
