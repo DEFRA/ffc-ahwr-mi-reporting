@@ -124,10 +124,13 @@ const createRow = (events) => {
   }
 }
 
-const groupBy = function (xs, key) {
-  return xs.reduce(function (rv, x) {
-    (rv[x[key]] = rv[x[key]] || []).push(x)
-    return rv
+const groupBy = function (array, key) {
+  return array.reduce(function (grouped, x) {
+    const currentKey = x[key]
+    const group = grouped[currentKey] || []
+    group.push(x)
+    grouped[currentKey] = group
+    return grouped
   }, {})
 }
 
@@ -165,7 +168,7 @@ const createRows = (events) => {
         `application:status-updated:${applicationStatus.recommendedToPay}`,
         `application:status-updated:${applicationStatus.recommendedToReject}`
       ]
-      // TODO Should be refactored
+
       const claimEvents = eventTypeClaimStatuses.includes(applicationEvents[applicationEvents.length - 1].EventType)
         ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim'))
         : []
