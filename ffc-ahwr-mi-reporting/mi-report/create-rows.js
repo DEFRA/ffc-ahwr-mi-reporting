@@ -110,8 +110,8 @@ const createRow = (events) => {
     applicationWithdrawn: convertFromBoolean(agreementWithdrawn?.value === applicationStatus.withdrawn),
     applicationWithdrawnOn: notApplicableIfUndefined(agreementWithdrawn?.raisedOn),
     applicationWithdrawnBy: notApplicableIfUndefined(agreementWithdrawn?.raisedBy.replace(/,/g, '')),
-    recommendedToPay: convertFromBoolean(recommendedToPayTrue) === 'yes' ? 'yes' : '',
-    recommendedToReject: convertFromBoolean(recommendedToRejectTrue) === 'yes' ? 'yes' : '',
+    recommendedToPay: recommendedToPayTrue ? 'yes' : '',
+    recommendedToReject: recommendedToRejectTrue ? 'yes' : '',
     recommendedOn: claimRecommendedOn(),
     recommendedBy: claimRecommendedBy(),
     claimApproved: convertFromBoolean(claimApproved?.value === applicationStatus.readyToPay),
@@ -157,13 +157,16 @@ const createRows = (events) => {
         .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
         .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
 
+      const eventTypeClaimStatuses = [
+        `application:status-updated:${applicationStatus.readyToPay}`,
+        `application:status-updated:${applicationStatus.rejected}`,
+        `application:status-updated:${applicationStatus.inCheck}`,
+        `application:status-updated:${applicationStatus.onHold}`,
+        `application:status-updated:${applicationStatus.recommendedToPay}`,
+        `application:status-updated:${applicationStatus.recommendedToReject}`
+      ]
       // TODO Should be refactored
-      const claimEvents = applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.readyToPay}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.inCheck}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.onHold}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.recommendedToPay}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.recommendedToReject}`
+      const claimEvents = eventTypeClaimStatuses.includes(applicationEvents[applicationEvents.length - 1].EventType)
         ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim'))
         : []
       if (applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.onHold}`) {
