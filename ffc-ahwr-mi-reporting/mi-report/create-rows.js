@@ -3,7 +3,7 @@ const groupByPartitionKey = require('../storage/group-by-partition-key')
 const { parseData, parsePayload, formatDate } = require('../parse-data')
 const convertFromBoolean = require('../csv/convert-from-boolean')
 const notApplicableIfUndefined = require('../csv/not-applicable-if-undefined')
-const agreementStatusIdToString = require('./agreement-status-id-to-string')
+const { claimRecommendedOn, claimRecommendedBy, currentStatus, groupBy } = require('./create-row-helpers')
 
 const applicationStatus = {
   withdrawn: 2,
@@ -48,35 +48,6 @@ const createRow = (events) => {
   const claimRecommendedToReject = parseData(events, `application:status-updated:${applicationStatus.recommendedToReject}`, 'statusId')
   const recommendedToRejectTrue = (claimRecommendedToReject?.value === applicationStatus.recommendedToReject) || (claimRecommendationWithInCheckSubStatus?.value === 'Recommend to reject')
 
-  const claimRecommendedOn = () => {
-    if (recommendedToPayTrue) {
-      return claimRecommendedToPay.raisedOn || claimRecommendationWithInCheckSubStatus.raisedOn
-    } else if (recommendedToRejectTrue) {
-      return claimRecommendedToReject.raisedOn || claimRecommendationWithInCheckSubStatus.raisedOn
-    } else {
-      return ''
-    }
-  }
-  const claimRecommendedBy = () => {
-    if (recommendedToPayTrue) {
-      return claimRecommendedToPay.raisedBy.replace(/,/g, '","') || claimRecommendationWithInCheckSubStatus.raisedBy.replace(/,/g, '","')
-    } else if (recommendedToRejectTrue) {
-      return claimRecommendedToReject.raisedBy.replace(/,/g, '","') || claimRecommendationWithInCheckSubStatus.raisedBy.replace(/,/g, '","')
-    } else {
-      return ''
-    }
-  }
-
-  const currentStatus = () => {
-    if (!claimApproved.value && !claimRejected.value && recommendedToPayTrue) {
-      return 'RECOMMENDED TO PAY'
-    } else if (!claimApproved.value && !claimRejected.value && recommendedToRejectTrue) {
-      return 'RECOMMENDED TO REJECT'
-    } else {
-      return agreementStatusIdToString(agreementCurrentStatusId.value)
-    }
-  }
-
   return {
     sbi: organisation?.sbi,
     cph: organisation?.cph,
@@ -112,26 +83,16 @@ const createRow = (events) => {
     applicationWithdrawnBy: notApplicableIfUndefined(agreementWithdrawn?.raisedBy.replace(/,/g, '')),
     recommendedToPay: recommendedToPayTrue ? 'yes' : '',
     recommendedToReject: recommendedToRejectTrue ? 'yes' : '',
-    recommendedOn: claimRecommendedOn(),
-    recommendedBy: claimRecommendedBy(),
+    recommendedOn: claimRecommendedOn(recommendedToPayTrue, recommendedToRejectTrue, claimRecommendedToPay, claimRecommendedToReject, claimRecommendationWithInCheckSubStatus),
+    recommendedBy: claimRecommendedBy(recommendedToPayTrue, recommendedToRejectTrue, claimRecommendedToPay, claimRecommendedToReject, claimRecommendationWithInCheckSubStatus),
     claimApproved: convertFromBoolean(claimApproved?.value === applicationStatus.readyToPay),
     claimApprovedOn: notApplicableIfUndefined(claimApproved?.raisedOn),
     claimApprovedBy: notApplicableIfUndefined(claimApproved?.raisedBy.replace(/,/g, '')),
     claimRejected: convertFromBoolean(claimRejected?.value === applicationStatus.rejected),
     claimRejectedOn: notApplicableIfUndefined(claimRejected?.raisedOn),
     claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy.replace(/,/g, '')),
-    agreementCurrentStatus: notApplicableIfUndefined(currentStatus())
+    agreementCurrentStatus: notApplicableIfUndefined(currentStatus(claimApproved, claimRejected, recommendedToPayTrue, recommendedToRejectTrue, agreementCurrentStatusId))
   }
-}
-
-const groupBy = function (array, key) {
-  return array.reduce(function (grouped, x) {
-    const currentKey = x[key]
-    const group = grouped[currentKey] || []
-    group.push(x)
-    grouped[currentKey] = group
-    return grouped
-  }, {})
 }
 
 const createRows = (events) => {
