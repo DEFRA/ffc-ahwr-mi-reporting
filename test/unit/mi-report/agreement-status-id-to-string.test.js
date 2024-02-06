@@ -102,9 +102,27 @@ describe('agreementStatusIdToString', () => {
       }
     },
     {
-      toString: () => 'OTHER',
+      toString: () => 'RECOMMENDED TO PAY',
       given: {
         statusId: 12
+      },
+      expect: {
+        status: 'RECOMMENDED TO PAY'
+      }
+    },
+    {
+      toString: () => 'RECOMMENDED TO REJECT',
+      given: {
+        statusId: 13
+      },
+      expect: {
+        status: 'RECOMMENDED TO REJECT'
+      }
+    },
+    {
+      toString: () => 'OTHER',
+      given: {
+        statusId: 14
       },
       expect: {
         status: ''

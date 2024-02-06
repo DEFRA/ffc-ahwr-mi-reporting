@@ -3,14 +3,16 @@ const groupByPartitionKey = require('../storage/group-by-partition-key')
 const { parseData, parsePayload, formatDate } = require('../parse-data')
 const convertFromBoolean = require('../csv/convert-from-boolean')
 const notApplicableIfUndefined = require('../csv/not-applicable-if-undefined')
-const agreementStatusIdToString = require('./agreement-status-id-to-string')
+const { claimRecommendedOn, claimRecommendedBy, currentStatus, groupBy } = require('./create-row-helpers')
 
 const applicationStatus = {
   withdrawn: 2,
   inCheck: 5,
   readyToPay: 9,
   rejected: 10,
-  onHold: 11
+  onHold: 11,
+  recommendedToPay: 12,
+  recommendedToReject: 13
 }
 
 const createRow = (events) => {
@@ -38,7 +40,13 @@ const createRow = (events) => {
   const claimRejected = parseData(events, `application:status-updated:${applicationStatus.rejected}`, 'statusId')
   const agreementCurrentStatusId = parseData(events, 'application:status-updated', 'statusId')
 
-  const claimRecommendation = parseData(events, `application:status-updated:${applicationStatus.inCheck}`, 'subStatus')
+  // To handle previously submitted claims with In Check status & sub-status of recommended to pay or reject:
+  const claimRecommendationWithInCheckSubStatus = parseData(events, `application:status-updated:${applicationStatus.inCheck}`, 'subStatus')
+  const claimRecommendedToPay = parseData(events, `application:status-updated:${applicationStatus.recommendedToPay}`, 'statusId')
+  const recommendedToPayTrue = (claimRecommendedToPay?.value === applicationStatus.recommendedToPay) || (claimRecommendationWithInCheckSubStatus?.value === 'Recommend to pay')
+
+  const claimRecommendedToReject = parseData(events, `application:status-updated:${applicationStatus.recommendedToReject}`, 'statusId')
+  const recommendedToRejectTrue = (claimRecommendedToReject?.value === applicationStatus.recommendedToReject) || (claimRecommendationWithInCheckSubStatus?.value === 'Recommend to reject')
 
   return {
     sbi: organisation?.sbi,
@@ -73,29 +81,18 @@ const createRow = (events) => {
     applicationWithdrawn: convertFromBoolean(agreementWithdrawn?.value === applicationStatus.withdrawn),
     applicationWithdrawnOn: notApplicableIfUndefined(agreementWithdrawn?.raisedOn),
     applicationWithdrawnBy: notApplicableIfUndefined(agreementWithdrawn?.raisedBy.replace(/,/g, '')),
-    recommendedToPay: claimRecommendation?.value
-      ? (claimRecommendation?.value === 'Recommend to pay' ? 'yes' : 'no')
-      : '',
-    recommendedToReject: claimRecommendation?.value
-      ? (claimRecommendation?.value === 'Recommend to reject' ? 'yes' : 'no')
-      : '',
-    recommendedOn: claimRecommendation?.value ? claimRecommendation?.raisedOn : '',
-    recommendedBy: claimRecommendation?.value ? claimRecommendation?.raisedBy.replace(/,/g, '","') : '',
+    recommendedToPay: recommendedToPayTrue ? 'yes' : '',
+    recommendedToReject: recommendedToRejectTrue ? 'yes' : '',
+    recommendedOn: claimRecommendedOn(recommendedToPayTrue, recommendedToRejectTrue, claimRecommendedToPay, claimRecommendedToReject, claimRecommendationWithInCheckSubStatus),
+    recommendedBy: claimRecommendedBy(recommendedToPayTrue, recommendedToRejectTrue, claimRecommendedToPay, claimRecommendedToReject, claimRecommendationWithInCheckSubStatus),
     claimApproved: convertFromBoolean(claimApproved?.value === applicationStatus.readyToPay),
     claimApprovedOn: notApplicableIfUndefined(claimApproved?.raisedOn),
     claimApprovedBy: notApplicableIfUndefined(claimApproved?.raisedBy.replace(/,/g, '')),
     claimRejected: convertFromBoolean(claimRejected?.value === applicationStatus.rejected),
     claimRejectedOn: notApplicableIfUndefined(claimRejected?.raisedOn),
     claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy.replace(/,/g, '')),
-    agreementCurrentStatus: notApplicableIfUndefined(agreementStatusIdToString(agreementCurrentStatusId?.value))
+    agreementCurrentStatus: notApplicableIfUndefined(currentStatus(claimApproved, claimRejected, recommendedToPayTrue, recommendedToRejectTrue, agreementCurrentStatusId))
   }
-}
-
-const groupBy = function (xs, key) {
-  return xs.reduce(function (rv, x) {
-    (rv[x[key]] = rv[x[key]] || []).push(x)
-    return rv
-  }, {})
 }
 
 const createRows = (events) => {
@@ -124,10 +121,16 @@ const createRows = (events) => {
         .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
         .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
 
-      const claimEvents = applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.readyToPay}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.rejected}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.inCheck}` ||
-      applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.onHold}`
+      const eventTypeClaimStatuses = [
+        `application:status-updated:${applicationStatus.readyToPay}`,
+        `application:status-updated:${applicationStatus.rejected}`,
+        `application:status-updated:${applicationStatus.inCheck}`,
+        `application:status-updated:${applicationStatus.onHold}`,
+        `application:status-updated:${applicationStatus.recommendedToPay}`,
+        `application:status-updated:${applicationStatus.recommendedToReject}`
+      ]
+
+      const claimEvents = eventTypeClaimStatuses.includes(applicationEvents[applicationEvents.length - 1].EventType)
         ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim'))
         : []
       if (applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.onHold}`) {
