@@ -1,5 +1,6 @@
 const { queryEntitiesByTimestamp, connect } = require('./storage/storage')
 const buildMiReport = require('./mi-report')
+const buildMiReportV2 = require('./mi-report')
 
 module.exports = async (context, miReportTimer) => {
   await connect()
@@ -8,6 +9,7 @@ module.exports = async (context, miReportTimer) => {
   const events = await queryEntitiesByTimestamp()
   if (events.length) {
     await buildMiReport(events)
+    await buildMiReportV2(events)
   } else {
     context.log('No events found')
   }

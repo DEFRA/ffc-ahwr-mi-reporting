@@ -2,7 +2,7 @@ const agreementStatusIdToString = require('../mi-report/agreement-status-id-to-s
 
 const transformJsonToCsv = (events) => {
   const csv = events.forEach(event => {
-    return transformEventToCsv(event)
+    return transformEventToCsv(event?.Payload)
   })
   return csv
 }
