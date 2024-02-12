@@ -1,6 +1,6 @@
 const { queryEntitiesByTimestamp, connect } = require('./storage/storage')
 const buildMiReport = require('./mi-report')
-const buildMiReportV2 = require('./mi-report')
+const buildMiReportV2 = require('./mi-report-v2')
 
 module.exports = async (context, miReportTimer) => {
   await connect()

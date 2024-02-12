@@ -1,66 +1,58 @@
 const agreementStatusIdToString = require('../mi-report/agreement-status-id-to-string')
 
+// Define the CSV column names
+const columns = ['sbiFromPartitionKey', 'type', 'message', 'reference', 'tempReference', 'sbiFromPayload', 'farmerName', 'organisationName', 'email', 'address', 'raisedBy', 'raisedOn',
+  'journey', 'confirmCheckDetails', 'eligibleSpecies', 'declaration', 'whichReview', 'detailsCorrect', 'visitDate', 'dateOfTesting',
+  'vetName', 'vetRcvs', 'urnResult', 'animalsTested', 'claimed', 'statusId', 'statusName', 'eventStatus']
+
 const transformJsonToCsv = (events) => {
-  const csv = events.forEach(event => {
-    return transformEventToCsv(event?.Payload)
-  })
-  return csv
+  const headerRow = columns.join(',') + '\n'
+  const csvContent = events.map (event => {
+    return transformEventToCsv(event)
+  }).join('\n')
+
+  return headerRow.concat(csvContent)
 }
 
-// This function converts a JSON string into CSV format
-function transformEventToCsv (jsonString, addColumnName = false) {
-  // Parse the JSON string into an object
-  const jsonObj = JSON.parse(jsonString)
+function transformEventToCsv (event) {
+  const { partitionKey: sbiFromPartitionKey, Status: eventStatus } = event
+  const { type, data, raisedBy, raisedOn, message } = JSON.parse(event.Payload) ?? ''
+  const { reference, tempReference, organisation, journey, confirmCheckDetails, eligibleSpecies, declaration, whichReview, detailsCorrect, 
+  visitDate, dateOfTesting, vetName, vetRcvs, urnResult, animalsTested, claimed, statusId } = data ?? ''
+  const { sbi, farmerName, name , email, address } = organisation ?? ''
 
-  // Extract data from the JSON object
-  const type = jsonObj.type
-  const data = jsonObj.data
-  const reference = data.reference
-  const organisation = data.organisation
-  const raisedBy = jsonObj.raisedBy
-  const raisedOn = jsonObj.raisedOn
-
-  // Define the CSV column names
-  const columns = ['type', 'reference', 'tempReference', 'sbi', 'farmerName', 'organisationName', 'email', 'address', 'raisedBy', 'raisedOn',
-    'journey', 'confirmCheckDetails', 'eligibleSpecies', 'declaration', 'whichReview', 'detailsCorrect', 'visitDate', 'dateOfTesting',
-    'vetName', 'vetRcvs', 'urnResult', 'animalsTested', 'claimed', 'statusId', 'statusName']
-
-  // Create the CSV string
-  let csvContent = addColumnName ? columns.join(',') + '\n' : ''// Add the column names to the first row
   const row = [
+    sbiFromPartitionKey,
     type,
+    message,
     reference,
-    data.tempReference,
-    organisation.sbi,
-    organisation.farmerName,
-    organisation.name,
-    organisation.email,
-    organisation.address,
+    tempReference,
+    sbi,
+    farmerName,
+    name ? name.replace(/,/g,'  ') : '',
+    email,
+    address ? address.replace(/,/g,'  ') : '',
     raisedBy,
     raisedOn,
-    data.journey ?? '',
-    data.confirmCheckDetails ?? '',
-    data.eligibleSpecies ?? '',
-    data.declaration ?? '',
-    data.whichReview ?? '',
-    data.detailsCorrect ?? '',
-    data.visitDate ?? '',
-    data.dateOfTesting ?? '',
-    data.vetName ?? '',
-    data.vetRcvs ?? '',
-    data.urnResult ?? '',
-    data.tempReference ?? '',
-    data.animalsTested ?? '',
-    data.claimed ?? '',
-    data.statusId ?? '',
-    agreementStatusIdToString(data.statusId ?? 0)
-  ].join(',') // Create a comma-separated string of the data
+    journey,
+    confirmCheckDetails,
+    eligibleSpecies,
+    declaration,
+    whichReview,
+    detailsCorrect,
+    visitDate,
+    dateOfTesting,
+    vetName,
+    vetRcvs,
+    urnResult,
+    animalsTested,
+    claimed,
+    statusId,
+    agreementStatusIdToString(data.statusId ?? 0),
+    eventStatus
+  ].join(',')
 
-  // Add the data row to the CSV content
-  csvContent += row + '\n'
-
-  // Return the CSV content
-  return csvContent
+  return row
 }
 
 module.exports = transformJsonToCsv

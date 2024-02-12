@@ -4,7 +4,7 @@ const storage = require('../storage/storage')
 const msGraph = require('../sharepoint/ms-graph')
 const transformJsonToCsv = require('./transform')
 
-const buildAhwrMiReport = async (events) => {
+const buildAhwrMiReportV2 = async (events) => {
   const fileName = createFileName('ahwr-mi-report-v2-')
   const dstFolder = `${config.sharePoint.dstFolder}/${config.environment}/${new Date().getFullYear()}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}`
   if (config.featureToggle.sharePoint.enabled) {
@@ -33,4 +33,4 @@ const buildAhwrMiReport = async (events) => {
   }
 }
 
-module.exports = buildAhwrMiReport
+module.exports = buildAhwrMiReportV2
