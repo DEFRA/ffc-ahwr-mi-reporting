@@ -5,4 +5,3 @@ const formatDate = (dateToFormat, currentDateFormat = 'YYYY-MM-DD', dateFormat =
 }
 
 module.exports = formatDate
-  

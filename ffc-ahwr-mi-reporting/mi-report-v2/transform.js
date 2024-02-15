@@ -8,7 +8,7 @@ const columns = ['sbiFromPartitionKey', 'type', 'message', 'reference', 'tempRef
 
 const transformJsonToCsv = (events) => {
   const headerRow = columns.join(',') + '\n'
-  const csvContent = events.map (event => {
+  const csvContent = events.map(event => {
     return transformEventToCsv(event)
   }).join('\n')
 
@@ -18,9 +18,26 @@ const transformJsonToCsv = (events) => {
 function transformEventToCsv (event) {
   const { partitionKey: sbiFromPartitionKey, Status: eventStatus } = event
   const { type, data, raisedBy, raisedOn, message } = JSON.parse(event.Payload) ?? ''
-  const { reference, tempReference, organisation, journey, confirmCheckDetails, eligibleSpecies, declaration, whichReview, detailsCorrect, 
-  visitDate, dateOfTesting, vetName, vetRcvs, urnResult, animalsTested, claimed, statusId } = data ?? ''
-  const { sbi, farmerName, name , email, address } = organisation ?? ''
+  const {
+    reference,
+    tempReference,
+    organisation,
+    journey,
+    confirmCheckDetails,
+    eligibleSpecies,
+    declaration,
+    whichReview,
+    detailsCorrect,
+    visitDate,
+    dateOfTesting,
+    vetName,
+    vetRcvs,
+    urnResult,
+    animalsTested,
+    claimed,
+    statusId
+  } = data ?? ''
+  const { sbi, farmerName, name, email, address } = organisation ?? ''
 
   const row = [
     sbiFromPartitionKey,
@@ -30,9 +47,9 @@ function transformEventToCsv (event) {
     tempReference,
     sbi,
     farmerName,
-    name ? name.replace(/,/g,'  ') : '',
+    name ? name.replace(/,/g, '  ') : '',
     email,
-    address ? address.replace(/,/g,'  ') : '',
+    address ? address.replace(/,/g, '  ') : '',
     raisedBy,
     formatDate(raisedOn),
     journey,
