@@ -1,4 +1,5 @@
 const agreementStatusIdToString = require('../mi-report/agreement-status-id-to-string')
+const formatDate = require('./format-date')
 
 // Define the CSV column names
 const columns = ['sbiFromPartitionKey', 'type', 'message', 'reference', 'tempReference', 'sbiFromPayload', 'farmerName', 'organisationName', 'email', 'address', 'raisedBy', 'raisedOn',
@@ -33,15 +34,15 @@ function transformEventToCsv (event) {
     email,
     address ? address.replace(/,/g,'  ') : '',
     raisedBy,
-    raisedOn,
+    formatDate(raisedOn),
     journey,
     confirmCheckDetails,
     eligibleSpecies,
     declaration,
     whichReview,
     detailsCorrect,
-    visitDate,
-    dateOfTesting,
+    formatDate(visitDate),
+    formatDate(dateOfTesting),
     vetName,
     vetRcvs,
     urnResult,
