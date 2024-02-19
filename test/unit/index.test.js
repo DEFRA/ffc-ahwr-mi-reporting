@@ -40,7 +40,8 @@ describe('report', () => {
       return {
         queryEntitiesByTimestamp: jest.fn().mockResolvedValue([{
           foo: 'bar',
-          EventType: 'eventType'
+          EventType: 'eventType',
+          Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-931B-C490","organisation":{"sbi":"106401373","farmerName":"Trevor John Hale","name":"M & G Williams","email":"trevorhalec@elahroverts.com.test","address":""}},"raisedBy":"trevorhalec@elahroverts.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
         }]),
         connect: jest.fn(),
         writeFile: mockWriteFile,
@@ -112,6 +113,6 @@ describe('report', () => {
   test('should write file to share', async () => {
     await generateReport(mockContext, mockTimer)
     expect(mockWriteFile).toHaveBeenCalled()
-    expect(MOCK_UPLOAD_FILE).toBeCalledTimes(1)
+    expect(MOCK_UPLOAD_FILE).toBeCalledTimes(2)
   })
 })
