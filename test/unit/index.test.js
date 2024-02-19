@@ -94,14 +94,14 @@ describe('report', () => {
   beforeEach(() => {
     mockEvents = [{
       partitionKey: 'partition',
-      EventType: 'batch-processing',
+      EventType: 'farmerApplyData-organisation',
       EventRaised: new Date().toISOString(),
-      Payload: '{"type":"info","message":"Payment request created from batch file","data":{"filename":"SITIELM0003_AP_20220412114822998.dat","sequence":"0003", "batchExportDate": "2022-02-01","paymentRequest":{"sourceSystem":"SFIP","deliveryBody":"RP00","invoiceNumber":"SFI00036146","frn":"3000006147","marketingYear":"2022","paymentRequestNumber":1,"agreementNumber":"SIP003000006147","contractNumber":"SFIP036146","currency":"GBP","schedule":"Q4","dueDate":"2022-12-01","value":100,"correlationId":"000026c9-fb51-491b-9272-1ef6ccd68f15","invoiceLines":[{"schemeCode":"80001","accountCode":"SOS273","fundCode":"DRD10","description":"G00 - Gross value of claim","value":100}]}},"timestamp":"2022-04-14T10:34:46.241Z"}'
+      Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-931B-C490","organisation":{"sbi":"106401373","farmerName":"Trevor John Hale","name":"M & G Williams","email":"trevorhalec@elahroverts.com.test","address":""}},"raisedBy":"trevorhalec@elahroverts.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
     }, {
       partitionKey: 'partition',
       EventRaised: new Date().toISOString(),
-      EventType: 'payment-request-enrichment',
-      Payload: '{"type":"info","message":"Payment request enriched","data":{"originalPaymentRequest":{"sourceSystem":"SFIP","deliveryBody":"RP00","invoiceNumber":"SFI00037229","frn":"3000007230","marketingYear":"2022","paymentRequestNumber":1,"agreementNumber":"SIP003000007230","contractNumber":"SFIP037229","currency":"GBP","schedule":"Q4","dueDate":"2022-12-01","value":100,"correlationId":"00001395-52e9-4606-8536-842e500e0f45","invoiceLines":[{"schemeCode":"80001","accountCode":"SOS273","fundCode":"DRD10","description":"G00 - Gross value of claim","value":100}]},"paymentRequest":{"sourceSystem":"SFIP","deliveryBody":"RP00","invoiceNumber":"S0037229SFIP037229V001","frn":"3000007230","marketingYear":"2022","paymentRequestNumber":1,"agreementNumber":"SIP003000007230","contractNumber":"SFIP037229","currency":"GBP","schedule":"Q4","dueDate":"01/12/2022","value":10000,"correlationId":"00001395-52e9-4606-8536-842e500e0f45","invoiceLines":[{"schemeCode":"80001","accountCode":"SOS273","fundCode":"DRD10","description":"G00 - Gross value of claim","value":10000}],"schemeId":2,"ledger":"AP"}},"timestamp":"2022-04-13T19:54:28.774Z"}'
+      EventType: 'ineligibility-event',
+      Payload: '{"type":"ineligibility-event","message":"Apply: LockedBusinessError","data":{"sbi":"106363424","crn":"1100514988","exception":"LockedBusinessError","raisedAt":"2024-02-15T13:23:39.830Z","journey":"apply","reference":"TEMP-EFF4-B965"},"raisedBy":"trevorhalec@elahroverts.com.test","raisedOn":"2024-02-15T13:23:40.068Z"}'
     }]
   })
 
