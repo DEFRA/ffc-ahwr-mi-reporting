@@ -8,12 +8,12 @@ const buildAhwrMiReportV2 = async (events) => {
   const fileName = createFileName('ahwr-mi-report-v2-')
   const dstFolder = `${config.sharePoint.dstFolder}/${config.environment}/${new Date().getFullYear()}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}`
   if (config.featureToggle.sharePoint.enabled) {
-    console.log(`${new Date().toISOString()} Creating, storing and uploading AHWR MI Report: ${JSON.stringify({
+    console.log(`${new Date().toISOString()} Creating, storing and uploading AHWR MI Report V2: ${JSON.stringify({
       dstFolder,
       fileName
     })}`)
   } else {
-    console.log(`${new Date().toISOString()} Creating, storing but not uploading AHWR MI Report: ${JSON.stringify({
+    console.log(`${new Date().toISOString()} Creating, storing but not uploading AHWR MI Report V2: ${JSON.stringify({
       fileName
     })}`)
   }
@@ -22,12 +22,12 @@ const buildAhwrMiReportV2 = async (events) => {
   if (config.featureToggle.sharePoint.enabled) {
     const fileContent = await storage.downloadFile(fileName)
     await msGraph.uploadFile(dstFolder, fileName, fileContent)
-    console.log(`${new Date().toISOString()} AHWR MI Report has been stored and uploaded: ${JSON.stringify({
+    console.log(`${new Date().toISOString()} AHWR MI Report V2 has been stored and uploaded: ${JSON.stringify({
       dstFolder,
       fileName
     })}`)
   } else {
-    console.log(`${new Date().toISOString()} AHWR MI Report has been stored but not uploaded: ${JSON.stringify({
+    console.log(`${new Date().toISOString()} AHWR MI Report V2 has been stored but not uploaded: ${JSON.stringify({
       fileName
     })}`)
   }
