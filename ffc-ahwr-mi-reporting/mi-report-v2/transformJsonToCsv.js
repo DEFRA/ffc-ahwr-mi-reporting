@@ -7,6 +7,9 @@ const columns = ['sbiFromPartitionKey', 'type', 'message', 'reference', 'tempRef
   'vetName', 'vetRcvs', 'urnResult', 'animalsTested', 'claimed', 'statusId', 'statusName', 'eventStatus']
 
 const transformJsonToCsv = (events) => {
+  if (events.length === 0) {
+    return
+  }
   const headerRow = columns.join(',') + '\n'
   const csvContent = events.map(event => {
     return transformEventToCsv(event)

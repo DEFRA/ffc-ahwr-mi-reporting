@@ -1,4 +1,4 @@
-const transformJsonToCsv = require('../../../ffc-ahwr-mi-reporting/mi-report-v2/transform')
+const transformJsonToCsv = require('../../../ffc-ahwr-mi-reporting/mi-report-v2/transformJsonToCsv')
 
 const events = [{
   partitionKey: '123456',
