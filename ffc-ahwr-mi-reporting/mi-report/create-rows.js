@@ -4,6 +4,7 @@ const { parseData, parsePayload, formatDate } = require('../parse-data')
 const convertFromBoolean = require('../csv/convert-from-boolean')
 const notApplicableIfUndefined = require('../csv/not-applicable-if-undefined')
 const { claimRecommendedOn, claimRecommendedBy, currentStatus, groupBy } = require('./create-row-helpers')
+const { string } = require('joi')
 
 const applicationStatus = {
   withdrawn: 2,
@@ -15,7 +16,7 @@ const applicationStatus = {
   recommendedToReject: 13
 }
 
-const createRow = (events) => {
+const createRow = (events) => {  
   const organisationData = parsePayload(events, 'farmerApplyData-organisation')
   const organisation = organisationData?.data?.organisation
 
@@ -25,7 +26,17 @@ const createRow = (events) => {
 
   const agreementReferenceFromFarmerApplyData = parseData(events, 'farmerApplyData-reference', 'reference')
   const agreementReference = agreementReferenceFromFarmerApplyData.value !== '' ? agreementReferenceFromFarmerApplyData : parseData(events, 'application:status-updated', 'reference')
-  const agreementDeclaration = parseData(events, 'farmerApplyData-declaration', 'declaration')
+  var agreementDeclaration = parseData(events, 'farmerApplyData-declaration', 'declaration')
+  const agreementApplicationCreatedDeclarationEvent = parseData(events, 'application:status-updated:1', 'statusId')
+  console.log(JSON.stringify(agreementDeclaration))
+  console.log(JSON.stringify(agreementApplicationCreatedDeclarationEvent))
+  if(agreementDeclaration?.value === '' && agreementDeclaration?.raisedOn === '' && agreementApplicationCreatedDeclarationEvent?.raisedOn!== '') {
+    agreementDeclaration = {
+      value: true,
+      raisedOn: agreementApplicationCreatedDeclarationEvent?.raisedOn
+    }
+  }
+  console.log(JSON.stringify(agreementDeclaration))
 
   const claimDetailsCorrect = parseData(events, 'claim-detailsCorrect', 'detailsCorrect')
   const claimVisitDate = parseData(events, 'claim-visitDate', 'visitDate')
@@ -114,12 +125,17 @@ const createRows = (events) => {
         JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[0].Payload).data.reference
       )
       if (typeof referenceEvent === 'undefined') {
-        return
+        console.log(`No reference event found for application ${applicationId}`)
+        //return
       }
 
-      const applyEvents = sbiEvents
+      var applyEvents = sbiEvents
         .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
         .filter(event => new Date(event.timestamp).getTime() <= new Date(referenceEvent.timestamp).getTime())
+
+      if(applyEvents.length === 0) {
+        applyEvents = sbiEvents
+      }
 
       const eventTypeClaimStatuses = [
         `application:status-updated:${applicationStatus.readyToPay}`,
