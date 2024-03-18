@@ -26,12 +26,43 @@ const events = [{
   EventRaised: new Date().toISOString(),
   EventType: 'farmerApplyData-declaration',
   Payload: '{"type":"farmerApplyData-declaration","message":"Session set for farmerApplyData and declaration.","data":{"reference":"TEMP-1234-ABCD","declaration":true},"raisedBy":"brown@test.com.test","raisedOn":"2024-01-04T21:27:23.530Z"}'
+},
+{
+  partitionKey: '123456',
+  SessionId: '789123456',
+  EventRaised: new Date().toISOString(),
+  EventType: 'farmerApplyData-declaration',
+  Payload: '{"type":"claim-vetName","message":"Session set for claim and vetName.","data":{"reference":"TEMP-1234-ABCD","vetName":"Freda George"},"raisedBy":"brown@test.com.test","raisedOn":"2024-01-04T21:27:23.530Z"}'
 }
 ]
 
-describe('events are transformed to remove json structure', () => {
-  let result
+let result
 
+test('no events found', () => {
+  const noEvents = []
+  const consoleSpy = jest
+    .spyOn(console, 'error')
+    .mockImplementation(() => {})
+
+  result = transformJsonToCsv(noEvents)
+
+  expect(consoleSpy).toHaveBeenCalled()
+  expect(result).toBe(undefined)
+})
+
+test('parsePayload', () => {
+  const event = events[0]
+  result = JSON.parse(event.Payload)
+
+  const { type, data, raisedBy, raisedOn, message } = result
+  expect(type).toBe('farmerApplyData-organisation')
+  expect(data).toMatchObject({ organisation: { address: '', email: 'brown@test.com.test', farmerName: 'Farmer Brown', name: 'Brown Cow Farm', sbi: '123456' }, reference: 'TEMP-1234-ABCD' })
+  expect(raisedBy).toBe('brown@test.com.test')
+  expect(raisedOn).toBe('2024-02-15T13:23:57.287Z')
+  expect(message).toBe('Session set for farmerApplyData and organisation.')
+})
+
+describe('events are transformed to remove json structure', () => {
   beforeEach(() => {
     result = transformJsonToCsv(events)
   })
@@ -59,5 +90,10 @@ describe('events are transformed to remove json structure', () => {
   test('csv content includes sample data from event - farmerApplyData-declaration', () => {
     const expectedTransformedJsonExample3 = '123456,789123456,farmerApplyData-declaration,Session set for farmerApplyData and declaration.,TEMP-1234-ABCD,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,true,,,,,,,,,,,,'
     expect(result).toContain(expectedTransformedJsonExample3)
+  })
+
+  test('csv content includes sample data from event - claim-vetName', () => {
+    const expectedTransformedJsonExample4 = '123456,789123456,claim-vetName,Session set for claim and vetName.,TEMP-1234-ABCD,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,,,Freda George,,,,,,,'
+    expect(result).toContain(expectedTransformedJsonExample4)
   })
 })

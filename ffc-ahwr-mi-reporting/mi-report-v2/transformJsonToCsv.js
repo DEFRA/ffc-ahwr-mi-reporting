@@ -7,6 +7,7 @@ const columns = ['sbiFromPartitionKey', 'sessionId', 'type', 'message', 'referen
 
 const transformJsonToCsv = (events) => {
   if (events.length === 0) {
+    console.error('No events found')
     return
   }
   const headerRow = columns.join(',') + '\n'
