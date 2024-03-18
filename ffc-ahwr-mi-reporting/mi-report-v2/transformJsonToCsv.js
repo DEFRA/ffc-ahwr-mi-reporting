@@ -25,7 +25,7 @@ function transformEventToCsv (event) {
   try {
     parsePayload = JSON.parse(event.Payload)
   } catch (error) {
-    console.error('parse event error', event, error)
+    console.error('Parse event error', event, error)
   }
 
   const { type, data, raisedBy, raisedOn, message } = parsePayload
@@ -78,7 +78,7 @@ function transformEventToCsv (event) {
     animalsTested,
     claimed,
     statusId,
-    agreementStatusIdToString(data.statusId ?? 0),
+    agreementStatusIdToString(statusId ?? 0),
     eventStatus
   ].join(',')
 
