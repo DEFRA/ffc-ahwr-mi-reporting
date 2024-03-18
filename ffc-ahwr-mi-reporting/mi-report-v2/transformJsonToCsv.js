@@ -1,8 +1,7 @@
 const agreementStatusIdToString = require('../mi-report/agreement-status-id-to-string')
-const formatDate = require('./format-date')
 
 // Define the CSV column names
-const columns = ['sbiFromPartitionKey', 'type', 'message', 'reference', 'tempReference', 'sbiFromPayload', 'farmerName', 'organisationName', 'email', 'address', 'raisedBy', 'raisedOn',
+const columns = ['sbiFromPartitionKey', 'sessionId', 'type', 'message', 'reference', 'tempReference', 'sbiFromPayload', 'farmerName', 'organisationName', 'email', 'address', 'raisedBy', 'raisedOn',
   'journey', 'confirmCheckDetails', 'eligibleSpecies', 'declaration', 'whichReview', 'detailsCorrect', 'visitDate', 'dateOfTesting',
   'vetName', 'vetRcvs', 'urnResult', 'animalsTested', 'claimed', 'statusId', 'statusName', 'eventStatus']
 
@@ -19,8 +18,16 @@ const transformJsonToCsv = (events) => {
 }
 
 function transformEventToCsv (event) {
-  const { partitionKey: sbiFromPartitionKey, Status: eventStatus } = event
-  const { type, data, raisedBy, raisedOn, message } = JSON.parse(event.Payload) ?? ''
+  const { partitionKey: sbiFromPartitionKey, SessionId: sessionId, Status: eventStatus } = event
+
+  let parsePayload = ''
+  try {
+    parsePayload = JSON.parse(event.Payload)
+  } catch (error) {
+    console.error('parse event error', event, error)
+  }
+
+  const { type, data, raisedBy, raisedOn, message } = parsePayload
   const {
     reference,
     tempReference,
@@ -44,26 +51,27 @@ function transformEventToCsv (event) {
 
   const row = [
     sbiFromPartitionKey,
+    sessionId,
     type,
     message,
     reference,
     tempReference,
     sbi,
-    farmerName,
+    farmerName ? farmerName.replace(/,/g, '  ') : '',
     name ? name.replace(/,/g, '  ') : '',
     email,
     address ? address.replace(/,/g, '  ') : '',
-    raisedBy,
-    formatDate(raisedOn),
+    raisedBy ? raisedBy.replace(/,/g, '  ') : '',
+    raisedOn,
     journey,
     confirmCheckDetails,
     eligibleSpecies,
     declaration,
     whichReview,
     detailsCorrect,
-    formatDate(visitDate),
-    formatDate(dateOfTesting),
-    vetName,
+    visitDate,
+    dateOfTesting,
+    vetName ? vetName.replace(/,/g, '  ') : '',
     vetRcvs,
     urnResult,
     animalsTested,
