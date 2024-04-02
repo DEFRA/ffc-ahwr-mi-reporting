@@ -115,10 +115,4 @@ describe('report', () => {
     expect(mockWriteFile).toHaveBeenCalled()
     expect(MOCK_UPLOAD_FILE).toBeCalledTimes(2)
   })
-
-  test('should not upload files when write file to share', async () => {
-    await generateReport(mockContext, mockTimer)
-    expect(mockWriteFile).toHaveBeenCalled()
-    expect(MOCK_UPLOAD_FILE).toBeCalledTimes(2)
-  })
 })
