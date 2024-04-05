@@ -118,16 +118,15 @@ const createRows = (events) => {
           `${e.EventType}`.startsWith('tempReference-tempReference') &&
           JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[0].Payload).data.reference
         )
-        if(statusEvents?.length >= 1){
+        if (statusEvents?.length >= 1) {
           referenceEvent = statusEvents[0]
-        }
-        else{
+        } else {
           referenceEvent = statusEvents
         }
       }
       if (typeof referenceEvent === 'undefined') {
         return
-      }      
+      }
 
       const applyEvents = sbiEvents
         .filter(event => `${event.EventType}`.startsWith('farmerApplyData'))
