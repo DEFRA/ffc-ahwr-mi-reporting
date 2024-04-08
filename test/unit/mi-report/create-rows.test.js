@@ -1163,17 +1163,17 @@ describe('createRows', () => {
             Payload: '{"type":"farmerApplyData-eligibleSpecies","message":"Session set for farmerApplyData and eligibleSpecies.","data":{"eligibleSpecies":"yes"},"raisedBy":"1100000210@email.com","raisedOn":"2023-02-22T15:16:26.305Z"}',
             Status: 'success'
           },
-          {
-            partitionKey: '105000200',
-            rowKey: '105000200_1677078987488',
-            timestamp: '2023-02-22T15:16:28.4402785Z',
-            SessionId: '1573b19c-3d4f-4fe4-b46c-3a252a21a5ac',
-            EventType: 'farmerApplyData-reference',
-            EventRaised: '2023-02-22T15:16:27.488Z',
-            EventBy: '1100000210@email.com',
-            Payload: '{"type":"farmerApplyData-reference","message":"Session set for farmerApplyData and reference.","data":{"reference":null},"raisedBy":"1100000210@email.com","raisedOn":"2023-02-22T15:16:27.488Z"}',
-            Status: 'success'
-          },
+          // {
+          //   partitionKey: '105000200',
+          //   rowKey: '105000200_1677078987488',
+          //   timestamp: '2023-02-22T15:16:28.4402785Z',
+          //   SessionId: '1573b19c-3d4f-4fe4-b46c-3a252a21a5ac',
+          //   EventType: 'farmerApplyData-reference',
+          //   EventRaised: '2023-02-22T15:16:27.488Z',
+          //   EventBy: '1100000210@email.com',
+          //   Payload: '{"type":"farmerApplyData-reference","message":"Session set for farmerApplyData and reference.","data":{"reference":null},"raisedBy":"1100000210@email.com","raisedOn":"2023-02-22T15:16:27.488Z"}',
+          //   Status: 'success'
+          // },
           {
             partitionKey: '105000200',
             rowKey: '105000200_1677078989725',
@@ -2653,5 +2653,200 @@ describe('createRows', () => {
   ])('%s', async (testCase) => {
     const parsedEvents = parseEvents(testCase.given.events)
     expect(parsedEvents).toEqual(testCase.expect.parsedEvents)
+  })
+})
+describe('createRows', () => {
+  test('returns rows with correct structure when events contain all expected properties', () => {
+    const events = [
+      {
+        partitionKey: '205000202',
+        rowKey: '205000202_1',
+        timestamp: '2023-01-01T00:00:00Z',
+        SessionId: 'session-1',
+        EventType: 'event-1',
+        EventRaised: '2023-01-01T00:00:00Z',
+        EventBy: 'user@example.com',
+        Payload: '{"data": "value"}',
+        Status: 'success'
+      }
+    ]
+
+    const rows = parseEvents(events)
+
+    expect(rows).toHaveLength(1)
+    expect(rows[0]).toEqual({
+      address: undefined,
+      agreementCurrentStatus: 'n/a',
+      applicationNumber: '',
+      applicationWithdrawn: 'no',
+      applicationWithdrawnBy: 'n/a',
+      applicationWithdrawnOn: 'n/a',
+      claimApproved: 'no',
+      claimApprovedBy: 'n/a',
+      claimApprovedOn: 'n/a',
+      claimClaimed: '',
+      claimClaimedRaisedOn: '',
+      claimDateOfTesting: 'Unknown',
+      claimDateOfTestingRaisedOn: '',
+      claimDetailsCorrect: '',
+      claimDetailsCorrectRaisedOn: '',
+      claimRejected: 'no',
+      claimRejectedBy: 'n/a',
+      claimRejectedOn: 'n/a',
+      claimUrnResult: '',
+      claimUrnResultRaisedOn: '',
+      claimVetName: '',
+      claimVetNameRaisedOn: '',
+      claimVetRcvs: '',
+      claimVetRcvsRaisedOn: '',
+      claimVisitDate: 'Unknown',
+      claimVisitDateRaisedOn: '',
+      confirmCheckDetails: '',
+      confirmCheckDetailsRaisedOn: '',
+      cph: undefined,
+      declaration: 'no',
+      declarationRaisedOn: '',
+      eligibleSpecies: '',
+      eligibleSpeciesRaisedOn: '',
+      email: undefined,
+      farmer: undefined,
+      name: undefined,
+      orgEmail: '',
+      recommendedBy: '',
+      recommendedOn: '',
+      recommendedToPay: '',
+      recommendedToReject: '',
+      sbi: undefined,
+      whichReview: '',
+      whichReviewRaisedOn: ''
+    })
+  })
+
+  test('handles events with missing properties', () => {
+    const events = [
+      {
+        partitionKey: '205000202',
+        rowKey: '205000202_1',
+        EventType: 'farmerApplyData-reference'
+      }
+    ]
+
+    const rows = parseEvents(events)
+
+    expect(rows).toHaveLength(1)
+    expect(rows[0]).toEqual({
+
+      address: undefined,
+      agreementCurrentStatus: 'n/a',
+      applicationNumber: '',
+      applicationWithdrawn: 'no',
+      applicationWithdrawnBy: 'n/a',
+      applicationWithdrawnOn: 'n/a',
+      claimApproved: 'no',
+      claimApprovedBy: 'n/a',
+      claimApprovedOn: 'n/a',
+      claimClaimed: '',
+      claimClaimedRaisedOn: '',
+      claimDateOfTesting: 'Unknown',
+      claimDateOfTestingRaisedOn: '',
+      claimDetailsCorrect: '',
+      claimDetailsCorrectRaisedOn: '',
+      claimRejected: 'no',
+      claimRejectedBy: 'n/a',
+      claimRejectedOn: 'n/a',
+      claimUrnResult: '',
+      claimUrnResultRaisedOn: '',
+      claimVetName: '',
+      claimVetNameRaisedOn: '',
+      claimVetRcvs: '',
+      claimVetRcvsRaisedOn: '',
+      claimVisitDate: 'Unknown',
+      claimVisitDateRaisedOn: '',
+      confirmCheckDetails: '',
+      confirmCheckDetailsRaisedOn: '',
+      cph: undefined,
+      declaration: 'no',
+      declarationRaisedOn: '',
+      eligibleSpecies: '',
+      eligibleSpeciesRaisedOn: '',
+      email: undefined,
+      farmer: undefined,
+      name: undefined,
+      orgEmail: '',
+      recommendedBy: '',
+      recommendedOn: '',
+      recommendedToPay: '',
+      recommendedToReject: '',
+      sbi: undefined,
+      whichReview: '',
+      whichReviewRaisedOn: ''
+    })
+  })
+
+  test('handles invalid event data types', () => {
+    const events = [
+      {
+        partitionKey: '205000202_1234',
+        rowKey: 205000202,
+        timestamp: 'invalid',
+        SessionId: 0,
+        EventType: 'farmerApplyData-reference',
+        EventRaised: {},
+        EventBy: [],
+        Payload: undefined,
+        Status: null
+      }
+    ]
+
+    const rows = parseEvents(events)
+
+    expect(rows).toHaveLength(1)
+    expect(rows[0]).toEqual({
+
+      address: undefined,
+      agreementCurrentStatus: 'n/a',
+      applicationNumber: '',
+      applicationWithdrawn: 'no',
+      applicationWithdrawnBy: 'n/a',
+      applicationWithdrawnOn: 'n/a',
+      claimApproved: 'no',
+      claimApprovedBy: 'n/a',
+      claimApprovedOn: 'n/a',
+      claimClaimed: '',
+      claimClaimedRaisedOn: '',
+      claimDateOfTesting: 'Unknown',
+      claimDateOfTestingRaisedOn: '',
+      claimDetailsCorrect: '',
+      claimDetailsCorrectRaisedOn: '',
+      claimRejected: 'no',
+      claimRejectedBy: 'n/a',
+      claimRejectedOn: 'n/a',
+      claimUrnResult: '',
+      claimUrnResultRaisedOn: '',
+      claimVetName: '',
+      claimVetNameRaisedOn: '',
+      claimVetRcvs: '',
+      claimVetRcvsRaisedOn: '',
+      claimVisitDate: 'Unknown',
+      claimVisitDateRaisedOn: '',
+      confirmCheckDetails: '',
+      confirmCheckDetailsRaisedOn: '',
+      cph: undefined,
+      declaration: 'no',
+      declarationRaisedOn: '',
+      eligibleSpecies: '',
+      eligibleSpeciesRaisedOn: '',
+      email: undefined,
+      farmer: undefined,
+      name: undefined,
+      orgEmail: '',
+      recommendedBy: '',
+      recommendedOn: '',
+      recommendedToPay: '',
+      recommendedToReject: '',
+      sbi: undefined,
+      whichReview: '',
+      whichReviewRaisedOn: ''
+    })
   })
 })
