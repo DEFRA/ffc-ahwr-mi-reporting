@@ -55,6 +55,7 @@ const createRow = (events) => {
     farmer: organisation?.farmerName,
     address: organisation?.address.replace(/,/g, '","'),
     email: organisation?.email,
+    orgEmail: organisation?.orgEmail ?? '',
     whichReview: whichReview?.value,
     whichReviewRaisedOn: whichReview?.raisedOn,
     eligibleSpecies: eligibleSpecies?.value,
