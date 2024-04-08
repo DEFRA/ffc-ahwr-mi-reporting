@@ -2927,7 +2927,7 @@ describe('createRows', () => {
     expect(parsedEvents).toEqual(testCase.expect.parsedEvents)
   })
 })
-describe('createRows', () => {
+describe('createRows for Temp Reference', () => {
   test('returns rows with correct structure when events contain all expected properties', () => {
     const events = [
       {
@@ -3062,10 +3062,21 @@ describe('createRows', () => {
         rowKey: 205000202,
         timestamp: 'invalid',
         SessionId: 0,
-        EventType: 'farmerApplyData-reference',
+        EventType: 'tempReference-tempReference',
         EventRaised: {},
         EventBy: [],
-        Payload: undefined,
+        Payload: '{"type":"tempReference-tempReference","message":"Session set for tempReference and tempReference.","data":{"reference":"AHWR-8F07-2CF1","tempReference":"TEMP-C6F6-3E4E"},"raisedBy":"johnlbland@btinterent.com","raisedOn":"2024-03-28T16:03:33.946Z"}',
+        Status: null
+      },
+      {
+        partitionKey: '205000202_12345',
+        rowKey: 205000202,
+        timestamp: '2023-02-22T15:22:12.3691125Z',
+        SessionId: 'a59f7225-24f2-498c-be2e-2de408c15d03',
+        EventType: 'application:status-updated:1',
+        EventRaised: '2023-02-22T15:22:11.638Z',
+        EventBy: '1100000678@email.com',
+        Payload: '{"type":"application:status-updated:1","message":"Session set status update.","data":{"reference":"AHWR-8F07-2CF1","statusId":1},"raisedBy":"1100000678@email.com","raisedOn":"2024-03-28T16:03:33.946Z"}',
         Status: null
       }
     ]
@@ -3074,10 +3085,9 @@ describe('createRows', () => {
 
     expect(rows).toHaveLength(1)
     expect(rows[0]).toEqual({
-
       address: undefined,
-      agreementCurrentStatus: 'n/a',
-      applicationNumber: '',
+      agreementCurrentStatus: 'AGREED',
+      applicationNumber: 'AHWR-8F07-2CF1',
       applicationWithdrawn: 'no',
       applicationWithdrawnBy: 'n/a',
       applicationWithdrawnOn: 'n/a',
