@@ -20,7 +20,7 @@ const transformJsonToCsv = (events) => {
 
 function transformEventToCsv (event) {
   const { partitionKey, SessionId: sessionId, Status: eventStatus } = event
-  const sbiFromPartitionKey = partitionKey && partitionKey.length > 9 ? partitionKey.slice(0, 8) : partitionKey
+  const sbiFromPartitionKey = partitionKey && partitionKey.length > 9 ? partitionKey.slice(0, 9) : partitionKey
   let parsePayload = ''
   try {
     parsePayload = JSON.parse(event.Payload)
