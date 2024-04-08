@@ -118,3 +118,21 @@ describe('events are transformed to remove json structure', () => {
     expect(result).toContain(expectedTransformedJsonExample4)
   })
 })
+
+describe('partition Key is transformed to 9 characters for sbi', () => {
+  test('csv content includes correct sbi from event partition key when exactly 9 characters', () => {
+    events[0].partitionKey = '123456789'
+    result = transformJsonToCsv(events)
+
+    expect(result).toContain('123456789')
+  })
+
+  test('csv content includes correct sbi from event partition key when more than 9 characters', () => {
+    events[0].partitionKey = '12345678999999'
+    result = transformJsonToCsv(events)
+    console.log('result', result)
+
+    expect(result).toContain('123456789')
+    expect(result).not.toContain('12345678999999')
+  })
+})
