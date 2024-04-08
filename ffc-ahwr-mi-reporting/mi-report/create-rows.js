@@ -55,6 +55,7 @@ const createRow = (events) => {
     farmer: organisation?.farmerName.replace(/,/g, '","'),
     address: organisation?.address.replace(/,/g, '","'),
     email: organisation?.email,
+    orgEmail: organisation?.orgEmail ?? '',
     whichReview: whichReview?.value,
     whichReviewRaisedOn: whichReview?.raisedOn,
     eligibleSpecies: eligibleSpecies?.value,
@@ -109,10 +110,21 @@ const createRows = (events) => {
     Object.keys(statusUpdatedEvents).forEach(applicationId => {
       const applicationEvents = statusUpdatedEvents[applicationId]
 
-      const referenceEvent = sbiEvents.find(e =>
+      let referenceEvent = sbiEvents.find(e =>
         `${e.EventType}`.startsWith('farmerApplyData-reference') &&
         JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[0].Payload).data.reference
       )
+      if (typeof referenceEvent === 'undefined') {
+        const statusEvents = sbiEvents.find(e =>
+          `${e.EventType}`.startsWith('tempReference-tempReference') &&
+          JSON.parse(e.Payload).data.reference === JSON.parse(applicationEvents[0].Payload).data.reference
+        )
+        if (statusEvents?.length >= 1) {
+          referenceEvent = statusEvents[0]
+        } else {
+          referenceEvent = statusEvents
+        }
+      }
       if (typeof referenceEvent === 'undefined') {
         return
       }
