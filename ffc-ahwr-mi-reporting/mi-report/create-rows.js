@@ -52,7 +52,7 @@ const createRow = (events) => {
     sbi: organisation?.sbi,
     cph: organisation?.cph,
     name: organisation?.name.replace(/,/g, '","'),
-    farmer: organisation?.farmerName,
+    farmer: organisation?.farmerName.replace(/,/g, '","'),
     address: organisation?.address.replace(/,/g, '","'),
     email: organisation?.email,
     orgEmail: organisation?.orgEmail ?? '',
