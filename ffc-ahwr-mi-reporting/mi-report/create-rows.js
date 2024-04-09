@@ -24,7 +24,7 @@ const createRow = (events) => {
   const confirmCheckDetails = parseData(events, 'farmerApplyData-confirmCheckDetails', 'confirmCheckDetails')
 
   const agreementReferenceFromFarmerApplyData = parseData(events, 'farmerApplyData-reference', 'reference')
-  const agreementReference = agreementReferenceFromFarmerApplyData.value !== '' ? agreementReferenceFromFarmerApplyData : parseData(events, 'application:status-updated', 'reference')
+  const agreementReference = (agreementReferenceFromFarmerApplyData?.value ?? '') !== '' && !agreementReferenceFromFarmerApplyData.value?.startsWith('TEMP') ? agreementReferenceFromFarmerApplyData : parseData(events, 'application:status-updated', 'reference')
   const agreementDeclaration = parseData(events, 'farmerApplyData-declaration', 'declaration')
 
   const claimDetailsCorrect = parseData(events, 'claim-detailsCorrect', 'detailsCorrect')
