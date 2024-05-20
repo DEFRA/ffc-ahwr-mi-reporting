@@ -90,7 +90,7 @@ describe('events are transformed to remove json structure', () => {
 
   test('csv content includes header row', () => {
     const expectedTransformedJsonHeader =
-    'sbiFromPartitionKey,sessionId,type,message,reference,tempApplicationReference,tempClaimReference,typeOfClaim,sbiFromPayload,farmerName,organisationName,userEmail,orgEmail,address,raisedBy,raisedOn,journey,confirmCheckDetails,eligibleSpecies,declaration,species,detailsCorrect,visitDate,dateOfTesting,vetName,vetRcvs,urnResult,numberAnimalsTested,claimed,statusId,statusName,eventStatus'
+    'sbiFromPartitionKey,sessionId,type,message,reference,tempApplicationReference,tempClaimReference,typeOfClaim,sbiFromPayload,farmerName,organisationName,userEmail,orgEmail,address,raisedBy,raisedOn,journey,confirmCheckDetails,eligibleSpecies,agreeSameSpecies,agreeSpeciesNumbers,agreeVisitTimings,declaration,offerStatus,species,detailsCorrect,visitDate,dateOfTesting,vetName,vetRcvs,urnResult,numberAnimalsTested,claimed,statusId,statusName,eventStatus'
     expect(result).toContain(expectedTransformedJsonHeader)
   })
 
@@ -110,12 +110,12 @@ describe('events are transformed to remove json structure', () => {
   })
 
   test('csv content includes sample data from event - farmerApplyData-declaration', () => {
-    const expectedTransformedJsonExample3 = '123456,789123456,farmerApplyData-declaration,Session set for farmerApplyData and declaration.,TEMP-1234-ABCD,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,true,,,,,,,,,,,,'
+    const expectedTransformedJsonExample3 = '123456,789123456,farmerApplyData-declaration,Session set for farmerApplyData and declaration.,TEMP-1234-ABCD,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,true,,,,,,,,,,,,,'
     expect(result).toContain(expectedTransformedJsonExample3)
   })
 
   test('csv content includes sample data from event - claim-vetName', () => {
-    const expectedTransformedJsonExample4 = '123456,789123456,claim-vetName,Session set for claim and vetName.,TEMP-1234-ABCD,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,,,Freda George,,,,,,,'
+    const expectedTransformedJsonExample4 = '123456,789123456,claim-vetName,Session set for claim and vetName.,TEMP-1234-ABCD,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,,,,,,,Freda George,,,,,,,'
     expect(result).toContain(expectedTransformedJsonExample4)
   })
 })
