@@ -17,8 +17,8 @@ const events = [{
   partitionKey: '123456',
   SessionId: '789123456',
   EventRaised: new Date().toISOString(),
-  EventType: 'endemicsClaim-organisation',
-  Payload: '{"type":"endemicsClaim-organisation","message":"Session set for endemicsClaim and organisation.","data":{"organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-03-05T15:57:39.590Z"}'
+  EventType: 'claim-organisation',
+  Payload: '{"type":"claim-organisation","message":"Session set for claim and organisation.","data":{"organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-03-05T15:57:39.590Z"}'
 },
 {
   partitionKey: '123456',
@@ -89,32 +89,33 @@ describe('events are transformed to remove json structure', () => {
   })
 
   test('csv content includes header row', () => {
-    const expectedTransformedJsonHeader = 'sbiFromPartitionKey,sessionId,type,message,reference,tempReference,sbiFromPayload,farmerName,organisationName,email,address,raisedBy,raisedOn,journey,confirmCheckDetails,eligibleSpecies,declaration,whichReview,detailsCorrect,visitDate,dateOfTesting,vetName,vetRcvs,urnResult,animalsTested,claimed,statusId,statusName,eventStatus'
+    const expectedTransformedJsonHeader =
+    'sbiFromPartitionKey,sessionId,type,message,reference,tempApplicationReference,tempClaimReference,typeOfClaim,sbiFromPayload,farmerName,organisationName,userEmail,orgEmail,address,raisedBy,raisedOn,journey,confirmCheckDetails,eligibleSpecies,declaration,species,detailsCorrect,visitDate,dateOfTesting,vetName,vetRcvs,urnResult,numberAnimalsTested,claimed,statusId,statusName,eventStatus'
     expect(result).toContain(expectedTransformedJsonHeader)
   })
 
   test('csv content includes sample data from event - farmerApplyData-organisation', () => {
-    const expectedTransformedJsonExample1 = '123456,789123456,farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,123456,Farmer Brown,Brown Cow Farm,brown@test.com.test,,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,'
+    const expectedTransformedJsonExample1 = '123456,789123456,farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,123456,Farmer Brown,Brown Cow Farm,brown@test.com.test,,,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,'
     expect(result).toContain(expectedTransformedJsonExample1)
   })
 
   test('csv content includes sample data from event - ineligibility-event', () => {
-    const expectedTransformedJsonExample2 = '123456,789123456,ineligibility-event,Apply: LockedBusinessError,TEMP-1234-ABCD,,,,,,,brown@test.com.test,2024-02-15T13:23:40.068Z,apply,,,,,,,,,,,,,,,'
+    const expectedTransformedJsonExample2 = '123456,789123456,ineligibility-event,Apply: LockedBusinessError,TEMP-1234-ABCD,,,,,,,,,,brown@test.com.test,2024-02-15T13:23:40.068Z,apply,,,,,,,,,,,,,,,'
     expect(result).toContain(expectedTransformedJsonExample2)
   })
 
-  test('csv content includes sample data from event - endemicsClaim-organisation', () => {
-    const expectedTransformedJsonExample3 = '123456,789123456,endemicsClaim-organisation,Session set for endemicsClaim and organisation.,,,123456,Farmer Brown,Brown Cow Farm,brown@test.com.test,Yorkshire Moors  AB1 1AB  United Kingdom,brown@test.com.test,2024-03-05T15:57:39.590Z,,,,,,,,,,,,,,,,'
+  test('csv content includes sample data from event - claim-organisation', () => {
+    const expectedTransformedJsonExample3 = '123456,789123456,claim-organisation,Session set for claim and organisation.,,,,,123456,Farmer Brown,Brown Cow Farm,brown@test.com.test,,Yorkshire Moors  AB1 1AB  United Kingdom,brown@test.com.test,2024-03-05T15:57:39.590Z,,,,,,,,,,,,,,,,'
     expect(result).toContain(expectedTransformedJsonExample3)
   })
 
   test('csv content includes sample data from event - farmerApplyData-declaration', () => {
-    const expectedTransformedJsonExample3 = '123456,789123456,farmerApplyData-declaration,Session set for farmerApplyData and declaration.,TEMP-1234-ABCD,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,true,,,,,,,,,,,,'
+    const expectedTransformedJsonExample3 = '123456,789123456,farmerApplyData-declaration,Session set for farmerApplyData and declaration.,TEMP-1234-ABCD,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,true,,,,,,,,,,,,'
     expect(result).toContain(expectedTransformedJsonExample3)
   })
 
   test('csv content includes sample data from event - claim-vetName', () => {
-    const expectedTransformedJsonExample4 = '123456,789123456,claim-vetName,Session set for claim and vetName.,TEMP-1234-ABCD,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,,,Freda George,,,,,,,'
+    const expectedTransformedJsonExample4 = '123456,789123456,claim-vetName,Session set for claim and vetName.,TEMP-1234-ABCD,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,,,Freda George,,,,,,,'
     expect(result).toContain(expectedTransformedJsonExample4)
   })
 })
