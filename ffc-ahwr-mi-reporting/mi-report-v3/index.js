@@ -26,12 +26,12 @@ const buildAhwrMiReportV3 = async (events) => {
   if (config.featureToggle.sharePoint.enabled) {
     const fileContent = await storage.downloadFile(fileName)
     await msGraph.uploadFile(dstFolder, fileName, fileContent)
-    console.log(`${new Date().toISOString()} AHWR MI Report V2 has been stored and uploaded: ${JSON.stringify({
+    console.log(`${new Date().toISOString()} AHWR MI Report V3 has been stored and uploaded: ${JSON.stringify({
       dstFolder,
       fileName
     })}`)
   } else {
-    console.log(`${new Date().toISOString()} AHWR MI Report V2 has been stored but not uploaded: ${JSON.stringify({
+    console.log(`${new Date().toISOString()} AHWR MI Report V3 has been stored but not uploaded: ${JSON.stringify({
       fileName
     })}`)
   }
