@@ -5,7 +5,7 @@ const events = [{
   SessionId: '789123456',
   EventType: 'farmerApplyData-organisation',
   EventRaised: new Date().toISOString(),
-  Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-1234-ABCD","organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","address":""}},"raisedBy":"brown@test.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
+  Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-1234-ABCD","organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","orgEmail":"brownorg@test.com.test","address":""}},"raisedBy":"brown@test.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
 }, {
   partitionKey: '123456',
   SessionId: '789123456',
@@ -18,7 +18,7 @@ const events = [{
   SessionId: '789123456',
   EventRaised: new Date().toISOString(),
   EventType: 'claim-organisation',
-  Payload: '{"type":"claim-organisation","message":"Session set for claim and organisation.","data":{"organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-03-05T15:57:39.590Z"}'
+  Payload: '{"type":"claim-organisation","message":"Session set for claim and organisation.","data":{"organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","orgEmail":"brownorg@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom",,"crn":"0123456789","frn":"9876543210"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-03-05T15:57:39.590Z"}'
 },
 {
   partitionKey: '123456',
@@ -90,7 +90,7 @@ describe('events are transformed to remove json structure', () => {
 
   test('csv content includes header row', () => {
     const expectedTransformedJsonHeader =
-    'sbiFromPartitionKey,sessionId,type,message,reference,tempApplicationReference,tempClaimReference,typeOfClaim,sbiFromPayload,farmerName,organisationName,userEmail,orgEmail,address,raisedBy,raisedOn,journey,confirmCheckDetails,eligibleSpecies,agreeSameSpecies,agreeSpeciesNumbers,agreeVisitTimings,declaration,offerStatus,species,detailsCorrect,visitDate,dateOfTesting,vetName,vetRcvs,urnResult,numberAnimalsTested,claimed,statusId,statusName,eventStatus'
+    'sbiFromPartitionKey,sessionId,eventType,message,reference,tempApplicationReference,tempClaimReference,typeOfClaim,sbiFromPayload,frn,farmerName,organisationName,userEmail,orgEmail,address,raisedBy,raisedOn,journey,confirmCheckDetails,eligibleSpecies,agreeSameSpecies,agreeSpeciesNumbers,agreeVisitTimings,declaration,offerStatus,species,detailsCorrect,typeOfLivestock,visitDate,dateOfSampling,vetName,vetRcvs,urnReference,herdVaccinationStatus,numberOfOralFluidSamples,numberOfSamplesTested,numberAnimalsTested,testResults,vetVisitsReviewTestResults,sheepEndemicsPackage,piHunt,biosecurity,biosecurityAssessmentPercentage,diseaseStatus,latestEndemicsApplication,latestVetVisitApplication,relevantReviewForEndemics,claimed,exception,statusId,statusName,eventStatus'
     expect(result).toContain(expectedTransformedJsonHeader)
   })
 
