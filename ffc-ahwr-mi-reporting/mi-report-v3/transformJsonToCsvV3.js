@@ -11,6 +11,7 @@ const columns = [
   'tempClaimReference',
   'typeOfClaim', // typeOfReview
   'sbiFromPayload',
+  'crn',
   'frn',
   'farmerName',
   'organisationName',
@@ -123,7 +124,7 @@ function transformEventToCsvV3 (event) {
     exception,
     statusId
   } = data ?? ''
-  const { sbi, frn, farmerName, name, email, orgEmail, address } = organisation ?? ''
+  const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? ''
   const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? ''
 
   const row = [
@@ -136,6 +137,7 @@ function transformEventToCsvV3 (event) {
     tempClaimReference,
     typeOfReview,
     sbi,
+    crn,
     frn,
     farmerName ? farmerName.replace(/,/g, ' ') : '',
     name ? name.replace(/,/g, ' ') : '',
