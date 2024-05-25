@@ -1,5 +1,19 @@
 const agreementStatusIdToString = require('../mi-report/agreement-status-id-to-string')
 
+const isInvalidDataEvent = (eventType) => eventType?.endsWith('-invalid')
+
+const invalidClaimDataToString = (invalidDataEventData) => {
+  const { sbi: sbiFromInvalidData, crn: crnFromInvalidData, sessionKey, exception: exceptionFromInvalidData, reference: referenceFromInvalidData } = invalidDataEventData
+  // May not need to repeat some of these values, but better to include now then remove them later
+  const invalidInfo = `sbi:${sbiFromInvalidData} crn:${crnFromInvalidData} sessionKey:${sessionKey} exception:${exceptionFromInvalidData} reference:${referenceFromInvalidData}`
+  return invalidInfo
+}
+
+// const sheepTestsToString = (sheepTests) => {
+//   const sheepTestsString = sheepTests.map(test => test.join(' '))
+//   return sheepTestsString
+// }
+
 // Define the CSV column names
 const columns = [
   'sbiFromPartitionKey',
@@ -43,7 +57,7 @@ const columns = [
   'testResults',
   'vetVisitsReviewTestResults',
   'sheepEndemicsPackage',
-  // 'sheepTests',
+  'sheepTests',
   // 'sheepTestResults',
   'piHunt',
   'biosecurity',
@@ -54,6 +68,7 @@ const columns = [
   'relevantReviewForEndemics',
   'claimed',
   'exception',
+  'invalidClaimData',
   'statusId',
   'statusName',
   'eventStatus'
@@ -112,7 +127,7 @@ function transformEventToCsvV3 (event) {
     testResults,
     vetVisitsReviewTestResults,
     sheepEndemicsPackage,
-    // sheepTests,    will be an array of strings representing the test codes
+    sheepTests, // an array of strings representing the test codes
     // sheepTestResults,   will be separate rows, each with an array, adding a test-with-results object to the array each time
     piHunt,
     biosecurity,
@@ -126,6 +141,8 @@ function transformEventToCsvV3 (event) {
   } = data ?? ''
   const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? ''
   const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? ''
+  const invalidClaimData = isInvalidDataEvent(type) ? invalidClaimDataToString(data) : ''
+  const sheepTestsString = sheepTests ? sheepTests.join(' ') : ''
 
   const row = [
     sbiFromPartitionKey,
@@ -169,7 +186,7 @@ function transformEventToCsvV3 (event) {
     testResults,
     vetVisitsReviewTestResults,
     sheepEndemicsPackage,
-    // sheepTests,
+    sheepTestsString,
     // sheepTestResults,
     piHunt,
     biosecurityConfirmation,
@@ -180,6 +197,7 @@ function transformEventToCsvV3 (event) {
     relevantReviewForEndemics,
     claimed,
     exception,
+    invalidClaimData,
     statusId,
     agreementStatusIdToString(statusId ?? 0),
     eventStatus

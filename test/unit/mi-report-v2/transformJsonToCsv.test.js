@@ -130,7 +130,6 @@ describe('partition Key is transformed to 9 characters for sbi', () => {
   test('csv content includes correct sbi from event partition key when more than 9 characters', () => {
     events[0].partitionKey = '12345678999999'
     result = transformJsonToCsv(events)
-    console.log('result', result)
 
     expect(result).toContain('123456789')
     expect(result).not.toContain('12345678999999')
