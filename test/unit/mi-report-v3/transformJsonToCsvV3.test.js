@@ -59,7 +59,7 @@ const events = [{
   partitionKey: '123456',
   SessionId: '789123456',
   EventRaised: new Date().toISOString(),
-  EventType: 'claim-numberOfOralFluidSamples-invalid',
+  EventType: 'claim-sheepTests',
   Payload: '{"type":"claim-sheepTests","message":"Session set for claim and sheepTests.","data":{"reference":"TEMP-1234-ABCD","sheepTests":["eae","bd","liverFluke","other"]},"raisedBy":"brown@test.com.test","raisedOn":"2024-01-04T21:27:23.530Z"}'
 }
 ]

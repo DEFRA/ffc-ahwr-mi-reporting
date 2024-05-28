@@ -10,8 +10,6 @@ const invalidClaimDataToString = (invalidDataEventData) => {
   return invalidInfo
 }
 
-// const arrayToString = (array, separator = ' ') => array.join(separator)
-
 // Define the CSV column names
 const columns = [
   'sbiFromPartitionKey',
@@ -126,7 +124,7 @@ function transformEventToCsvV3 (event) {
     vetVisitsReviewTestResults,
     sheepEndemicsPackage,
     sheepTests, // an array of strings representing the test codes
-    // sheepTestResults,   will be separate rows, each with an array, adding a test-with-results object to the array each time
+    // sheepTestResults,   // will be separate rows, each with an array, adding a test-with-results object to the array each time
     piHunt,
     biosecurity,
     diseaseStatus,
@@ -141,6 +139,7 @@ function transformEventToCsvV3 (event) {
   const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? ''
   const invalidClaimData = isInvalidDataEvent(type) ? invalidClaimDataToString(data) : ''
   const sheepTestsString = sheepTests ? arrayToString(sheepTests) : ''
+  // const sheepTestResultsString = sheepTestResults ? arrayToString(sheepTestResults) : ''
 
   const row = [
     sbiFromPartitionKey,
@@ -185,7 +184,7 @@ function transformEventToCsvV3 (event) {
     vetVisitsReviewTestResults,
     sheepEndemicsPackage,
     sheepTestsString,
-    // sheepTestResults,
+    // sheepTestResultsString,
     piHunt,
     biosecurityConfirmation,
     assessmentPercentage,
