@@ -34,8 +34,11 @@ const parseData = (events, type, key) => {
   }
 }
 
+const arrayToString = (array, separator = ' ') => array.join(separator)
+
 module.exports = {
   formatDate,
   parsePayload,
-  parseData
+  parseData,
+  arrayToString
 }

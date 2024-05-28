@@ -1,4 +1,5 @@
 const agreementStatusIdToString = require('../mi-report/agreement-status-id-to-string')
+const { arrayToString } = require('../parse-data')
 
 const isInvalidDataEvent = (eventType) => eventType?.endsWith('-invalid')
 
@@ -9,10 +10,7 @@ const invalidClaimDataToString = (invalidDataEventData) => {
   return invalidInfo
 }
 
-// const sheepTestsToString = (sheepTests) => {
-//   const sheepTestsString = sheepTests.map(test => test.join(' '))
-//   return sheepTestsString
-// }
+// const arrayToString = (array, separator = ' ') => array.join(separator)
 
 // Define the CSV column names
 const columns = [
@@ -142,7 +140,7 @@ function transformEventToCsvV3 (event) {
   const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? ''
   const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? ''
   const invalidClaimData = isInvalidDataEvent(type) ? invalidClaimDataToString(data) : ''
-  const sheepTestsString = sheepTests ? sheepTests.join(' ') : ''
+  const sheepTestsString = sheepTests ? arrayToString(sheepTests) : ''
 
   const row = [
     sbiFromPartitionKey,
