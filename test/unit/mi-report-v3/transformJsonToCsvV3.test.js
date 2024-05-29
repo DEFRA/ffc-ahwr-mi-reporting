@@ -70,6 +70,13 @@ const events = [{
   partitionKey: '123456',
   SessionId: '789123456',
   EventRaised: new Date().toISOString(),
+  EventType: 'claim-sheepTestResults',
+  Payload: '{"type":"claim-sheepTestResults","message":"Session set for claim and sheepTestResults.","data":{"reference":"TEMP-1234-ABCD","sheepTestResults":[{"diseaseType":"eae","result":"positive","isCurrentPage":false},{"diseaseType":"bd","result":"negative","isCurrentPage":false},{"diseaseType":"liverFluke","result":"clinicalSymptomsNotPresent","isCurrentPage":true}]},"raisedBy":"brown@test.com.test","raisedOn":"2024-01-04T21:27:23.530Z"}'
+},
+{
+  partitionKey: '123456',
+  SessionId: '789123456',
+  EventRaised: new Date().toISOString(),
   EventType: 'ineligibility-event',
   Payload: '{"type":"ineligibility-event","message":"Apply: LockedBusinessError","data":{"sbi":"123456","crn":"123456789","exception":"LockedBusinessError","raisedAt":"2024-02-15T13:23:39.830Z","journey":"apply","reference":"TEMP-1234-ABCD"},"raisedBy":"brown@test.com.test","raisedOn":"2024-02-15T13:23:40.068Z"}'
 },
@@ -189,10 +196,16 @@ describe('events are transformed to remove json structure', () => {
       expect(countEntriesInRow(result, 6)).toBe(56)
     })
 
-    test('csv content includes sample data from event - claim-sheepTestResults', () => {
+    test('csv content includes sample data from event - claim-sheepTestResults with Other', () => {
       const expectedTransformedJsonExample = '123456,789123456,claim-sheepTestResults,Session set for claim and sheepTestResults.,TEMP-1234-ABCD,,,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,,,,,,,,,,,,,,,,,,,eae  result positive  bd  result negative  liverFluke  result clinicalSymptomsNotPresent  other  Something nasty  result Positive  Something even worse  result No symptoms,,,,,,,,,,,,,'
       expect(result).toContain(expectedTransformedJsonExample)
       expect(countEntriesInRow(result, 7)).toBe(56)
+    })
+
+    test('csv content includes sample data from event - claim-sheepTestResults without Other', () => {
+      const expectedTransformedJsonExample = '123456,789123456,claim-sheepTestResults,Session set for claim and sheepTestResults.,TEMP-1234-ABCD,,,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,,,,,,,,,,,,,,,,,,,eae  result positive  bd  result negative  liverFluke  result clinicalSymptomsNotPresent,,,,,,,,,,,,,'
+      expect(result).toContain(expectedTransformedJsonExample)
+      expect(countEntriesInRow(result, 8)).toBe(56)
     })
   })
 
@@ -200,7 +213,7 @@ describe('events are transformed to remove json structure', () => {
     test('csv content includes sample data from event - ineligibility-event', () => {
       const expectedTransformedJsonExample = '123456,789123456,ineligibility-event,Apply: LockedBusinessError,TEMP-1234-ABCD,,,,,,,,,,,,brown@test.com.test,2024-02-15T13:23:40.068Z,apply,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,LockedBusinessError,,,,'
       expect(result).toContain(expectedTransformedJsonExample)
-      expect(countEntriesInRow(result, 8)).toBe(56)
+      expect(countEntriesInRow(result, 9)).toBe(56)
     })
   })
 
@@ -208,13 +221,13 @@ describe('events are transformed to remove json structure', () => {
     test('csv content includes sample data from event - claim-biosecurity-invalid', () => {
       const expectedTransformedJsonExample = '123456,789123456,claim-biosecurity-invalid,biosecurity: Value no is not equal to required value yes,TEMP-1234-ABCD,,,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,claim,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Value no is not equal to required value yes,sbi:123456 crn:123456789 sessionKey:biosecurity exception:Value no is not equal to required value yes reference:TEMP-1234-ABCD,,,'
       expect(result).toContain(expectedTransformedJsonExample)
-      expect(countEntriesInRow(result, 9)).toBe(56)
+      expect(countEntriesInRow(result, 10)).toBe(56)
     })
 
     test('csv content includes sample data from event - claim-numberOfOralFluidSamples-invalid', () => {
       const expectedTransformedJsonExample = '123456,789123456,claim-numberOfOralFluidSamples-invalid,numberOfOralFluidSamples: Value 1 is less than required threshold 5,TEMP-1234-ABCD,,,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,claim,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Value 1 is less than required threshold 5,sbi:123456 crn:123456789 sessionKey:numberOfOralFluidSamples exception:Value 1 is less than required threshold 5 reference:TEMP-1234-ABCD,,,'
       expect(result).toContain(expectedTransformedJsonExample)
-      expect(countEntriesInRow(result, 10)).toBe(56)
+      expect(countEntriesInRow(result, 11)).toBe(56)
     })
   })
 
