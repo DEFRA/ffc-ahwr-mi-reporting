@@ -1,4 +1,4 @@
-const agreementStatusIdToString = require('../mi-report/agreement-status-id-to-string')
+const { statusToString, statusToId } = require('../utils/statusHelpers')
 
 // Define the CSV column names
 const columns = ['sbiFromPartitionKey', 'sessionId', 'type', 'message', 'reference', 'tempReference', 'sbiFromPayload', 'farmerName', 'organisationName', 'email', 'address', 'raisedBy', 'raisedOn',
@@ -46,14 +46,18 @@ function transformEventToCsv (event) {
     urnResult,
     animalsTested,
     claimed,
-    statusId
+    statusId,
+    subStatus
   } = data ?? ''
   const { sbi, farmerName, name, email, address } = organisation ?? ''
+
+  const rowStatusId = subStatus && statusId === 5 ? statusToId(subStatus) : statusId
+  const rowType = subStatus && statusId === 5 ? type.replace(/.$/, statusToId(subStatus)) : type
 
   const row = [
     sbiFromPartitionKey,
     sessionId,
-    type,
+    rowType,
     message,
     reference,
     tempReference,
@@ -77,8 +81,8 @@ function transformEventToCsv (event) {
     urnResult,
     animalsTested,
     claimed,
-    statusId,
-    agreementStatusIdToString(statusId ?? 0),
+    rowStatusId,
+    statusToString(rowStatusId ?? 0),
     eventStatus
   ].join(',')
 
