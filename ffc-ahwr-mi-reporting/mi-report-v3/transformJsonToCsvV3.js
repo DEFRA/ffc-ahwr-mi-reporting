@@ -1,16 +1,28 @@
 const agreementStatusIdToString = require('../mi-report/agreement-status-id-to-string')
+const { arrayToString, parseSheepTestResults } = require('../parse-data')
+
+const isInvalidDataEvent = (eventType) => eventType?.endsWith('-invalid')
+
+const invalidClaimDataToString = (invalidDataEventData) => {
+  const { sbi: sbiFromInvalidData, crn: crnFromInvalidData, sessionKey, exception: exceptionFromInvalidData, reference: referenceFromInvalidData } = invalidDataEventData
+  // May not need to repeat some of these values, but better to include now then remove them later
+  const invalidInfo = `sbi:${sbiFromInvalidData} crn:${crnFromInvalidData} sessionKey:${sessionKey} exception:${exceptionFromInvalidData} reference:${referenceFromInvalidData}`
+  return invalidInfo
+}
 
 // Define the CSV column names
 const columns = [
   'sbiFromPartitionKey',
   'sessionId',
-  'type',
+  'eventType', // type
   'message',
   'reference',
   'tempApplicationReference',
   'tempClaimReference',
   'typeOfClaim', // typeOfReview
   'sbiFromPayload',
+  'crn',
+  'frn',
   'farmerName',
   'organisationName',
   'userEmail',
@@ -20,17 +32,40 @@ const columns = [
   'raisedOn',
   'journey',
   'confirmCheckDetails',
-  'eligibleSpecies',
+  'eligibleSpecies', // old application journey
+  'agreeSameSpecies',
+  'agreeSpeciesNumbers',
+  'agreeVisitTimings',
   'declaration',
+  'offerStatus',
   'species', // whichReview
   'detailsCorrect',
+  'typeOfLivestock',
   'visitDate',
-  'dateOfTesting',
+  'dateOfSampling',
   'vetName',
   'vetRcvs',
-  'urnResult',
+  'urnReference', // urnResult
+  'herdVaccinationStatus',
+  'numberOfOralFluidSamples',
+  'numberOfSamplesTested',
   'numberAnimalsTested',
+  'testResults',
+  'vetVisitsReviewTestResults',
+  'sheepEndemicsPackage',
+  'sheepTests',
+  'sheepTestResults',
+  'piHunt',
+  'biosecurity',
+  'biosecurityAssessmentPercentage',
+  'diseaseStatus',
+  'claimPaymentAmount',
+  'latestEndemicsApplication',
+  'latestVetVisitApplication',
+  'relevantReviewForEndemics',
   'claimed',
+  'exception',
+  'invalidClaimData',
   'statusId',
   'statusName',
   'eventStatus'
@@ -61,27 +96,52 @@ function transformEventToCsvV3 (event) {
 
   const { type, data, raisedBy, raisedOn, message } = parsePayload
   const {
+    organisation,
     reference,
     tempReference,
     tempClaimReference,
     typeOfReview,
-    organisation,
     journey,
     confirmCheckDetails,
-    eligibleSpecies,
+    eligibleSpecies, // old journey
+    agreeSameSpecies,
+    agreeSpeciesNumbers,
+    agreeVisitTimings,
     declaration,
-    whichReview,
+    offerStatus,
+    whichReview, // old journey
     detailsCorrect,
+    typeOfLivestock,
     visitDate,
     dateOfTesting,
     vetName,
     vetRcvs,
     urnResult,
+    herdVaccinationStatus,
+    numberOfOralFluidSamples,
+    numberOfSamplesTested,
     animalsTested,
+    testResults,
+    vetVisitsReviewTestResults,
+    sheepEndemicsPackage,
+    sheepTests, // an array of strings representing the test codes
+    sheepTestResults, // will be separate rows, each with an array, adding a test-with-results object to the array each time
+    piHunt,
+    biosecurity,
+    diseaseStatus,
+    amount,
+    latestEndemicsApplication,
+    latestVetVisitApplication,
+    relevantReviewForEndemics,
     claimed,
+    exception,
     statusId
   } = data ?? ''
-  const { sbi, farmerName, name, email, orgEmail, address } = organisation ?? ''
+  const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? ''
+  const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? ''
+  const invalidClaimData = isInvalidDataEvent(type) ? invalidClaimDataToString(data) : ''
+  const sheepTestsString = sheepTests ? arrayToString(sheepTests) : ''
+  const sheepTestResultsString = sheepTestResults ? parseSheepTestResults(sheepTestResults) : ''
 
   const row = [
     sbiFromPartitionKey,
@@ -93,26 +153,51 @@ function transformEventToCsvV3 (event) {
     tempClaimReference,
     typeOfReview,
     sbi,
-    farmerName ? farmerName.replace(/,/g, '  ') : '',
-    name ? name.replace(/,/g, '  ') : '',
+    crn,
+    frn,
+    farmerName ? farmerName.replace(/,/g, ' ') : '',
+    name ? name.replace(/,/g, ' ') : '',
     email,
     orgEmail,
-    address ? address.replace(/,/g, '  ') : '',
-    raisedBy ? raisedBy.replace(/,/g, '  ') : '',
+    address ? address.replace(/,/g, ' ') : '',
+    raisedBy ? raisedBy.replace(/,/g, ' ') : '',
     raisedOn,
     journey,
     confirmCheckDetails,
     eligibleSpecies,
+    agreeSameSpecies,
+    agreeSpeciesNumbers,
+    agreeVisitTimings,
     declaration,
+    offerStatus,
     whichReview,
     detailsCorrect,
+    typeOfLivestock,
     visitDate,
     dateOfTesting,
-    vetName ? vetName.replace(/,/g, '  ') : '',
+    vetName ? vetName.replace(/,/g, ' ') : '',
     vetRcvs,
     urnResult,
+    herdVaccinationStatus,
+    numberOfOralFluidSamples,
+    numberOfSamplesTested,
     animalsTested,
+    testResults,
+    vetVisitsReviewTestResults,
+    sheepEndemicsPackage,
+    sheepTestsString,
+    sheepTestResultsString,
+    piHunt,
+    biosecurityConfirmation,
+    assessmentPercentage,
+    diseaseStatus,
+    amount,
+    latestEndemicsApplication,
+    latestVetVisitApplication,
+    relevantReviewForEndemics,
     claimed,
+    exception,
+    invalidClaimData,
     statusId,
     agreementStatusIdToString(statusId ?? 0),
     eventStatus

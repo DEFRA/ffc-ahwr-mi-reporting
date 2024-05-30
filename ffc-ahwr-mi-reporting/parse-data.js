@@ -34,8 +34,39 @@ const parseData = (events, type, key) => {
   }
 }
 
+const arrayToString = (array, separator = ' ') => array.join(separator)
+
+const parseSheepTestResults = (sheepTestResults) => {
+  const result = []
+
+  const flatten = (item) => {
+    if (Array.isArray(item)) {
+      item.forEach(subItem => flatten(subItem))
+    } else if (typeof item === 'object' && item !== null) {
+      if (item.diseaseType) {
+        result.push(item.diseaseType)
+      }
+      if (item.result) {
+        if (Array.isArray(item.result)) {
+          flatten(item.result)
+        } else {
+          result.push(`result ${item.result}`)
+        }
+      }
+      if (item.testResult) {
+        result.push(`result ${item.testResult}`)
+      }
+    }
+  }
+
+  flatten(sheepTestResults)
+  return result.join('  ')
+}
+
 module.exports = {
   formatDate,
   parsePayload,
-  parseData
+  parseData,
+  arrayToString,
+  parseSheepTestResults
 }
