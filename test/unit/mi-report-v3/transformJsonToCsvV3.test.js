@@ -65,6 +65,13 @@ const events = [{
   partitionKey: '123456',
   SessionId: '789123456',
   EventRaised: new Date().toISOString(),
+  EventType: 'claim-sheepTests',
+  Payload: '{"type":"claim-sheepTests","message":"Session set for claim and sheepTests.","data":{"reference":"TEMP-1234-ABCD","sheepTests":"eae"},"raisedBy":"brown@test.com.test","raisedOn":"2024-01-04T21:27:23.530Z"}'
+},
+{
+  partitionKey: '123456',
+  SessionId: '789123456',
+  EventRaised: new Date().toISOString(),
   EventType: 'claim-sheepTestResults',
   Payload: '{"type":"claim-sheepTestResults","message":"Session set for claim and sheepTestResults.","data":{"reference":"TEMP-1234-ABCD","sheepTestResults":[{"diseaseType":"eae","result":"positive","isCurrentPage":false},{"diseaseType":"bd","result":"negative","isCurrentPage":false},{"diseaseType":"liverFluke","result":"clinicalSymptomsNotPresent","isCurrentPage":false},{"diseaseType":"other","result":[{"diseaseType":"Something nasty","testResult":"Positive"},{"diseaseType":"Something even worse","testResult":"No symptoms"}],"isCurrentPage":true}]},"raisedBy":"brown@test.com.test","raisedOn":"2024-01-04T21:27:23.530Z"}'
 },
@@ -205,22 +212,28 @@ describe('events are transformed to remove json structure', () => {
       expect(countEntriesInRow(result, 6)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
     })
 
+    test('csv content includes sample data from event - claim-sheepTests when a single sheepTest', () => {
+      const expectedTransformedJsonExample = '123456,789123456,claim-sheepTests,Session set for claim and sheepTests.,TEMP-1234-ABCD,,,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,,,,,,,,,,,,,,,,,,eae,,,,,,,,,,,,,'
+      expect(result).toContain(expectedTransformedJsonExample)
+      expect(countEntriesInRow(result, 7)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+    })
+
     test('csv content includes sample data from event - claim-sheepTestResults with Other', () => {
       const expectedTransformedJsonExample = '123456,789123456,claim-sheepTestResults,Session set for claim and sheepTestResults.,TEMP-1234-ABCD,,,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,,,,,,,,,,,,,,,,,,,eae  result positive  bd  result negative  liverFluke  result clinicalSymptomsNotPresent  other  Something nasty  result Positive  Something even worse  result No symptoms,,,,,,,,,,,,,'
       expect(result).toContain(expectedTransformedJsonExample)
-      expect(countEntriesInRow(result, 7)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+      expect(countEntriesInRow(result, 8)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
     })
 
     test('csv content includes sample data from event - claim-sheepTestResults without Other', () => {
       const expectedTransformedJsonExample = '123456,789123456,claim-sheepTestResults,Session set for claim and sheepTestResults.,TEMP-1234-ABCD,,,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,,,,,,,,,,,,,,,,,,,eae  result positive  bd  result negative  liverFluke  result clinicalSymptomsNotPresent,,,,,,,,,,,,,'
       expect(result).toContain(expectedTransformedJsonExample)
-      expect(countEntriesInRow(result, 8)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+      expect(countEntriesInRow(result, 9)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
     })
 
     test('csv content includes sample data from event - claim-amount', () => {
       const expectedTransformedJsonExample = '123456,789123456,claim-amount,Session set for claim and amount.,TEMP-1234-ABCD,,,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,350,,,,,,,,,'
       expect(result).toContain(expectedTransformedJsonExample)
-      expect(countEntriesInRow(result, 9)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+      expect(countEntriesInRow(result, 10)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
     })
   })
 
@@ -228,7 +241,7 @@ describe('events are transformed to remove json structure', () => {
     test('csv content includes sample data from event - ineligibility-event', () => {
       const expectedTransformedJsonExample = '123456,789123456,ineligibility-event,Apply: LockedBusinessError,TEMP-1234-ABCD,,,,,,,,,,,,brown@test.com.test,2024-02-15T13:23:40.068Z,apply,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,LockedBusinessError,,,,'
       expect(result).toContain(expectedTransformedJsonExample)
-      expect(countEntriesInRow(result, 10)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+      expect(countEntriesInRow(result, 11)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
     })
   })
 
@@ -236,13 +249,13 @@ describe('events are transformed to remove json structure', () => {
     test('csv content includes sample data from event - claim-biosecurity-invalid', () => {
       const expectedTransformedJsonExample = '123456,789123456,claim-biosecurity-invalid,biosecurity: Value no is not equal to required value yes,TEMP-1234-ABCD,,,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,claim,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Value no is not equal to required value yes,sbi:123456 crn:123456789 sessionKey:biosecurity exception:Value no is not equal to required value yes reference:TEMP-1234-ABCD,,,'
       expect(result).toContain(expectedTransformedJsonExample)
-      expect(countEntriesInRow(result, 11)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+      expect(countEntriesInRow(result, 12)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
     })
 
     test('csv content includes sample data from event - claim-numberOfOralFluidSamples-invalid', () => {
       const expectedTransformedJsonExample = '123456,789123456,claim-numberOfOralFluidSamples-invalid,numberOfOralFluidSamples: Value 1 is less than required threshold 5,TEMP-1234-ABCD,,,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,claim,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Value 1 is less than required threshold 5,sbi:123456 crn:123456789 sessionKey:numberOfOralFluidSamples exception:Value 1 is less than required threshold 5 reference:TEMP-1234-ABCD,,,'
       expect(result).toContain(expectedTransformedJsonExample)
-      expect(countEntriesInRow(result, 12)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+      expect(countEntriesInRow(result, 13)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
     })
   })
 
