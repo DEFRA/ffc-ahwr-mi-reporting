@@ -109,6 +109,48 @@ const events = [{
   EventRaised: new Date().toISOString(),
   EventType: 'claim-numberOfOralFluidSamples-invalid',
   Payload: '{"type":"claim-numberOfOralFluidSamples-invalid","message":"numberOfOralFluidSamples: Value 1 is less than required threshold 5","data":{"sbi":"123456","crn":"123456789","sessionKey":"numberOfOralFluidSamples","exception":"Value 1 is less than required threshold 5","raisedAt":"2024-01-04T21:27:23.530Z","journey":"claim","reference":"TEMP-1234-ABCD"},"raisedBy":"brown@test.com.test","raisedOn":"2024-01-04T21:27:23.530Z"}'
+},
+{
+  partitionKey: '123456',
+  SessionId: '789123456',
+  EventRaised: new Date().toISOString(),
+  EventType: 'application:status-updated:11',
+  Payload: '{"type":"application:status-updated:11","message":"Application has been updated","data":{"reference":"AHWR-04DC-5073","statusId":11},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
+},
+{
+  partitionKey: '123456',
+  SessionId: '789123456',
+  EventRaised: new Date().toISOString(),
+  EventType: 'application:status-updated:5',
+  Payload: '{"type":"application:status-updated:5","message":"Application has been updated","data":{"reference":"AHWR-04DC-5073","statusId":5},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
+},
+{
+  partitionKey: '123456',
+  SessionId: '789123456',
+  EventRaised: new Date().toISOString(),
+  EventType: 'application:status-updated:5',
+  Payload: '{"type":"application:status-updated:5","message":"New stage execution has been created","data":{"reference":"AHWR-04DC-5073","statusId":5,"subStatus":"Recommend to pay"},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
+},
+{
+  partitionKey: '123456',
+  SessionId: '789123456',
+  EventRaised: new Date().toISOString(),
+  EventType: 'application:status-updated:5',
+  Payload: '{"type":"application:status-updated:5","message":"New stage execution has been created","data":{"reference":"AHWR-04DC-5073","statusId":5,"subStatus":"Recommend to reject"},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
+},
+{
+  partitionKey: '123456',
+  SessionId: '789123456',
+  EventRaised: new Date().toISOString(),
+  EventType: 'application:status-updated:12',
+  Payload: '{"type":"application:status-updated:12","message":"Application has been updated","data":{"reference":"AHWR-04DC-5073","statusId":12},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
+},
+{
+  partitionKey: '123456',
+  SessionId: '789123456',
+  EventRaised: new Date().toISOString(),
+  EventType: 'application:status-updated:13',
+  Payload: '{"type":"application:status-updated:13","message":"Application has been updated","data":{"reference":"AHWR-04DC-5073","statusId":13},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
 }
 ]
 
@@ -256,6 +298,44 @@ describe('events are transformed to remove json structure', () => {
       const expectedTransformedJsonExample = '123456,789123456,claim-numberOfOralFluidSamples-invalid,numberOfOralFluidSamples: Value 1 is less than required threshold 5,TEMP-1234-ABCD,,,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,claim,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Value 1 is less than required threshold 5,sbi:123456 crn:123456789 sessionKey:numberOfOralFluidSamples exception:Value 1 is less than required threshold 5 reference:TEMP-1234-ABCD,,,'
       expect(result).toContain(expectedTransformedJsonExample)
       expect(countEntriesInRow(result, 13)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+    })
+  })
+
+  describe('status change events', () => {
+    test('csv content includes sample data from event - application:status-updated:11 On Hold', () => {
+      const expectedTransformedJsonExample = '123456,789123456,application:status-updated:11,Application has been updated,AHWR-04DC-5073,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,11,ON HOLD,'
+      expect(result).toContain(expectedTransformedJsonExample)
+      expect(countEntriesInRow(result, 14)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+    })
+
+    test('csv content includes sample data from event - application:status-updated:5 with no subStatus', () => {
+      const expectedTransformedJsonExample = '123456,789123456,application:status-updated:5,Application has been updated,AHWR-04DC-5073,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,5,IN CHECK,'
+      expect(result).toContain(expectedTransformedJsonExample)
+      expect(countEntriesInRow(result, 15)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+    })
+
+    test('csv content includes sample data from event - application:status-updated:5 where status originates from subStatus', () => {
+      const expectedTransformedJsonExample = '123456,789123456,application:status-updated:12,New stage execution has been created,AHWR-04DC-5073,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,'
+      expect(result).toContain(expectedTransformedJsonExample)
+      expect(countEntriesInRow(result, 16)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+    })
+
+    test('csv content includes sample data from event - application:status-updated:5 where status originates from subStatus', () => {
+      const expectedTransformedJsonExample = '123456,789123456,application:status-updated:13,New stage execution has been created,AHWR-04DC-5073,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,13,RECOMMENDED TO REJECT,'
+      expect(result).toContain(expectedTransformedJsonExample)
+      expect(countEntriesInRow(result, 17)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+    })
+
+    test('csv content includes sample data from event - application:status-updated:12 NOT originating from subStatus', () => {
+      const expectedTransformedJsonExample = '123456,789123456,application:status-updated:12,Application has been updated,AHWR-04DC-5073,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,'
+      expect(result).toContain(expectedTransformedJsonExample)
+      expect(countEntriesInRow(result, 18)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+    })
+
+    test('csv content includes sample data from event - application:status-updated:13 NOT originating from subStatus', () => {
+      const expectedTransformedJsonExample = '123456,789123456,application:status-updated:13,Application has been updated,AHWR-04DC-5073,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,13,RECOMMENDED TO REJECT,'
+      expect(result).toContain(expectedTransformedJsonExample)
+      expect(countEntriesInRow(result, 19)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
     })
   })
 
