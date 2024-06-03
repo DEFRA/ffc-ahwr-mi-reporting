@@ -1,4 +1,5 @@
-const agreementStatusIdToString = require('../mi-report/agreement-status-id-to-string')
+// const agreementStatusIdToString = require('../mi-report/agreement-status-id-to-string')
+const { statusToString, statusToId } = require('../utils/statusHelpers')
 const { arrayToString, parseSheepTestResults } = require('../parse-data')
 
 const isInvalidDataEvent = (eventType) => eventType?.endsWith('-invalid')
@@ -135,18 +136,21 @@ function transformEventToCsvV3 (event) {
     relevantReviewForEndemics,
     claimed,
     exception,
-    statusId
+    statusId,
+    subStatus
   } = data ?? ''
   const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? ''
   const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? ''
   const invalidClaimData = isInvalidDataEvent(type) ? invalidClaimDataToString(data) : ''
   const sheepTestsString = sheepTests ? arrayToString(sheepTests) : ''
   const sheepTestResultsString = sheepTestResults ? parseSheepTestResults(sheepTestResults) : ''
+  const rowStatusId = subStatus && statusId === 5 ? statusToId(subStatus) : statusId
+  const rowType = subStatus && statusId === 5 ? type.replace(/.$/, statusToId(subStatus)) : type
 
   const row = [
     sbiFromPartitionKey,
     sessionId,
-    type,
+    rowType,
     message,
     reference,
     tempReference,
@@ -198,8 +202,8 @@ function transformEventToCsvV3 (event) {
     claimed,
     exception,
     invalidClaimData,
-    statusId,
-    agreementStatusIdToString(statusId ?? 0),
+    rowStatusId,
+    statusToString(rowStatusId ?? 0),
     eventStatus
   ].join(',')
 
