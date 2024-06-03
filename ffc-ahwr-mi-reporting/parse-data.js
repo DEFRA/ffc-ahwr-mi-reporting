@@ -34,7 +34,13 @@ const parseData = (events, type, key) => {
   }
 }
 
-const arrayToString = (array, separator = ' ') => array.join(separator)
+const arrayToString = (array, separator = ' ') => {
+  if (Array.isArray(array)) {
+    return array.join(separator)
+  } else {
+    return array
+  }
+}
 
 const parseSheepTestResults = (sheepTestResults) => {
   const result = []
