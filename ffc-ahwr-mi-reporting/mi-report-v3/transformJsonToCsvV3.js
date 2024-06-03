@@ -1,4 +1,3 @@
-// const agreementStatusIdToString = require('../mi-report/agreement-status-id-to-string')
 const { statusToString, statusToId } = require('../utils/statusHelpers')
 const { arrayToString, parseSheepTestResults } = require('../parse-data')
 
