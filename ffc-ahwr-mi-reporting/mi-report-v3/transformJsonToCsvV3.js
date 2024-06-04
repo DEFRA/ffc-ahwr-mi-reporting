@@ -146,7 +146,6 @@ function transformEventToCsvV3 (event) {
   const sheepTestResultsString = sheepTestResults ? parseSheepTestResults(sheepTestResults) : ''
   const isSubStatus = isInCheckWithSubStatus(subStatus, statusId)
   const rowStatusId = isSubStatus ? statusToId(subStatus) : statusId
-  // Do we actually want to change the name of the original event type or should we just change the status string?
   const rowType = isSubStatus ? type.replace(/.$/, statusToId(subStatus)) : type
 
   const row = [
