@@ -1,7 +1,7 @@
 {
   "bindings": [
     {
-      "schedule": "0 0 10 * * *",
+      "schedule": "0 0 9 * * *",
       "name": "miReportTimer",
       "type": "timerTrigger",
       "direction": "in"
