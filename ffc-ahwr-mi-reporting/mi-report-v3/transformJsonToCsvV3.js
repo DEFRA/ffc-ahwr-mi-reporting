@@ -18,6 +18,7 @@ const columns = [
   'eventType', // type
   'message',
   'reference',
+  'applicationReference',
   'tempApplicationReference',
   'tempClaimReference',
   'typeOfClaim', // typeOfReview
@@ -99,6 +100,7 @@ function transformEventToCsvV3 (event) {
   const {
     organisation,
     reference,
+    applicationReference,
     tempReference,
     tempClaimReference,
     typeOfReview,
@@ -154,6 +156,7 @@ function transformEventToCsvV3 (event) {
     rowType,
     message,
     reference,
+    applicationReference,
     tempReference,
     tempClaimReference,
     typeOfReview,
