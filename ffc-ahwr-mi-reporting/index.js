@@ -9,9 +9,23 @@ module.exports = async (context, miReportTimer) => {
   context.log('Sourcing report data')
   const events = await queryEntitiesByTimestamp()
   if (events.length) {
-    await buildMiReport(events)
-    await buildMiReportV2(events)
-    await buildMiReportV3(events)
+    try {
+      await buildMiReport(events)
+    } catch (e) {
+      context.log('MI report failed : ', e)
+    }
+
+    try {
+      await buildMiReportV2(events)
+    } catch (e) {
+      context.log('MI report V2 failed : ', e)
+    }
+
+    try {
+      await buildMiReportV3(events)
+    } catch (e) {
+      context.log('MI report V3 failed : ', e)
+    }
   } else {
     context.log('No events found')
   }
