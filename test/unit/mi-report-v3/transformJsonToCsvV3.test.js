@@ -122,7 +122,7 @@ const events = [{
   SessionId: '789123456',
   EventRaised: new Date().toISOString(),
   EventType: 'application:status-updated:5',
-  Payload: '{"type":"application:status-updated:5","message":"Application has been updated","data":{"reference":"AHWR-04DC-5073","statusId":5},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
+  Payload: '{"type":"application:status-updated:5","message":"New claim has been created","data":{"reference":"REPI-04DC-5073","applicationReference":"IAHW-1234-EFGH","statusId":5},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
 },
 {
   partitionKey: '123456',
@@ -143,14 +143,14 @@ const events = [{
   SessionId: '789123456',
   EventRaised: new Date().toISOString(),
   EventType: 'application:status-updated:12',
-  Payload: '{"type":"application:status-updated:12","message":"Application has been updated","data":{"reference":"AHWR-04DC-5073","statusId":12},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
+  Payload: '{"type":"application:status-updated:12","message":"Claim has been updated","data":{"reference":"REPI-04DC-5073","applicationReference":"IAHW-1234-EFGH","statusId":12},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
 },
 {
   partitionKey: '123456',
   SessionId: '789123456',
   EventRaised: new Date().toISOString(),
   EventType: 'application:status-updated:13',
-  Payload: '{"type":"application:status-updated:13","message":"Application has been updated","data":{"reference":"AHWR-04DC-5073","statusId":13},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
+  Payload: '{"type":"application:status-updated:13","message":"Claim has been updated","data":{"reference":"REPI-04DC-5073","applicationReference":"IAHW-1234-EFGH","statusId":13},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
 }
 ]
 
@@ -309,7 +309,7 @@ describe('events are transformed to remove json structure', () => {
     })
 
     test('csv content includes sample data from event - application:status-updated:5 with no subStatus', () => {
-      const expectedTransformedJsonExample = '123456,789123456,application:status-updated:5,Application has been updated,AHWR-04DC-5073,,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,5,IN CHECK,'
+      const expectedTransformedJsonExample = '123456,789123456,application:status-updated:5,New claim has been created,REPI-04DC-5073,IAHW-1234-EFGH,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,5,IN CHECK,'
       expect(result).toContain(expectedTransformedJsonExample)
       expect(countEntriesInRow(result, 15)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
     })
@@ -327,13 +327,13 @@ describe('events are transformed to remove json structure', () => {
     })
 
     test('csv content includes sample data from event - application:status-updated:12 NOT originating from subStatus', () => {
-      const expectedTransformedJsonExample = '123456,789123456,application:status-updated:12,Application has been updated,AHWR-04DC-5073,,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,'
+      const expectedTransformedJsonExample = '123456,789123456,application:status-updated:12,Claim has been updated,REPI-04DC-5073,IAHW-1234-EFGH,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,'
       expect(result).toContain(expectedTransformedJsonExample)
       expect(countEntriesInRow(result, 18)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
     })
 
     test('csv content includes sample data from event - application:status-updated:13 NOT originating from subStatus', () => {
-      const expectedTransformedJsonExample = '123456,789123456,application:status-updated:13,Application has been updated,AHWR-04DC-5073,,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,13,RECOMMENDED TO REJECT,'
+      const expectedTransformedJsonExample = '123456,789123456,application:status-updated:13,Claim has been updated,REPI-04DC-5073,IAHW-1234-EFGH,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,13,RECOMMENDED TO REJECT,'
       expect(result).toContain(expectedTransformedJsonExample)
       expect(countEntriesInRow(result, 19)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
     })
