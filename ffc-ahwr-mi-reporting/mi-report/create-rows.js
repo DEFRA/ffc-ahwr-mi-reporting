@@ -43,10 +43,10 @@ const createRow = (events) => {
   // To handle previously submitted claims with In Check status & sub-status of recommended to pay or reject:
   const claimRecommendationWithInCheckSubStatus = parseData(events, `application:status-updated:${applicationStatus.inCheck}`, 'subStatus')
   const claimRecommendedToPay = parseData(events, `application:status-updated:${applicationStatus.recommendedToPay}`, 'statusId')
-  const recommendedToPayTrue = (claimRecommendedToPay?.value === applicationStatus.recommendedToPay) || (claimRecommendationWithInCheckSubStatus?.value === 'Recommend to pay')
+  const recommendedToPayTrue = (claimRecommendedToPay?.value == applicationStatus.recommendedToPay) || (claimRecommendationWithInCheckSubStatus?.value == 'Recommend to pay')
 
   const claimRecommendedToReject = parseData(events, `application:status-updated:${applicationStatus.recommendedToReject}`, 'statusId')
-  const recommendedToRejectTrue = (claimRecommendedToReject?.value === applicationStatus.recommendedToReject) || (claimRecommendationWithInCheckSubStatus?.value === 'Recommend to reject')
+  const recommendedToRejectTrue = (claimRecommendedToReject?.value == applicationStatus.recommendedToReject) || (claimRecommendationWithInCheckSubStatus?.value == 'Recommend to reject')
 
   return {
     sbi: organisation?.sbi,
@@ -79,17 +79,17 @@ const createRow = (events) => {
     claimUrnResultRaisedOn: claimUrnResult?.raisedOn,
     claimClaimed: claimClaimed?.value,
     claimClaimedRaisedOn: claimClaimed?.raisedOn,
-    applicationWithdrawn: convertFromBoolean(agreementWithdrawn?.value === applicationStatus.withdrawn),
+    applicationWithdrawn: convertFromBoolean(agreementWithdrawn?.value == applicationStatus.withdrawn),
     applicationWithdrawnOn: notApplicableIfUndefined(agreementWithdrawn?.raisedOn),
     applicationWithdrawnBy: notApplicableIfUndefined(agreementWithdrawn?.raisedBy.replace(/,/g, '')),
     recommendedToPay: recommendedToPayTrue ? 'yes' : '',
     recommendedToReject: recommendedToRejectTrue ? 'yes' : '',
     recommendedOn: claimRecommendedOn(recommendedToPayTrue, recommendedToRejectTrue, claimRecommendedToPay, claimRecommendedToReject, claimRecommendationWithInCheckSubStatus),
     recommendedBy: claimRecommendedBy(recommendedToPayTrue, recommendedToRejectTrue, claimRecommendedToPay, claimRecommendedToReject, claimRecommendationWithInCheckSubStatus),
-    claimApproved: convertFromBoolean(claimApproved?.value === applicationStatus.readyToPay),
+    claimApproved: convertFromBoolean(claimApproved?.value == applicationStatus.readyToPay),
     claimApprovedOn: notApplicableIfUndefined(claimApproved?.raisedOn),
     claimApprovedBy: notApplicableIfUndefined(claimApproved?.raisedBy.replace(/,/g, '')),
-    claimRejected: convertFromBoolean(claimRejected?.value === applicationStatus.rejected),
+    claimRejected: convertFromBoolean(claimRejected?.value == applicationStatus.rejected),
     claimRejectedOn: notApplicableIfUndefined(claimRejected?.raisedOn),
     claimRejectedBy: notApplicableIfUndefined(claimRejected?.raisedBy.replace(/,/g, '')),
     agreementCurrentStatus: notApplicableIfUndefined(currentStatus(claimApproved, claimRejected, recommendedToPayTrue, recommendedToRejectTrue, agreementCurrentStatusId))
