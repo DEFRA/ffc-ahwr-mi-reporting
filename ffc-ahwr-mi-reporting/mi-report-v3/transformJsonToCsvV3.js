@@ -1,5 +1,5 @@
 const { statusToString, statusToId } = require('../utils/statusHelpers')
-const { arrayToString, parseSheepTestResults } = require('../parse-data')
+const { arrayToString, parseSheepTestResults, getReferenceFromNestedData } = require('../parse-data')
 
 const isInvalidDataEvent = (eventType) => eventType?.endsWith('-invalid')
 const isInCheckWithSubStatus = (subStatus, statusId) => subStatus && statusId === 5
@@ -143,9 +143,9 @@ function transformEventToCsvV3 (event) {
   } = data ?? ''
   const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? ''
   const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? ''
-  const relevantReviewForEndemicsReference = relevantReviewForEndemics ? relevantReviewForEndemics?.reference : ''
-  const latestEndemicsApplicationReference = latestEndemicsApplication ? latestEndemicsApplication?.reference : ''
-  const latestVetVisitApplicationReference = latestVetVisitApplication ? latestVetVisitApplication?.reference : ''
+  const relevantReviewForEndemicsReference = getReferenceFromNestedData(relevantReviewForEndemics)
+  const latestEndemicsApplicationReference = getReferenceFromNestedData(latestEndemicsApplication)
+  const latestVetVisitApplicationReference = getReferenceFromNestedData(latestVetVisitApplication)
   const invalidClaimData = isInvalidDataEvent(type) ? invalidClaimDataToString(data) : ''
   const sheepTestsString = sheepTests ? arrayToString(sheepTests) : ''
   const sheepTestResultsString = sheepTestResults ? parseSheepTestResults(sheepTestResults) : ''
