@@ -143,6 +143,9 @@ function transformEventToCsvV3 (event) {
   } = data ?? ''
   const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? ''
   const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? ''
+  const relevantReviewForEndemicsReference = relevantReviewForEndemics ? relevantReviewForEndemics?.reference : ''
+  const latestEndemicsApplicationReference = latestEndemicsApplication ? latestEndemicsApplication?.reference : ''
+  const latestVetVisitApplicationReference = latestVetVisitApplication ? latestVetVisitApplication?.reference : ''
   const invalidClaimData = isInvalidDataEvent(type) ? invalidClaimDataToString(data) : ''
   const sheepTestsString = sheepTests ? arrayToString(sheepTests) : ''
   const sheepTestResultsString = sheepTestResults ? parseSheepTestResults(sheepTestResults) : ''
@@ -200,9 +203,9 @@ function transformEventToCsvV3 (event) {
     assessmentPercentage,
     diseaseStatus,
     amount,
-    latestEndemicsApplication,
-    latestVetVisitApplication,
-    relevantReviewForEndemics,
+    latestEndemicsApplicationReference,
+    latestVetVisitApplicationReference,
+    relevantReviewForEndemicsReference,
     claimed,
     exception,
     invalidClaimData,
