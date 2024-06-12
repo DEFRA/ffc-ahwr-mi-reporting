@@ -69,10 +69,16 @@ const parseSheepTestResults = (sheepTestResults) => {
   return result.join('  ')
 }
 
+const getReferenceFromNestedData = (data) => {
+  const referenceString = data ? data.reference : ''
+  return referenceString
+}
+
 module.exports = {
   formatDate,
   parsePayload,
   parseData,
   arrayToString,
-  parseSheepTestResults
+  parseSheepTestResults,
+  getReferenceFromNestedData
 }

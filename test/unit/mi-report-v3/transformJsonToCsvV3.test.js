@@ -93,6 +93,14 @@ const events = [{
   partitionKey: '123456',
   SessionId: '789123456',
   EventRaised: new Date().toISOString(),
+  EventType: 'claim-relevantReviewForEndemics',
+  //       {"type":"claim-relevantReviewForEndemics","message":"Session set for claim and relevantReviewForEndemics.","data":{"reference":"TEMP-CLAIM-4536-04F5","applicationReference":"IAHW-8CAD-7CA5","relevantReviewForEndemics":{"id":"d79f8008-746c-4ea5-a3c8-6f40a332554e","reference":"RESH-D79F-8008","applicationReference":"IAHW-8CAD-7CA5","data":{"amount":436,"vetsName":"Tom","claimType":"R","dateOfVisit":"2024-06-10T00:00:00.000Z","dateOfTesting":"2024-06-10T00:00:00.000Z","laboratoryURN":"123urn","vetRCVSNumber":"1234567","speciesNumbers":"yes","typeOfLivestock":"sheep","numberAnimalsTested":"42"},"statusId":9,"type":"R","createdAt":"2024-06-10T17:24:03.989Z","updatedAt":"2024-06-10T17:25:14.467Z","createdBy":"admin","updatedBy":"Developer","status":{"status":"READY TO PAY"}}},"raisedBy":"davidnorthb@htrondivado.com.test","raisedOn":"2024-06-11T15:52:44.023Z"}
+  Payload: '{"type":"claim-relevantReviewForEndemics","message":"Session set for claim and relevantReviewForEndemics.","data":{"reference":"TEMP-CLAIM-1234-ABCD","applicationReference":"IAHW-1234-EFGH","relevantReviewForEndemics":{"id":"123456789","reference":"RESH-12AB-34CD","applicationReference":"IAHW-12AB-34CD","data":{"amount":100,"vetsName":"Tom","claimType":"R","dateOfVisit":"2024-06-10T00:00:00.000Z","dateOfTesting":"2024-06-10T00:00:00.000Z","laboratoryURN":"123urn","vetRCVSNumber":"1234567","speciesNumbers":"yes","typeOfLivestock":"sheep","numberAnimalsTested":"42"},"statusId":9,"type":"R","createdAt":"2024-06-10T17:24:03.989Z","updatedAt":"2024-06-10T17:25:14.467Z","createdBy":"admin","updatedBy":"Developer","status":{"status":"READY TO PAY"}}},"raisedBy":"brown@test.com.test","raisedOn":"2024-01-04T21:27:23.530Z"}'
+},
+{
+  partitionKey: '123456',
+  SessionId: '789123456',
+  EventRaised: new Date().toISOString(),
   EventType: 'ineligibility-event',
   Payload: '{"type":"ineligibility-event","message":"Apply: LockedBusinessError","data":{"sbi":"123456","crn":"123456789","exception":"LockedBusinessError","raisedAt":"2024-02-15T13:23:39.830Z","journey":"apply","reference":"TEMP-1234-ABCD"},"raisedBy":"brown@test.com.test","raisedOn":"2024-02-15T13:23:40.068Z"}'
 },
@@ -274,6 +282,12 @@ describe('events are transformed to remove json structure', () => {
 
     test('csv content includes sample data from event - claim-amount', () => {
       const expectedTransformedJsonExample = '123456,789123456,claim-amount,Session set for claim and amount.,TEMP-1234-ABCD,IAHW-1234-EFGH,,,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,350,,,,,,,,,'
+      expect(result).toContain(expectedTransformedJsonExample)
+      expect(countEntriesInRow(result, 10)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
+    })
+
+    test('csv content includes sample data from event - claim-relevantReviewForEndemics', () => {
+      const expectedTransformedJsonExample = '123456,789123456,claim-relevantReviewForEndemics,Session set for claim and relevantReviewForEndemics.,TEMP-CLAIM-1234-ABCD,IAHW-1234-EFGH,,,,,,,,,,,,brown@test.com.test,2024-01-04T21:27:23.530Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,RESH-12AB-34CD,,,,,,'
       expect(result).toContain(expectedTransformedJsonExample)
       expect(countEntriesInRow(result, 10)).toBe(EXPECTED_NUMBER_OF_COLUMNS)
     })
