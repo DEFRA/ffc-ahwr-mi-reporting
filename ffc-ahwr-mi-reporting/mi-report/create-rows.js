@@ -15,6 +15,7 @@ const applicationStatus = {
   recommendedToReject: 13
 }
 
+/* eslint eqeqeq: 0 */
 const createRow = (events) => {
   const organisationData = parsePayload(events, 'farmerApplyData-organisation')
   const organisation = organisationData?.data?.organisation
