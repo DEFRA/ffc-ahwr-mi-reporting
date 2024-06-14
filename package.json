@@ -22,15 +22,12 @@
     "@azure/data-tables": "13.1.2",
     "@azure/storage-blob": "^12.13.0",
     "@hapi/wreck": "^18.0.1",
-    "@pnp/nodejs-commonjs": "^2.15.0",
+    "@pnp/nodejs-commonjs": "^2.2.0",
     "joi": "17.6.0",
     "moment": "2.29.4",
-    "notifications-node-client": "^8.1.0"
+    "notifications-node-client": "^7.0.6"
   },
   "overrides": {
-    "@pnp/nodejs-commonjs": {
-      "@azure/msal-node": "2.9.2"
-    },
     "jsonwebtoken": "9.0.0",
     "node-fetch": "2.6.7",
     "axios": "1.6.4",
