@@ -88,7 +88,7 @@ const transformJsonToCsvV3 = (events) => {
 
 function transformEventToCsvV3 (event) {
   const { partitionKey, SessionId: sessionId, Status: eventStatus } = event
-  const sbiFromPartitionKey = partitionKey && partitionKey.length > 9 ? partitionKey.slice(0, 9) : partitionKey
+  const sbiFromPartitionKey = partitionKey?.length > 9 ? partitionKey.slice(0, 9) : partitionKey
   let parsePayload = ''
   try {
     parsePayload = JSON.parse(event.Payload)
@@ -150,8 +150,16 @@ function transformEventToCsvV3 (event) {
   const sheepTestsString = sheepTests ? arrayToString(sheepTests) : ''
   const sheepTestResultsString = sheepTestResults ? parseSheepTestResults(sheepTestResults) : ''
   const isSubStatus = isInCheckWithSubStatus(subStatus, statusId)
-  const rowStatusId = isSubStatus ? statusToId(subStatus) : statusId
-  const rowType = isSubStatus ? type.replace(/.$/, statusToId(subStatus)) : type
+
+  let rowStatusId
+  let rowType
+  if (isSubStatus) {
+    rowStatusId = statusToId(subStatus)
+    rowType = type.replace(/.$/, statusToId(subStatus))
+  } else {
+    rowStatusId = statusId
+    rowType = type
+  }
 
   const row = [
     sbiFromPartitionKey,
