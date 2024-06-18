@@ -11,6 +11,8 @@ const invalidClaimDataToString = (invalidDataEventData) => {
   return invalidInfo
 }
 
+const getSbiFromPartitionKey = (partitionKey) => partitionKey?.length > 9 ? partitionKey.slice(0, 9) : partitionKey
+
 // Define the CSV column names
 const columns = [
   'sbiFromPartitionKey',
@@ -88,7 +90,7 @@ const transformJsonToCsvV3 = (events) => {
 
 function transformEventToCsvV3 (event) {
   const { partitionKey, SessionId: sessionId, Status: eventStatus } = event
-  const sbiFromPartitionKey = partitionKey && partitionKey.length > 9 ? partitionKey.slice(0, 9) : partitionKey
+  const sbiFromPartitionKey = getSbiFromPartitionKey(partitionKey)
   let parsePayload = ''
   try {
     parsePayload = JSON.parse(event.Payload)
@@ -150,14 +152,22 @@ function transformEventToCsvV3 (event) {
   const sheepTestsString = sheepTests ? arrayToString(sheepTests) : ''
   const sheepTestResultsString = sheepTestResults ? parseSheepTestResults(sheepTestResults) : ''
   const isSubStatus = isInCheckWithSubStatus(subStatus, statusId)
-  const rowStatusId = isSubStatus ? statusToId(subStatus) : statusId
-  const rowType = isSubStatus ? type.replace(/.$/, statusToId(subStatus)) : type
+
+  let rowStatusId
+  let rowType
+  if (isSubStatus) {
+    rowStatusId = statusToId(subStatus)
+    rowType = type.replace(/.$/, statusToId(subStatus))
+  } else {
+    rowStatusId = statusId
+    rowType = type
+  }
 
   const row = [
     sbiFromPartitionKey,
     sessionId,
     rowType,
-    message,
+    message ? message.replace(/,/g, ' ') : '',
     reference,
     applicationReference,
     tempReference,
@@ -207,8 +217,8 @@ function transformEventToCsvV3 (event) {
     latestVetVisitApplicationReference,
     relevantReviewForEndemicsReference,
     claimed,
-    exception,
-    invalidClaimData,
+    exception ? exception.replace(/,/g, ' ') : '',
+    invalidClaimData ? invalidClaimData.replace(/,/g, ' ') : '',
     rowStatusId,
     statusToString(rowStatusId ?? 0),
     eventStatus
