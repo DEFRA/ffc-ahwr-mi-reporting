@@ -208,7 +208,7 @@ function transformEventToCsvV3 (event) {
     relevantReviewForEndemicsReference,
     claimed,
     exception ? exception.replace(/,/g, ' ') : '',
-    invalidClaimData ? invalidClaimData.replace(/,/g, ' ') : '',,
+    invalidClaimData ? invalidClaimData.replace(/,/g, ' ') : '',
     rowStatusId,
     statusToString(rowStatusId ?? 0),
     eventStatus
