@@ -207,7 +207,7 @@ function transformEventToCsvV3 (event) {
     latestVetVisitApplicationReference,
     relevantReviewForEndemicsReference,
     claimed,
-    exception,
+    exception ? exception.replace(/,/g, ' ') : '',
     invalidClaimData,
     rowStatusId,
     statusToString(rowStatusId ?? 0),
