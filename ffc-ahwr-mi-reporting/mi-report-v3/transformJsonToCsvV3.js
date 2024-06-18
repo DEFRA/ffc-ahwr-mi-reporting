@@ -11,6 +11,8 @@ const invalidClaimDataToString = (invalidDataEventData) => {
   return invalidInfo
 }
 
+const getSbiFromPartitionKey = (partitionKey) => partitionKey?.length > 9 ? partitionKey.slice(0, 9) : partitionKey
+
 // Define the CSV column names
 const columns = [
   'sbiFromPartitionKey',
@@ -88,7 +90,7 @@ const transformJsonToCsvV3 = (events) => {
 
 function transformEventToCsvV3 (event) {
   const { partitionKey, SessionId: sessionId, Status: eventStatus } = event
-  const sbiFromPartitionKey = partitionKey?.length > 9 ? partitionKey.slice(0, 9) : partitionKey
+  const sbiFromPartitionKey = getSbiFromPartitionKey(partitionKey)
   let parsePayload = ''
   try {
     parsePayload = JSON.parse(event.Payload)
