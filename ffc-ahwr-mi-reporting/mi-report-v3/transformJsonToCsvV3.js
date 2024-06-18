@@ -157,7 +157,7 @@ function transformEventToCsvV3 (event) {
     sbiFromPartitionKey,
     sessionId,
     rowType,
-    message,
+    message ? message.replace(/,/g, ' ') : '',
     reference,
     applicationReference,
     tempReference,
