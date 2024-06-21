@@ -11,6 +11,10 @@ const invalidClaimDataToString = (invalidDataEventData) => {
   return invalidInfo
 }
 
+const replaceCommasWithSpace = (stringToEdit) => {
+  return stringToEdit ? stringToEdit.replace(/,/g, ' ') : ''
+}
+
 const getSbiFromPartitionKey = (partitionKey) => partitionKey?.length > 9 ? partitionKey.slice(0, 9) : partitionKey
 
 // Define the CSV column names
@@ -167,7 +171,7 @@ function transformEventToCsvV3 (event) {
     sbiFromPartitionKey,
     sessionId,
     rowType,
-    message ? message.replace(/,/g, ' ') : '',
+    replaceCommasWithSpace(message),
     reference,
     applicationReference,
     tempReference,
@@ -176,12 +180,12 @@ function transformEventToCsvV3 (event) {
     sbi,
     crn,
     frn,
-    farmerName ? farmerName.replace(/,/g, ' ') : '',
-    name ? name.replace(/,/g, ' ') : '',
+    replaceCommasWithSpace(farmerName),
+    replaceCommasWithSpace(name),
     email,
     orgEmail,
-    address ? address.replace(/,/g, ' ') : '',
-    raisedBy ? raisedBy.replace(/,/g, ' ') : '',
+    replaceCommasWithSpace(address),
+    replaceCommasWithSpace(raisedBy),
     raisedOn,
     journey,
     confirmCheckDetails,
@@ -196,7 +200,7 @@ function transformEventToCsvV3 (event) {
     typeOfLivestock,
     visitDate,
     dateOfTesting,
-    vetName ? vetName.replace(/,/g, ' ') : '',
+    replaceCommasWithSpace(vetName),
     vetRcvs,
     urnResult,
     herdVaccinationStatus,
@@ -217,8 +221,8 @@ function transformEventToCsvV3 (event) {
     latestVetVisitApplicationReference,
     relevantReviewForEndemicsReference,
     claimed,
-    exception ? exception.replace(/,/g, ' ') : '',
-    invalidClaimData ? invalidClaimData.replace(/,/g, ' ') : '',
+    replaceCommasWithSpace(exception),
+    replaceCommasWithSpace(invalidClaimData),
     rowStatusId,
     statusToString(rowStatusId ?? 0),
     eventStatus
