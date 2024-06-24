@@ -1,17 +1,14 @@
 const { statusToString, statusToId } = require('../utils/statusHelpers')
-const { arrayToString, parseSheepTestResults, getReferenceFromNestedData } = require('../parse-data')
-
-const isInvalidDataEvent = (eventType) => eventType?.endsWith('-invalid')
-const isInCheckWithSubStatus = (subStatus, statusId) => subStatus && statusId === 5
-
-const invalidClaimDataToString = (invalidDataEventData) => {
-  const { sbi: sbiFromInvalidData, crn: crnFromInvalidData, sessionKey, exception: exceptionFromInvalidData, reference: referenceFromInvalidData } = invalidDataEventData
-  // May not need to repeat some of these values, but better to include now then remove them later
-  const invalidInfo = `sbi:${sbiFromInvalidData} crn:${crnFromInvalidData} sessionKey:${sessionKey} exception:${exceptionFromInvalidData} reference:${referenceFromInvalidData}`
-  return invalidInfo
-}
-
-const getSbiFromPartitionKey = (partitionKey) => partitionKey?.length > 9 ? partitionKey.slice(0, 9) : partitionKey
+const {
+  arrayToString,
+  getReferenceFromNestedData,
+  getSbiFromPartitionKey,
+  invalidClaimDataToString,
+  isInCheckWithSubStatus,
+  isInvalidDataEvent,
+  parseSheepTestResults,
+  replaceCommasWithSpace
+} = require('../utils/parse-data')
 
 // Define the CSV column names
 const columns = [
@@ -167,7 +164,7 @@ function transformEventToCsvV3 (event) {
     sbiFromPartitionKey,
     sessionId,
     rowType,
-    message ? message.replace(/,/g, ' ') : '',
+    replaceCommasWithSpace(message),
     reference,
     applicationReference,
     tempReference,
@@ -176,12 +173,12 @@ function transformEventToCsvV3 (event) {
     sbi,
     crn,
     frn,
-    farmerName ? farmerName.replace(/,/g, ' ') : '',
-    name ? name.replace(/,/g, ' ') : '',
+    replaceCommasWithSpace(farmerName),
+    replaceCommasWithSpace(name),
     email,
     orgEmail,
-    address ? address.replace(/,/g, ' ') : '',
-    raisedBy ? raisedBy.replace(/,/g, ' ') : '',
+    replaceCommasWithSpace(address),
+    replaceCommasWithSpace(raisedBy),
     raisedOn,
     journey,
     confirmCheckDetails,
@@ -196,7 +193,7 @@ function transformEventToCsvV3 (event) {
     typeOfLivestock,
     visitDate,
     dateOfTesting,
-    vetName ? vetName.replace(/,/g, ' ') : '',
+    replaceCommasWithSpace(vetName),
     vetRcvs,
     urnResult,
     herdVaccinationStatus,
@@ -217,8 +214,8 @@ function transformEventToCsvV3 (event) {
     latestVetVisitApplicationReference,
     relevantReviewForEndemicsReference,
     claimed,
-    exception ? exception.replace(/,/g, ' ') : '',
-    invalidClaimData ? invalidClaimData.replace(/,/g, ' ') : '',
+    replaceCommasWithSpace(exception),
+    replaceCommasWithSpace(invalidClaimData),
     rowStatusId,
     statusToString(rowStatusId ?? 0),
     eventStatus

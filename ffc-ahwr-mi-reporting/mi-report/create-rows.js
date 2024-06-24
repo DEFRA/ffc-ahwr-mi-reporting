@@ -1,6 +1,6 @@
 const moment = require('moment')
 const groupByPartitionKey = require('../storage/group-by-partition-key')
-const { parseData, parsePayload, formatDate } = require('../parse-data')
+const { parseData, parsePayload, formatDate } = require('../utils/parse-data')
 const convertFromBoolean = require('../csv/convert-from-boolean')
 const notApplicableIfUndefined = require('../csv/not-applicable-if-undefined')
 const { claimRecommendedOn, claimRecommendedBy, currentStatus, groupBy } = require('./create-row-helpers')
