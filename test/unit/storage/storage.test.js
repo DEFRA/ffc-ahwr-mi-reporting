@@ -56,7 +56,7 @@ describe('Storage', () => {
 
       const buffer = await downloadFile(filename)
 
-      const downloadedContent = buffer.toString('utf-8')
+      const downloadedContent = buffer.toString('utf8')
       expect(downloadedContent).toBe('This is a test file.')
     })
   })

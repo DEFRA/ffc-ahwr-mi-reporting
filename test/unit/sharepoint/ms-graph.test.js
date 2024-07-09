@@ -119,6 +119,7 @@ describe('msGraph', () => {
             pathToFile: 'folder/sub_folder'
           })}`,
           `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
+            // file deepcode ignore HardcodedNonCryptoSecret/test: mock is not a real secret
             accessToken: 'acces...token'
           })}`,
           `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
