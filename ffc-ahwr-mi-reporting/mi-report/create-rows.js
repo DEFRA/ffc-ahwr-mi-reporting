@@ -146,9 +146,7 @@ const createRows = (events) => {
       const claimEvents = eventTypeClaimStatuses.includes(applicationEvents[applicationEvents.length - 1].EventType)
         ? sbiEvents.filter(event => `${event.EventType}`.startsWith('claim'))
         : []
-      if (applicationEvents[applicationEvents.length - 1].EventType === `application:status-updated:${applicationStatus.onHold}`) {
-        sbiEvents.filter(event => `${event.EventType}`.startsWith('claim')).forEach(s => console.log(s))
-      }
+
       rows.push(createRow([
         ...applicationEvents,
         ...applyEvents,
