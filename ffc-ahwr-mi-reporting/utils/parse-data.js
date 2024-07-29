@@ -44,7 +44,7 @@ const parseData = (events, type, key) => {
     raisedOn = formatDate(data?.raisedOn, moment.ISO_8601)
     raisedBy = data?.raisedBy
   } catch (error) {
-    // console.log(`${key} not found`)
+    console.log(`${key} not found`)
   }
 
   return {
