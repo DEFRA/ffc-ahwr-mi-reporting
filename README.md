@@ -1,6 +1,6 @@
 # ffc-ahwr-mi-reporting
 
-FFC AHWR MI reporting
+FFC AHWR MI reporting.
 
 ## mi-report
 
