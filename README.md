@@ -2,7 +2,6 @@
 
 FFC AHWR MI reporting.
 
-
 ## mi-report
 
 Each record depicts the progression of an agreement's journey, commencing with the application stage and concluding at the claim stage.
