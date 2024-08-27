@@ -57,6 +57,8 @@ const columns = [
   'sheepTests',
   'sheepTestResults',
   'piHunt',
+  'piHuntRecommended',
+  'piHuntAllAnimals',
   'biosecurity',
   'biosecurityAssessmentPercentage',
   'diseaseStatus',
@@ -130,6 +132,8 @@ function transformEventToCsvV3 (event) {
     sheepTests, // an array of strings representing the test codes
     sheepTestResults, // will be separate rows, each with an array, adding a test-with-results object to the array each time
     piHunt,
+    piHuntRecommended,
+    piHuntAllAnimals,
     biosecurity,
     diseaseStatus,
     amount,
@@ -207,6 +211,8 @@ function transformEventToCsvV3 (event) {
     sheepTestsString,
     sheepTestResultsString,
     piHunt,
+    piHuntRecommended,
+    piHuntAllAnimals,
     biosecurityConfirmation,
     assessmentPercentage,
     diseaseStatus,
