@@ -31,6 +31,40 @@ const queryEntitiesByTimestamp = async (tableName) => {
   }
   return events
 }
+const queryEntitiesByTimestampByDate = async (tableName, startDate = null, endDate = null) => {
+  const events = []
+
+  // Default startDate to yesterday's 00:00
+  if (!startDate) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);  // Set to 00:00:00
+    startDate = yesterday;
+  }
+
+  // Default endDate to today's last midnight (00:00)
+  if (!endDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);  // Set to 00:00:00
+    endDate = today;
+  }
+
+  const eventResults = (tableName
+    ? TableClient.fromConnectionString(connectionString, tableName, { allowInsecureConnection: true })
+    : tableClient
+  ).listEntities({
+    queryOptions: {
+      filter: odata`Timestamp ge datetime'${startDate.toISOString()}' and Timestamp le datetime'${endDate.toISOString()}'`
+    }
+  });
+
+  for await (const event of eventResults) {
+    events.push(event);
+  }
+  
+  return events;
+};
+
 
 const getBlob = async (filename) => {
   return container.getBlockBlobClient(`${filename}`)
@@ -49,6 +83,7 @@ const writeFile = async (filename, content) => {
 module.exports = {
   connect,
   queryEntitiesByTimestamp,
+  queryEntitiesByTimestampByDate,
   writeFile,
   downloadFile
 }
