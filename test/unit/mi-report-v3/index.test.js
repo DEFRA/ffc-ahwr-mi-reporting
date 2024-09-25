@@ -1,203 +1,130 @@
 const mockAzureStorageWriteFile = jest.fn()
 const mockAzureStorageDownloadFile = jest.fn()
 const mockSharepointUploadFile = jest.fn()
+const mockStreamJsonToCsv = jest.fn()
+const mockUploadFileToAzureBlob = jest.fn()
+const mockFsReadFileSync = jest.fn()
+const mockFsUnlinkSync = jest.fn()
+
+jest.mock('fs', () => ({
+  readFileSync: mockFsReadFileSync,
+  unlinkSync: mockFsUnlinkSync
+}))
+
+jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage', () => ({
+  writeFile: mockAzureStorageWriteFile,
+  downloadFile: mockAzureStorageDownloadFile
+}))
+
+jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph', () => ({
+  uploadFile: mockSharepointUploadFile
+}))
+
+jest.mock('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3', () => ({
+  streamJsonToCsv: mockStreamJsonToCsv,
+  uploadFileToAzureBlob: mockUploadFileToAzureBlob
+}))
+
+jest.mock('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename', () => jest.fn((reportName) => `${reportName}.csv`))
+
+jest.mock('../../../ffc-ahwr-mi-reporting/config/config', () => ({
+  featureToggle: {
+    sharePoint: {
+      enabled: true
+    }
+  },
+  sharePoint: {
+    dstFolder: 'dst_folder',
+    documentLibrary: 'document_lib'
+  },
+  connectionString: 'mock-connection-string',
+  containerName: 'mock-container',
+  environment: 'test-env'
+}))
+
+const buildAhwrMiReportV3 = require('../../../ffc-ahwr-mi-reporting/mi-report-v3')
+const path = require('path')
 
 describe('buildAhwrMiReportV3', () => {
-  describe('buildAhwrMiReportV3 - sharepoint on', () => {
-    let buildAhwrMiReportV3
-
-    beforeAll(() => {
-      jest.mock('../../../ffc-ahwr-mi-reporting/feature-toggle/config', () => ({
-        sharePoint: {
-          enabled: true
-        }
-      }))
-
-      jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
-        tenantId: 'tenant_id',
-        clientId: 'client_id',
-        clientSecret: 'client_secret',
-        hostname: 'hostname',
-        sitePath: 'site_path',
-        documentLibrary: 'document_lib',
-        dstFolder: 'dst_folder'
-      }))
-
-      jest.mock('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename', () => {
-        return jest.fn(reportName => `${reportName}.csv`)
-      })
-
-      jest.mock('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3.js', () => {
-        return jest.fn(events => [
-          {
-            // mocked event
-          }
-        ])
-      })
-
-      jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage', () => ({
-        writeFile: mockAzureStorageWriteFile,
-        downloadFile: mockAzureStorageDownloadFile
-      }))
-
-      jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph', () => ({
-        uploadFile: mockSharepointUploadFile
-      }))
-
-      buildAhwrMiReportV3 = require('../../../ffc-ahwr-mi-reporting/mi-report-v3')
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
-      jest.resetModules()
-    })
-
-    test('should create and upload CSV file', async () => {
-      const events = [{ /* Mocked event data here */ }]
-
-      mockAzureStorageDownloadFile.mockResolvedValue('downloadedFile')
-
-      await buildAhwrMiReportV3(events)
-
-      expect(mockAzureStorageWriteFile).toHaveBeenCalledWith('ahwr-mi-report-v3-.csv', [{}])
-      expect(mockSharepointUploadFile).toHaveBeenCalledWith(expect.any(String), 'ahwr-mi-report-v3-.csv', 'downloadedFile')
-    })
-  /*
-    test('should not upload to SharePoint when feature toggle is disabled', async () => {
-      const events = [{ }]
-      const reportName = 'testReport'
-      const fileName = `${reportName}.csv`
-
-      const disabledSharePointConfig = {
-        featureToggle: {
-          sharePoint: {
-            enabled: false
-          }
-        }
-      }
-
-      await buildAhwrMiReportv3(events, reportName, disabledSharePointConfig)
-
-      expect(mockWriteFile).toHaveBeenCalledWith(fileName, 'csvData')
-      expect(mockUploadFile).not.toHaveBeenCalled()
-    })
-  */
-    // Add more test cases as needed
+  afterEach(() => {
+    jest.clearAllMocks()
+    jest.resetModules()
   })
 
-  describe('buildAhwrMiReportv3 - no events found', () => {
-    let buildAhwrMiReportv3
+  test('should create and upload CSV file to both Azure Blob Storage and SharePoint', async () => {
+    const events = [{ /* Mock event data */ }]
+    const mockCsvFilePath = path.join('tmp', 'testfile.csv')
 
-    beforeAll(() => {
-      jest.mock('../../../ffc-ahwr-mi-reporting/feature-toggle/config', () => ({
-        sharePoint: {
-          enabled: true
-        }
-      }))
+    // Mocking function behaviors
+    mockStreamJsonToCsv.mockResolvedValueOnce(mockCsvFilePath)
+    mockUploadFileToAzureBlob.mockResolvedValueOnce()
+    mockFsReadFileSync.mockReturnValueOnce('file-content')
+    mockSharepointUploadFile.mockResolvedValueOnce()
 
-      jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
-        tenantId: 'tenant_id',
-        clientId: 'client_id',
-        clientSecret: 'client_secret',
-        hostname: 'hostname',
-        sitePath: 'site_path',
-        documentLibrary: 'document_lib',
-        dstFolder: 'dst_folder'
-      }))
+    await buildAhwrMiReportV3(events)
 
-      jest.mock('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename', () => {
-        return jest.fn(reportName => `${reportName}.csv`)
-      })
+    // Check CSV generation
+    expect(mockStreamJsonToCsv).toHaveBeenCalledWith(events, expect.any(String))
 
-      jest.mock('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3.js', () => {
-        return jest.fn(events => [])
-      })
+    // Check upload to Azure Blob Storage
+    expect(mockUploadFileToAzureBlob).toHaveBeenCalledWith(expect.any(String), 'mock-container', 'ahwr-mi-report-v3-.csv', 'mock-connection-string')
 
-      jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage', () => ({
-        writeFile: mockAzureStorageWriteFile,
-        downloadFile: mockAzureStorageDownloadFile
-      }))
+    // Check SharePoint upload
+    expect(mockFsReadFileSync).toHaveBeenCalledWith(expect.any(String))
+    expect(mockSharepointUploadFile).toHaveBeenCalledWith(expect.any(String), 'ahwr-mi-report-v3-.csv', 'file-content')
 
-      jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph', () => ({
-        uploadFile: mockSharepointUploadFile
-      }))
-
-      buildAhwrMiReportv3 = require('../../../ffc-ahwr-mi-reporting/mi-report-v3')
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
-      jest.resetModules()
-    })
-
-    test('should not create nor upload CSV file', async () => {
-      const events = [{ /* Mocked event data here */ }]
-
-      mockAzureStorageDownloadFile.mockResolvedValue('downloadedFile')
-
-      await buildAhwrMiReportv3(events)
-
-      expect(mockAzureStorageWriteFile).not.toHaveBeenCalled()
-      expect(mockSharepointUploadFile).not.toHaveBeenCalled()
-    })
+    // Check temporary file deletion
+    expect(mockFsUnlinkSync).toHaveBeenCalledWith(expect.any(String))
   })
 
-  describe('buildAhwrMiReportv3 - sharepoint off', () => {
-    let buildAhwrMiReportv3
-
-    beforeAll(() => {
-      jest.mock('../../../ffc-ahwr-mi-reporting/feature-toggle/config', () => ({
+  test('should create and upload CSV file to only Azure Blob Storage when SharePoint upload is disabled', async () => {
+    jest.mock('../../../ffc-ahwr-mi-reporting/config/config', () => ({
+      featureToggle: {
         sharePoint: {
           enabled: false
         }
-      }))
+      },
+      sharePoint: {
+        dstFolder: 'dst_folder',
+        documentLibrary: 'document_lib'
+      },
+      connectionString: 'mock-connection-string',
+      containerName: 'mock-container',
+      environment: 'test-env'
+    }))
 
-      jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
-        tenantId: 'tenant_id',
-        clientId: 'client_id',
-        clientSecret: 'client_secret',
-        hostname: 'hostname',
-        sitePath: 'site_path',
-        documentLibrary: 'document_lib',
-        dstFolder: 'dst_folder'
-      }))
+    const events = [{ /* Mock event data */ }]
+    const mockCsvFilePath = path.join('tmp', 'testfile.csv')
 
-      jest.mock('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename', () => {
-        return jest.fn(reportName => `${reportName}.csv`)
-      })
+    // Mocking function behaviors
+    mockStreamJsonToCsv.mockResolvedValueOnce(mockCsvFilePath)
+    mockUploadFileToAzureBlob.mockResolvedValueOnce()
+    mockFsReadFileSync.mockReturnValueOnce('file-content')
 
-      jest.mock('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3.js', () => {
-        return jest.fn(events => [
-          {
-            // mocked event
-          }
-        ])
-      })
+    await buildAhwrMiReportV3(events)
 
-      jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage', () => ({
-        writeFile: mockAzureStorageWriteFile,
-        downloadFile: mockAzureStorageDownloadFile
-      }))
+    // Check CSV generation
+    expect(mockStreamJsonToCsv).toHaveBeenCalledWith(events, expect.any(String))
 
-      jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph', () => ({
-        uploadFile: mockSharepointUploadFile
-      }))
+    // Check upload to Azure Blob Storage
+    expect(mockUploadFileToAzureBlob).toHaveBeenCalledWith(expect.any(String), 'mock-container', 'ahwr-mi-report-v3-.csv', 'mock-connection-string')
 
-      buildAhwrMiReportv3 = require('../../../ffc-ahwr-mi-reporting/mi-report-v3')
-    })
+    // Check that SharePoint upload did not happen
+    expect(mockSharepointUploadFile).not.toHaveBeenCalled()
 
-    afterEach(() => {
-      jest.clearAllMocks()
-      jest.resetModules()
-    })
+    // Check temporary file deletion
+    expect(mockFsUnlinkSync).toHaveBeenCalledWith(expect.any(String))
+  })
 
-    test('should not upload to SharePoint when feature toggle is disabled', async () => {
-      const events = [{ }]
+  test('should not create nor upload CSV file when no events are present', async () => {
+    const events = []
 
-      await buildAhwrMiReportv3(events)
+    await buildAhwrMiReportV3(events)
 
-      expect(mockAzureStorageWriteFile).toHaveBeenCalledWith('ahwr-mi-report-v3-.csv', [{}])
-      expect(mockSharepointUploadFile).not.toHaveBeenCalled()
-    })
+    // Ensure CSV generation, uploads, and deletions were not called
+    expect(mockStreamJsonToCsv).not.toHaveBeenCalled()
+    expect(mockUploadFileToAzureBlob).not.toHaveBeenCalled()
+    expect(mockSharepointUploadFile).not.toHaveBeenCalled()
+    expect(mockFsUnlinkSync).not.toHaveBeenCalled()
   })
 })

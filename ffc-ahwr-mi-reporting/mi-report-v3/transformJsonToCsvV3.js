@@ -9,6 +9,8 @@ const {
   parseSheepTestResults,
   replaceCommasWithSpace
 } = require('../utils/parse-data')
+const { BlobServiceClient } = require('@azure/storage-blob')
+const fs = require('fs')
 
 // Define the CSV column names
 const columns = [
@@ -74,19 +76,84 @@ const columns = [
   'eventStatus'
 ]
 
-const transformJsonToCsvV3 = (events) => {
-  if (events.length === 0) {
+// Stream CSV data row by row to reduce memory footprint
+const streamJsonToCsv = async (events, csvFilePath) => {
+  if (!events || events.length === 0) {
     console.error('No events found')
     return
   }
-  const headerRow = columns.join(',') + '\n'
-  const csvContent = events.map(event => {
-    return transformEventToCsvV3(event)
-  }).join('\n')
 
-  return headerRow.concat(csvContent)
+  const writableStream = fs.createWriteStream(csvFilePath)
+  writableStream.write(columns.join(',') + '\n') // Write CSV headers
+
+  for (const event of events) {
+    const csvRow = transformEventToCsvV3(event)
+    writableStream.write(csvRow + '\n') // Write each row
+  }
+
+  writableStream.end()
+  return csvFilePath // Return the path of the written CSV file
 }
 
+// Function to upload file to Azure Blob Storage
+const uploadFileToAzureBlob = async (filePath, blobContainerName, blobName, connectionString) => {
+  const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
+  const containerClient = blobServiceClient.getContainerClient(blobContainerName)
+
+  // Create container if it does not exist
+  await containerClient.createIfNotExists()
+
+  const blockBlobClient = containerClient.getBlockBlobClient(blobName)
+
+  // Upload large files in chunks
+  // Define block size (4MB) and variables to track block IDs and buffers
+  const blockSize = 4 * 1024 * 1024 // 4MB block size
+  const blocks = []
+  let blockId = 0
+  let buffer = Buffer.alloc(0)
+
+  const fileStream = fs.createReadStream(filePath, { highWaterMark: blockSize })
+
+  // Process the file stream chunk by chunk
+  for await (const chunk of fileStream) {
+    // Append the new chunk to the buffer
+    buffer = Buffer.concat([buffer, chunk])
+
+    // If the buffer is greater than or equal to blockSize, upload a block
+    while (buffer.length >= blockSize) {
+      const blockIdString = blockId.toString().padStart(6, '0')
+      const blockIdEncoded = Buffer.from(blockIdString).toString('base64')
+      blocks.push(blockIdEncoded)
+
+      // Upload the first blockSize chunk of the buffer
+      const blockBuffer = buffer.slice(0, blockSize)
+      await blockBlobClient.stageBlock(blockIdEncoded, blockBuffer, blockBuffer.length)
+      console.log(`Uploaded block ${blockId + 1} (${blockBuffer.length} bytes)`)
+
+      blockId++
+
+      // Remove the uploaded chunk from the buffer
+      buffer = buffer.slice(blockSize)
+    }
+  }
+
+  // After reading the stream, upload any remaining data as the final block
+  if (buffer.length > 0) {
+    const blockIdString = blockId.toString().padStart(6, '0')
+    const blockIdEncoded = Buffer.from(blockIdString).toString('base64')
+    blocks.push(blockIdEncoded)
+
+    await blockBlobClient.stageBlock(blockIdEncoded, buffer, buffer.length)
+    console.log(`Uploaded final block ${blockId + 1} (${buffer.length} bytes)`)
+  }
+
+  // Commit the blocks to finalize the blob
+  await blockBlobClient.commitBlockList(blocks)
+
+  console.log(`File ${blobName} uploaded successfully to Azure Blob Storage.`)
+}
+
+// Function to transform event data to CSV row format
 function transformEventToCsvV3 (event) {
   const { partitionKey, SessionId: sessionId, Status: eventStatus } = event
   const sbiFromPartitionKey = getSbiFromPartitionKey(partitionKey)
@@ -107,13 +174,13 @@ function transformEventToCsvV3 (event) {
     typeOfReview,
     journey,
     confirmCheckDetails,
-    eligibleSpecies, // old journey
+    eligibleSpecies,
     agreeSameSpecies,
     agreeSpeciesNumbers,
     agreeVisitTimings,
     declaration,
     offerStatus,
-    whichReview, // old journey
+    whichReview,
     detailsCorrect,
     typeOfLivestock,
     visitDate,
@@ -129,11 +196,9 @@ function transformEventToCsvV3 (event) {
     testResults,
     vetVisitsReviewTestResults,
     sheepEndemicsPackage,
-    sheepTests, // an array of strings representing the test codes
-    sheepTestResults, // will be separate rows, each with an array, adding a test-with-results object to the array each time
+    sheepTests,
+    sheepTestResults,
     piHunt,
-    piHuntRecommended,
-    piHuntAllAnimals,
     biosecurity,
     diseaseStatus,
     amount,
@@ -144,9 +209,9 @@ function transformEventToCsvV3 (event) {
     exception,
     statusId,
     subStatus
-  } = data ?? ''
-  const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? ''
-  const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? ''
+  } = data ?? {}
+  const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? {}
+  const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? {}
   const relevantReviewForEndemicsReference = getReferenceFromNestedData(relevantReviewForEndemics)
   const latestEndemicsApplicationReference = getReferenceFromNestedData(latestEndemicsApplication)
   const latestVetVisitApplicationReference = getReferenceFromNestedData(latestVetVisitApplication)
@@ -211,8 +276,6 @@ function transformEventToCsvV3 (event) {
     sheepTestsString,
     sheepTestResultsString,
     piHunt,
-    piHuntRecommended,
-    piHuntAllAnimals,
     biosecurityConfirmation,
     assessmentPercentage,
     diseaseStatus,
@@ -231,4 +294,4 @@ function transformEventToCsvV3 (event) {
   return row
 }
 
-module.exports = transformJsonToCsvV3
+module.exports = { streamJsonToCsv, uploadFileToAzureBlob, transformEventToCsvV3 }
