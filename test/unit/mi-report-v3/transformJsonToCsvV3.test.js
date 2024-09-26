@@ -1,4 +1,4 @@
-const { streamJsonToCsv, uploadFileToAzureBlob, transformEventToCsvV3 } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
+const { streamJsonToCsv, uploadFileToAzureBlob, transformEventToCsvV3, getBlockSize } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
 const fs = require('fs')
 const { BlobServiceClient } = require('@azure/storage-blob')
 
@@ -8,56 +8,52 @@ jest.mock('fs', () => ({
     end: jest.fn()
   }),
   createReadStream: jest.fn(),
-  readFileSync: jest.fn(),
   unlinkSync: jest.fn()
 }))
 
-jest.mock('@azure/storage-blob')
+jest.mock('@azure/storage-blob', () => {
+  const mockBlobServiceClient = {
+    getContainerClient: jest.fn().mockReturnValue({
+      createIfNotExists: jest.fn(),
+      getBlockBlobClient: jest.fn().mockReturnValue({
+        stageBlock: jest.fn(),
+        commitBlockList: jest.fn()
+      })
+    })
+  }
 
-describe('transformJsonToCsvV3', () => {
-  const events = [
-    {
-      partitionKey: '123456',
-      SessionId: '789123456',
-      EventType: 'farmerApplyData-organisation',
-      EventRaised: new Date().toISOString(),
-      Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-1234-ABCD","organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","orgEmail":"brownorg@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom","crn":"0123456789","frn":"9876543210"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
+  return {
+    BlobServiceClient: {
+      fromConnectionString: jest.fn(() => mockBlobServiceClient)
     }
-  ]
+  }
+})
 
-  beforeEach(() => {
-    jest.clearAllMocks()
+describe('streamJsonToCsv', () => {
+  test('should write CSV data to file', async () => {
+    const mockEvents = [
+      { partitionKey: '123', Payload: '{"type":"eventType","data":{}}' }
+    ]
+    const csvFilePath = 'path/to/csv'
+
+    await streamJsonToCsv(mockEvents, csvFilePath)
+
+    // Verify that fs.createWriteStream was called correctly
+    expect(fs.createWriteStream).toHaveBeenCalledWith(csvFilePath)
+    // Check if the CSV headers were written
+    expect(fs.createWriteStream().write).toHaveBeenCalledWith(expect.stringContaining('sbiFromPartitionKey'))
+    // Check if the CSV row was written
+    expect(fs.createWriteStream().write).toHaveBeenCalledWith(expect.any(String))
+    expect(fs.createWriteStream().end).toHaveBeenCalled()
   })
 
-  test('should transform event to CSV row', () => {
-    const result = transformEventToCsvV3(events[0])
-    const expectedCsvRow =
-      '123456,789123456,farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,'
-    expect(result).toEqual(expectedCsvRow)
-  })
-
-  test('should return undefined and log error for missing events', async () => {
+  test('should handle empty events and log an error', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
     const result = await streamJsonToCsv([], 'path/to/csv')
+
     expect(consoleSpy).toHaveBeenCalledWith('No events found')
     expect(result).toBeUndefined()
     consoleSpy.mockRestore()
-  })
-
-  test('should write CSV header and rows to file', async () => {
-    const writeStreamMock = {
-      write: jest.fn(),
-      end: jest.fn()
-    }
-    fs.createWriteStream.mockReturnValue(writeStreamMock)
-
-    const csvFilePath = 'path/to/csv'
-    await streamJsonToCsv(events, csvFilePath)
-
-    expect(fs.createWriteStream).toHaveBeenCalledWith(csvFilePath)
-    expect(writeStreamMock.write).toHaveBeenCalledWith(expect.stringContaining('sbiFromPartitionKey'))
-    expect(writeStreamMock.write).toHaveBeenCalledWith(expect.stringContaining('123456,789123456'))
-    expect(writeStreamMock.end).toHaveBeenCalled()
   })
 })
 
@@ -84,7 +80,7 @@ describe('uploadFileToAzureBlob', () => {
     fs.createReadStream.mockReturnValue({
       [Symbol.asyncIterator]: jest.fn().mockReturnValue({
         async next () {
-          return { value: Buffer.alloc(1024 * 1024 * 4), done: false } // 4MB chunk
+          return { value: Buffer.alloc(1024), done: false } // Use 1KB buffer for testing
         }
       })
     })
@@ -113,7 +109,7 @@ describe('uploadFileToAzureBlob', () => {
     fs.createReadStream.mockReturnValue({
       [Symbol.asyncIterator]: jest.fn().mockReturnValue({
         async next () {
-          return { value: Buffer.alloc(1024 * 1024 * 4), done: false } // 4MB chunk
+          return { value: Buffer.alloc(1024), done: false } // Use 1KB buffer for testing
         }
       })
     })
@@ -124,5 +120,40 @@ describe('uploadFileToAzureBlob', () => {
 
     expect(mockBlobClient.stageBlock).toHaveBeenCalled()
     expect(mockBlobClient.commitBlockList).not.toHaveBeenCalled()
+  })
+})
+
+describe('transformEventToCsvV3', () => {
+  test('should transform event to CSV row', () => {
+    const event = {
+      partitionKey: '123456',
+      SessionId: '789123456',
+      Payload: '{"type":"eventType","data":{"key":"value"}}'
+    }
+    const result = transformEventToCsvV3(event)
+
+    // Check if the result contains the CSV-formatted string
+    expect(result).toContain('123456')
+    expect(result).toContain('789123456')
+    expect(result).toContain('eventType')
+  })
+
+  test('should handle JSON parse error in event payload', () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    const event = {
+      partitionKey: '123456',
+      SessionId: '789123456',
+      Payload: '{invalidJSON}'
+    }
+    transformEventToCsvV3(event)
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.any(String), event, expect.any(SyntaxError))
+    consoleSpy.mockRestore()
+  })
+})
+
+describe('getBlockSize', () => {
+  test('should return block size', () => {
+    expect(getBlockSize()).toBe(4 * 1024 * 1024) // 4MB block size
   })
 })

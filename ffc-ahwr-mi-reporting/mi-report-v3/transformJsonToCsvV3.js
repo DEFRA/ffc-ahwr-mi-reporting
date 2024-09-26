@@ -95,6 +95,9 @@ const streamJsonToCsv = async (events, csvFilePath) => {
   return csvFilePath // Return the path of the written CSV file
 }
 
+const getBlockSize = () => {
+  return 4 * 1024 * 1024 // 4MB block size
+}
 // Function to upload file to Azure Blob Storage
 const uploadFileToAzureBlob = async (filePath, blobContainerName, blobName, connectionString) => {
   const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
@@ -107,7 +110,7 @@ const uploadFileToAzureBlob = async (filePath, blobContainerName, blobName, conn
 
   // Upload large files in chunks
   // Define block size (4MB) and variables to track block IDs and buffers
-  const blockSize = 4 * 1024 * 1024 // 4MB block size
+  const blockSize = getBlockSize()
   const blocks = []
   let blockId = 0
   let buffer = Buffer.alloc(0)
@@ -199,6 +202,8 @@ function transformEventToCsvV3 (event) {
     sheepTests,
     sheepTestResults,
     piHunt,
+    piHuntRecommended,
+    piHuntAllAnimals,
     biosecurity,
     diseaseStatus,
     amount,
@@ -276,6 +281,8 @@ function transformEventToCsvV3 (event) {
     sheepTestsString,
     sheepTestResultsString,
     piHunt,
+    piHuntRecommended,
+    piHuntAllAnimals,
     biosecurityConfirmation,
     assessmentPercentage,
     diseaseStatus,
@@ -294,4 +301,4 @@ function transformEventToCsvV3 (event) {
   return row
 }
 
-module.exports = { streamJsonToCsv, uploadFileToAzureBlob, transformEventToCsvV3 }
+module.exports = { streamJsonToCsv, uploadFileToAzureBlob, transformEventToCsvV3, getBlockSize }
