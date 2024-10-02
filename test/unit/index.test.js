@@ -1,4 +1,11 @@
-let mockEvents = []
+const { queryEntitiesByTimestamp, connect } = require('../../ffc-ahwr-mi-reporting/storage/storage')
+const buildAhwrMiReportV3 = require('../../ffc-ahwr-mi-reporting/mi-report-v3')
+const miReportFunction = require('../../ffc-ahwr-mi-reporting') // Adjust the path as necessary
+const mockEvents = []
+const mockSendEmail = jest.fn()
+const mockUpload = jest.fn()
+
+jest.mock('../../ffc-ahwr-mi-reporting/mi-report-v3')
 jest.mock('@azure/data-tables', () => {
   return {
     odata: jest.fn(),
@@ -13,106 +20,135 @@ jest.mock('@azure/data-tables', () => {
     }
   }
 })
-
-let generateReport
-let mockContext
-let mockTimer
-const mockSendEmail = jest.fn()
-const mockUpload = jest.fn()
-const mockWriteFile = jest.fn()
-const mockEnvironment = 'test'
-
-const MOCK_UPLOAD_FILE = jest.fn()
-
-describe('report', () => {
-  beforeAll(() => {
-    mockContext = require('../mock/mock-context')
-    mockTimer = require('../mock/mock-timer')
-
-    jest.mock('notifications-node-client', () => ({
-      NotifyClient: jest.fn().mockImplementation(() => ({
-        sendEmail: mockSendEmail,
-        prepareUpload: jest.fn().mockReturnValue({ })
-      }))
-    }))
-
-    jest.mock('../../ffc-ahwr-mi-reporting/storage/storage', () => {
-      return {
-        queryEntitiesByTimestamp: jest.fn().mockResolvedValue([{
-          foo: 'bar',
-          EventType: 'eventType',
-          Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-931B-C490","organisation":{"sbi":"106401373","farmerName":"Trevor John Hale","name":"M & G Williams","email":"trevorhalec@elahroverts.com.test","address":""}},"raisedBy":"trevorhalec@elahroverts.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
-        }]),
-        connect: jest.fn(),
-        writeFile: mockWriteFile,
-        downloadFile: jest.fn()
-      }
-    })
-
-    jest.mock('../../ffc-ahwr-mi-reporting/sharepoint/ms-graph', () => ({
-      uploadFile: MOCK_UPLOAD_FILE
-    }))
-
-    jest.mock('../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
-      sharePoint: {}
-    }))
-    jest.mock('../../ffc-ahwr-mi-reporting/feature-toggle/config', () => ({
-      sharePoint: {
-        enabled: true
-      }
-    }))
-    jest.mock('../../ffc-ahwr-mi-reporting/config/config', () => {
-      return {
-        ...jest.requireActual('../../ffc-ahwr-mi-reporting/config/config'),
-        environment: mockEnvironment
-      }
-    })
-
-    jest.mock('@azure/storage-blob', () => {
-      return {
-        BlobServiceClient: {
-          fromConnectionString: jest.fn().mockImplementation(() => {
+jest.mock('notifications-node-client', () => ({
+  NotifyClient: jest.fn().mockImplementation(() => ({
+    sendEmail: mockSendEmail,
+    prepareUpload: jest.fn().mockReturnValue({ })
+  }))
+}))
+jest.mock('../../ffc-ahwr-mi-reporting/storage/storage', () => {
+  return {
+    queryEntitiesByTimestamp: jest.fn().mockResolvedValue([{
+      foo: 'bar',
+      EventType: 'eventType',
+      Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-931B-C490","organisation":{"sbi":"106401373","farmerName":"Trevor John Hale","name":"M & G Williams","email":"trevorhalec@elahroverts.com.test","address":""}},"raisedBy":"trevorhalec@elahroverts.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
+    }]),
+    connect: jest.fn(),
+    writeFile: jest.fn(),
+    downloadFile: jest.fn()
+  }
+})
+jest.mock('../../ffc-ahwr-mi-reporting/sharepoint/ms-graph', () => ({
+  uploadFile: jest.fn()
+}))
+jest.mock('../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
+  sharePoint: {}
+}))
+jest.mock('../../ffc-ahwr-mi-reporting/feature-toggle/config', () => ({
+  sharePoint: {
+    enabled: true
+  }
+}))
+jest.mock('../../ffc-ahwr-mi-reporting/config/config', () => {
+  return {
+    ...jest.requireActual('../../ffc-ahwr-mi-reporting/config/config'),
+    environment: 'test'
+  }
+})
+jest.mock('@azure/storage-blob', () => {
+  return {
+    BlobServiceClient: {
+      fromConnectionString: jest.fn().mockImplementation(() => {
+        return {
+          getContainerClient: jest.fn().mockImplementation(() => {
             return {
-              getContainerClient: jest.fn().mockImplementation(() => {
+              createIfNotExists: jest.fn(),
+              getBlockBlobClient: jest.fn().mockImplementation(() => {
                 return {
-                  createIfNotExists: jest.fn(),
-                  getBlockBlobClient: jest.fn().mockImplementation(() => {
-                    return {
-                      upload: mockUpload
-                    }
-                  })
+                  upload: mockUpload
                 }
               })
             }
           })
         }
-      }
-    })
+      })
+    }
+  }
+})
 
-    generateReport = require('../../ffc-ahwr-mi-reporting')
-  })
+describe('miReportFunction', () => {
+  let context
+  let miReportTimer
 
   beforeEach(() => {
-    mockEvents = [{
-      partitionKey: 'partition',
-      EventType: 'farmerApplyData-organisation',
-      EventRaised: new Date().toISOString(),
-      Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-931B-C490","organisation":{"sbi":"106401373","farmerName":"Trevor John Hale","name":"M & G Williams","email":"trevorhalec@elahroverts.com.test","address":""}},"raisedBy":"trevorhalec@elahroverts.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
-    }, {
-      partitionKey: 'partition',
-      EventRaised: new Date().toISOString(),
-      EventType: 'ineligibility-event',
-      Payload: '{"type":"ineligibility-event","message":"Apply: LockedBusinessError","data":{"sbi":"106363424","crn":"1100514988","exception":"LockedBusinessError","raisedAt":"2024-02-15T13:23:39.830Z","journey":"apply","reference":"TEMP-EFF4-B965"},"raisedBy":"trevorhalec@elahroverts.com.test","raisedOn":"2024-02-15T13:23:40.068Z"}'
-    }]
+    buildAhwrMiReportV3.mockImplementation(() => jest.fn())
+    context = {
+      log: jest.fn()
+    }
+    miReportTimer = {
+      isPastDue: false
+    }
   })
 
-  afterEach(() => {
-    jest.clearAllMocks()
+  test('should connect to storage and log sourcing report data', async () => {
+    connect.mockResolvedValue()
+    queryEntitiesByTimestamp.mockResolvedValue([])
+
+    await miReportFunction(context, miReportTimer)
+
+    expect(connect).toHaveBeenCalled()
+    expect(context.log).toHaveBeenCalledWith('Sourcing report data')
   })
 
-  test('should write file to share', async () => {
-    await generateReport(mockContext, mockTimer)
-    expect(mockWriteFile).toHaveBeenCalled()
-    expect(MOCK_UPLOAD_FILE).toBeCalledTimes(1)
+  test('should log no events found if no events are returned', async () => {
+    connect.mockResolvedValue()
+    queryEntitiesByTimestamp.mockResolvedValue([])
+
+    await miReportFunction(context, miReportTimer)
+
+    expect(context.log).toHaveBeenCalledWith('No events found')
+  })
+
+  test('should build and store AHWR MI Report V3 if events are found', async () => {
+    const events = [{ id: 1 }, { id: 2 }]
+    connect.mockResolvedValue()
+    queryEntitiesByTimestamp.mockResolvedValue(events)
+    buildAhwrMiReportV3.mockResolvedValue()
+
+    await miReportFunction(context, miReportTimer)
+
+    expect(buildAhwrMiReportV3).toHaveBeenCalledWith(events)
+  })
+
+  test('should log an error if building the report fails', async () => {
+    const events = [{ id: 1 }]
+    const error = new Error('Test error')
+    connect.mockResolvedValue()
+    queryEntitiesByTimestamp.mockResolvedValue(events)
+    buildAhwrMiReportV3.mockRejectedValue(error)
+
+    await miReportFunction(context, miReportTimer)
+
+    expect(context.log).toHaveBeenCalledWith('MI report V3 failed: ', error)
+  })
+
+  test('should log if the timer is past due', async () => {
+    connect.mockResolvedValue()
+    queryEntitiesByTimestamp.mockResolvedValue([])
+    miReportTimer.isPastDue = true
+
+    await miReportFunction(context, miReportTimer)
+
+    expect(context.log).toHaveBeenCalledWith('Node is running late')
+  })
+
+  test('should log the function ran with the timestamp', async () => {
+    connect.mockResolvedValue()
+    queryEntitiesByTimestamp.mockResolvedValue([])
+    const timeStamp = new Date().toISOString()
+
+    await miReportFunction(context, miReportTimer)
+
+    expect(context.log).toHaveBeenCalledWith('Node timer trigger function ran', timeStamp)
   })
 })
