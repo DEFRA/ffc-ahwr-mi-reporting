@@ -9,8 +9,6 @@ const {
   parseSheepTestResults,
   replaceCommasWithSpace
 } = require('../utils/parse-data')
-const { BlobServiceClient } = require('@azure/storage-blob')
-const fs = require('fs')
 
 // Define the CSV column names
 const columns = [
@@ -75,86 +73,6 @@ const columns = [
   'statusName',
   'eventStatus'
 ]
-
-// Stream CSV data row by row to reduce memory footprint
-const streamJsonToCsv = async (events, csvFilePath) => {
-  if (!events || events.length === 0) {
-    console.error('No events found')
-    return
-  }
-
-  const writableStream = fs.createWriteStream(csvFilePath)
-  writableStream.write(columns.join(',') + '\n') // Write CSV headers
-
-  for (const event of events) {
-    const csvRow = transformEventToCsvV3(event)
-    writableStream.write(csvRow + '\n') // Write each row
-  }
-
-  writableStream.end()
-  return csvFilePath // Return the path of the written CSV file
-}
-
-const getBlockSize = () => {
-  return 4 * 1024 * 1024 // 4MB block size
-}
-// Function to upload file to Azure Blob Storage
-const uploadFileToAzureBlob = async (filePath, blobContainerName, blobName, connectionString) => {
-  const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
-  const containerClient = blobServiceClient.getContainerClient(blobContainerName)
-
-  // Create container if it does not exist
-  await containerClient.createIfNotExists()
-
-  const blockBlobClient = containerClient.getBlockBlobClient(blobName)
-
-  // Upload large files in chunks
-  // Define block size (4MB) and variables to track block IDs and buffers
-  const blockSize = getBlockSize()
-  const blocks = []
-  let blockId = 0
-  let buffer = Buffer.alloc(0)
-
-  const fileStream = fs.createReadStream(filePath, { highWaterMark: blockSize })
-
-  // Process the file stream chunk by chunk
-  for await (const chunk of fileStream) {
-    // Append the new chunk to the buffer
-    buffer = Buffer.concat([buffer, chunk])
-
-    // If the buffer is greater than or equal to blockSize, upload a block
-    while (buffer.length >= blockSize) {
-      const blockIdString = blockId.toString().padStart(6, '0')
-      const blockIdEncoded = Buffer.from(blockIdString).toString('base64')
-      blocks.push(blockIdEncoded)
-
-      // Upload the first blockSize chunk of the buffer
-      const blockBuffer = buffer.slice(0, blockSize)
-      await blockBlobClient.stageBlock(blockIdEncoded, blockBuffer, blockBuffer.length)
-      console.log(`Uploaded block ${blockId + 1} (${blockBuffer.length} bytes)`)
-
-      blockId++
-
-      // Remove the uploaded chunk from the buffer
-      buffer = buffer.slice(blockSize)
-    }
-  }
-
-  // After reading the stream, upload any remaining data as the final block
-  if (buffer.length > 0) {
-    const blockIdString = blockId.toString().padStart(6, '0')
-    const blockIdEncoded = Buffer.from(blockIdString).toString('base64')
-    blocks.push(blockIdEncoded)
-
-    await blockBlobClient.stageBlock(blockIdEncoded, buffer, buffer.length)
-    console.log(`Uploaded final block ${blockId + 1} (${buffer.length} bytes)`)
-  }
-
-  // Commit the blocks to finalize the blob
-  await blockBlobClient.commitBlockList(blocks)
-
-  console.log(`File ${blobName} uploaded successfully to Azure Blob Storage.`)
-}
 
 // Function to transform event data to CSV row format
 function transformEventToCsvV3 (event) {
@@ -301,4 +219,4 @@ function transformEventToCsvV3 (event) {
   return row
 }
 
-module.exports = { streamJsonToCsv, uploadFileToAzureBlob, transformEventToCsvV3, getBlockSize }
+module.exports = { transformEventToCsvV3, columns }
