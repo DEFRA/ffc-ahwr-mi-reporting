@@ -88,6 +88,7 @@ function transformEventToCsvV3 (event) {
     parsePayload = JSON.parse(event.Payload)
   } catch (error) {
     console.error('Parse event error', event, error)
+    return
   }
 
   const { type, data, raisedBy, raisedOn, message } = parsePayload
