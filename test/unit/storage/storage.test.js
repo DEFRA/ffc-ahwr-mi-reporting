@@ -9,19 +9,24 @@ jest.mock('@azure/storage-blob', () => ({
     fromConnectionString: jest.fn().mockReturnValue({
       getContainerClient: jest.fn().mockReturnValue({
         createIfNotExists: jest.fn(),
-        getBlockBlobClient: jest.fn().mockImplementation((filename) => {
-          if (filename === 'test.txt') {
+        getAppendBlobClient: jest.fn().mockImplementation((filename) => {
+          if (filename === 'fileNameThatDoesNotExist') {
             return {
-              downloadToBuffer: jest.fn().mockResolvedValue('This is a test file.'),
-              upload: jest.fn().mockImplementation((content, length) => {
-                if (content !== 'content' || length !== content.length) {
-                  throw new Error('Assertion failed')
-                }
-              }),
-              exists: jest.fn().mockResolvedValue(true)
+              exists: jest.fn().mockResolvedValue(false),
+              create: jest.fn().mockResolvedValue(true),
+              appendBlock: jest.fn().mockResolvedValue(true)
+            }
+          } else {
+            return {
+              exists: jest.fn().mockResolvedValue(true),
+              appendBlock: jest.fn().mockResolvedValue(true)
             }
           }
-          return {}
+        }),
+        getBlobClient: jest.fn().mockImplementation(() => {
+          return {
+            download: jest.fn().mockResolvedValue({ readableStreamBody: '' })
+          }
         })
       })
     })
@@ -31,29 +36,49 @@ jest.mock('@azure/storage-blob', () => ({
 jest.mock('@azure/data-tables', () => ({
   TableClient: {
     fromConnectionString: jest.fn().mockReturnValue({
-      listEntities: jest.fn().mockReturnValue(['event1', 'event2'])
+      listEntities: jest.fn().mockReturnValue({
+        byPage: jest.fn().mockReturnValue(['event1', 'event2'])
+      })
     })
   },
   odata: jest.fn()
 }))
+
+jest.mock('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
+
+const consoleSpy = jest
+  .spyOn(console, 'log')
+  .mockImplementation(() => {})
 
 describe('Storage', () => {
   beforeEach(async () => {
     await connect()
   })
 
+  afterEach(() => {
+    consoleSpy.mockReset()
+    jest.clearAllMocks()
+  })
+
   describe('processEntitiesByTimestampPaged', () => {
-    test.skip('should TODO1', async () => {
-      const result = await processEntitiesByTimestampPaged('tableName', 'fileName')
-      // TODO AHWR-96 impl
-      expect(result).not.toBeNull()
+    test('should process successfully when file already exists', async () => {
+      await processEntitiesByTimestampPaged('tableName', 'fileName')
+
+      console.log(consoleSpy.mock.calls)
+      expect(consoleSpy).toHaveBeenCalledWith('Page 1 and 6 event items written to append blob')
+    })
+
+    test('should process successfully when file does not exists', async () => {
+      await processEntitiesByTimestampPaged('tableName', 'fileNameThatDoesNotExist')
+
+      console.log(consoleSpy.mock.calls)
+      expect(consoleSpy).toHaveBeenCalledWith('Page 1 and 6 event items written to append blob')
     })
   })
 
   describe('streamBlobToFile', () => {
-    test.skip('should TODO2', async () => {
+    test('should process successfully', async () => {
       const readableStreamBody = await streamBlobToFile('fileName')
-      // TODO AHWR-96 impl
       expect(readableStreamBody).not.toBeNull()
     })
   })
