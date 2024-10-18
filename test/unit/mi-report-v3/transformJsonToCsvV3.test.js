@@ -217,10 +217,9 @@ const consoleSpy = jest
 let result
 
 test('no events found', async () => {
-  const noEvents = []
-  result = await transformEventToCsvV3(noEvents)
+  result = await transformEventToCsvV3(undefined)
 
-  expect(consoleSpy).toHaveBeenCalledWith('No events found')
+  expect(consoleSpy).toHaveBeenCalledWith('No event provided')
   expect(result).toBe(undefined)
 
   consoleSpy.mockReset()

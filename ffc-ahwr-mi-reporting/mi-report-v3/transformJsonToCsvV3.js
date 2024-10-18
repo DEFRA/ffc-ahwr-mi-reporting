@@ -76,8 +76,8 @@ const columns = [
 
 // Function to transform event data to CSV row format
 function transformEventToCsvV3 (event) {
-  if (!event || !event.length) {
-    console.error('No events found')
+  if (!event) {
+    console.error('No event provided')
     return
   }
 
