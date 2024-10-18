@@ -76,6 +76,11 @@ const columns = [
 
 // Function to transform event data to CSV row format
 function transformEventToCsvV3 (event) {
+  if (!event || !event.length) {
+    console.error('No events found')
+    return
+  }
+
   const { partitionKey, SessionId: sessionId, Status: eventStatus } = event
   const sbiFromPartitionKey = getSbiFromPartitionKey(partitionKey)
   let parsePayload = ''

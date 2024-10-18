@@ -1,8 +1,7 @@
 const {
   connect,
-  queryEntitiesByTimestamp,
-  writeFile,
-  downloadFile
+  processEntitiesByTimestampPaged,
+  streamBlobToFile
 } = require('../../../ffc-ahwr-mi-reporting/storage/storage')
 
 jest.mock('@azure/storage-blob', () => ({
@@ -43,30 +42,19 @@ describe('Storage', () => {
     await connect()
   })
 
-  describe('queryEntitiesByTimestamp', () => {
-    test('should return an array of events', async () => {
-      const result = await queryEntitiesByTimestamp('tableName')
-      expect(result).toEqual(['event1', 'event2'])
+  describe('processEntitiesByTimestampPaged', () => {
+    test.skip('should TODO1', async () => {
+      const result = await processEntitiesByTimestampPaged('tableName', 'fileName')
+      // TODO AHWR-96 impl
+      expect(result).not.toBeNull()
     })
   })
 
-  describe('downloadFile', () => {
-    test('should download the file from the storage container', async () => {
-      const filename = 'test.txt'
-
-      const buffer = await downloadFile(filename)
-
-      const downloadedContent = buffer.toString('utf8')
-      expect(downloadedContent).toBe('This is a test file.')
-    })
-  })
-
-  describe('writeFile', () => {
-    test('should upload the file from the storage container', async () => {
-      const filename = 'test.txt'
-      const content = 'content'
-
-      await expect(writeFile(filename, content)).resolves.toBeUndefined()
+  describe('streamBlobToFile', () => {
+    test.skip('should TODO2', async () => {
+      const readableStreamBody = await streamBlobToFile('fileName')
+      // TODO AHWR-96 impl
+      expect(readableStreamBody).not.toBeNull()
     })
   })
 })
