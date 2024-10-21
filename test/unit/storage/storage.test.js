@@ -1,8 +1,7 @@
 const {
   connect,
-  queryEntitiesByTimestamp,
-  writeFile,
-  downloadFile
+  processEntitiesByTimestampPaged,
+  streamBlobToFile
 } = require('../../../ffc-ahwr-mi-reporting/storage/storage')
 
 jest.mock('@azure/storage-blob', () => ({
@@ -10,19 +9,24 @@ jest.mock('@azure/storage-blob', () => ({
     fromConnectionString: jest.fn().mockReturnValue({
       getContainerClient: jest.fn().mockReturnValue({
         createIfNotExists: jest.fn(),
-        getBlockBlobClient: jest.fn().mockImplementation((filename) => {
-          if (filename === 'test.txt') {
+        getAppendBlobClient: jest.fn().mockImplementation((filename) => {
+          if (filename === 'fileNameThatDoesNotExist') {
             return {
-              downloadToBuffer: jest.fn().mockResolvedValue('This is a test file.'),
-              upload: jest.fn().mockImplementation((content, length) => {
-                if (content !== 'content' || length !== content.length) {
-                  throw new Error('Assertion failed')
-                }
-              }),
-              exists: jest.fn().mockResolvedValue(true)
+              exists: jest.fn().mockResolvedValue(false),
+              create: jest.fn().mockResolvedValue(true),
+              appendBlock: jest.fn().mockResolvedValue(true)
+            }
+          } else {
+            return {
+              exists: jest.fn().mockResolvedValue(true),
+              appendBlock: jest.fn().mockResolvedValue(true)
             }
           }
-          return {}
+        }),
+        getBlobClient: jest.fn().mockImplementation(() => {
+          return {
+            download: jest.fn().mockResolvedValue({ readableStreamBody: '' })
+          }
         })
       })
     })
@@ -32,41 +36,50 @@ jest.mock('@azure/storage-blob', () => ({
 jest.mock('@azure/data-tables', () => ({
   TableClient: {
     fromConnectionString: jest.fn().mockReturnValue({
-      listEntities: jest.fn().mockReturnValue(['event1', 'event2'])
+      listEntities: jest.fn().mockReturnValue({
+        byPage: jest.fn().mockReturnValue(['event1', 'event2'])
+      })
     })
   },
   odata: jest.fn()
 }))
+
+jest.mock('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
+
+const consoleSpy = jest
+  .spyOn(console, 'log')
+  .mockImplementation(() => {})
 
 describe('Storage', () => {
   beforeEach(async () => {
     await connect()
   })
 
-  describe('queryEntitiesByTimestamp', () => {
-    test('should return an array of events', async () => {
-      const result = await queryEntitiesByTimestamp('tableName')
-      expect(result).toEqual(['event1', 'event2'])
+  afterEach(() => {
+    consoleSpy.mockReset()
+    jest.clearAllMocks()
+  })
+
+  describe('processEntitiesByTimestampPaged', () => {
+    test('should process successfully when file already exists', async () => {
+      await processEntitiesByTimestampPaged('tableName', 'fileName')
+
+      console.log(consoleSpy.mock.calls)
+      expect(consoleSpy).toHaveBeenCalledWith('Page 1 and 6 event items written to append blob')
+    })
+
+    test('should process successfully when file does not exists', async () => {
+      await processEntitiesByTimestampPaged('tableName', 'fileNameThatDoesNotExist')
+
+      console.log(consoleSpy.mock.calls)
+      expect(consoleSpy).toHaveBeenCalledWith('Page 1 and 6 event items written to append blob')
     })
   })
 
-  describe('downloadFile', () => {
-    test('should download the file from the storage container', async () => {
-      const filename = 'test.txt'
-
-      const buffer = await downloadFile(filename)
-
-      const downloadedContent = buffer.toString('utf8')
-      expect(downloadedContent).toBe('This is a test file.')
-    })
-  })
-
-  describe('writeFile', () => {
-    test('should upload the file from the storage container', async () => {
-      const filename = 'test.txt'
-      const content = 'content'
-
-      await expect(writeFile(filename, content)).resolves.toBeUndefined()
+  describe('streamBlobToFile', () => {
+    test('should process successfully', async () => {
+      const readableStreamBody = await streamBlobToFile('fileName')
+      expect(readableStreamBody).not.toBeNull()
     })
   })
 })

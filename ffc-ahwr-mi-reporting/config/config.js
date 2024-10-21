@@ -6,5 +6,6 @@ module.exports = {
   containerName: 'reports',
   tableName: 'ahwreventstore',
   sharePoint: featureToggle.sharePoint.enabled ? require('../sharepoint/config') : {},
-  featureToggle
+  featureToggle,
+  pageSize: Number(process.env.PAGE_SIZE ?? 1000)
 }

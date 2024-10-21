@@ -90,36 +90,6 @@ describe('miReportFunction', () => {
     }
   })
 
-  test('should connect to storage and log sourcing report data', async () => {
-    connect.mockResolvedValue()
-    queryEntitiesByTimestamp.mockResolvedValue([])
-
-    await miReportFunction(context, miReportTimer)
-
-    expect(connect).toHaveBeenCalled()
-    expect(context.log).toHaveBeenCalledWith('Sourcing report data')
-  })
-
-  test('should log no events found if no events are returned', async () => {
-    connect.mockResolvedValue()
-    queryEntitiesByTimestamp.mockResolvedValue([])
-
-    await miReportFunction(context, miReportTimer)
-
-    expect(context.log).toHaveBeenCalledWith('No events found')
-  })
-
-  test('should build and store AHWR MI Report V3 if events are found', async () => {
-    const events = [{ id: 1 }, { id: 2 }]
-    connect.mockResolvedValue()
-    queryEntitiesByTimestamp.mockResolvedValue(events)
-    buildAhwrMiReportV3.mockResolvedValue()
-
-    await miReportFunction(context, miReportTimer)
-
-    expect(buildAhwrMiReportV3).toHaveBeenCalledWith(events)
-  })
-
   test('should log an error if building the report fails', async () => {
     const events = [{ id: 1 }]
     const error = new Error('Test error')
@@ -140,15 +110,5 @@ describe('miReportFunction', () => {
     await miReportFunction(context, miReportTimer)
 
     expect(context.log).toHaveBeenCalledWith('Node is running late')
-  })
-
-  test('should log the function ran with the timestamp', async () => {
-    connect.mockResolvedValue()
-    queryEntitiesByTimestamp.mockResolvedValue([])
-    const timeStamp = new Date().toISOString()
-
-    await miReportFunction(context, miReportTimer)
-
-    expect(context.log).toHaveBeenCalledWith('Node timer trigger function ran', timeStamp)
   })
 })
