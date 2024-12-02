@@ -102,24 +102,27 @@ describe('replaceCommasWithSpace', () => {
 })
 
 describe('parseData and parsePayload', () => {
+  const dateNow = new Date()
+  const laterDate = new Date()
+  laterDate.setSeconds(laterDate.getSeconds() + 10)
   const events = [{
     partitionKey: '123456',
     SessionId: '789123456',
     EventType: 'farmerApplyData-organisation',
-    EventRaised: new Date().toISOString(),
+    EventRaised: laterDate.toISOString(),
     Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-1234-ABCD","organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","orgEmail":"brownorg@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom","crn":"0123456789","frn":"9876543210"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
   },
   {
     partitionKey: '123456',
     SessionId: '789123456',
-    EventRaised: new Date().toISOString(),
+    EventRaised: dateNow.toISOString(),
     EventType: 'claim-organisation',
     Payload: '{"type":"claim-organisation","message":"Session set for claim and organisation.","data":{"reference":"TEMP-1234-ABCD","applicationReference":"IAHW-1234-EFGH","organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","orgEmail":"brownorg@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom","crn":"0123456789","frn":"9876543210"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-03-05T15:57:39.590Z"}'
   },
   {
     partitionKey: '123456',
     SessionId: '789123456',
-    EventRaised: new Date().toISOString(),
+    EventRaised: dateNow.toISOString(),
     EventType: 'farmerApplyData-declaration',
     Payload: '{"type":"farmerApplyData-declaration","message":"Session set for farmerApplyData and declaration.","data":{"reference":"TEMP-1234-ABCD","declaration":true},"raisedBy":"brown@test.com.test","raisedOn":"2024-01-04T21:27:23.530Z"}'
   }]
