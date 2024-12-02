@@ -24,17 +24,11 @@
     "@hapi/wreck": "^18.0.1",
     "@pnp/nodejs-commonjs": "^2.15.0",
     "applicationinsights": "^2.9.1",
-    "joi": "17.6.0",
+    "joi": "17.13.3",
     "moment": "2.29.4",
     "pino": "^9.5.0"
   },
   "overrides": {
-    "@pnp/nodejs-commonjs": {
-      "@azure/msal-node": "2.9.2"
-    },
-    "adal-node": {
-      "axios": "1.7.5"
-    },
     "jsonwebtoken": "9.0.0",
     "node-fetch": "2.6.7",
     "semver": "7.5.2"
