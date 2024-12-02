@@ -1,7 +1,7 @@
 const { TableClient, odata } = require('@azure/data-tables')
 const { BlobServiceClient } = require('@azure/storage-blob')
 const { connectionString, containerName, tableName, pageSize } = require('../config/config')
-const logger = require('../config/logging')
+
 let tableClient
 let blobServiceClient
 let container
@@ -10,21 +10,23 @@ let appendBlobClient
 
 const { transformEventToCsvV3, columns } = require('../mi-report-v3/transformJsonToCsvV3')
 
-const initialiseContainers = async () => {
-  logger.info('Making sure blob containers exist')
-  await container.createIfNotExists()
-  containersInitialised = true
+const initialiseContainers = async (context) => {
+  if (!containersInitialised) {
+    context.info('Making sure blob containers exist')
+    await container.createIfNotExists()
+    containersInitialised = true
+  }
 }
 
-const connect = async () => {
-  logger.info(`Connecting to storage with connectionString containerName ${containerName} tableName ${tableName}`)
+const connect = async (context) => {
+  context.info(`Connecting to storage with connectionString containerName ${containerName} tableName ${tableName}`)
   blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
   container = blobServiceClient.getContainerClient(containerName)
-  containersInitialised ?? await initialiseContainers()
+  await initialiseContainers(context)
   tableClient = TableClient.fromConnectionString(connectionString, tableName, { allowInsecureConnection: true })
 }
 
-const processEntitiesByTimestampPaged = async (tableName, fileName) => {
+const processEntitiesByTimestampPaged = async (tableName, fileName, context) => {
   const queryFilter = odata`Timestamp ge datetime'${new Date(2022, 1, 1).toISOString()}'`
 
   const eventResults = (tableName
@@ -32,7 +34,7 @@ const processEntitiesByTimestampPaged = async (tableName, fileName) => {
     : tableClient
   ).listEntities({ queryOptions: { filter: queryFilter } })
 
-  logger.info(`pageSize ${pageSize}`)
+  context.info(`pageSize ${pageSize}`)
 
   const eventsIterator = eventResults.byPage({ maxPageSize: pageSize })
 
@@ -47,7 +49,7 @@ const processEntitiesByTimestampPaged = async (tableName, fileName) => {
     await appendBlobClient.create()
     const headerContent = columns.join(',') + '\n'
     await appendBlobClient.appendBlock(headerContent, Buffer.byteLength(headerContent))
-    logger.info('write CSV headers to append blob')
+    context.info('write CSV headers to append blob')
   }
 
   let pageCount = 0
@@ -55,19 +57,19 @@ const processEntitiesByTimestampPaged = async (tableName, fileName) => {
 
   for await (const eventsPage of eventsIterator) {
     pageCount++
-    logger.info(`Current page ${pageCount}`)
+    context.info(`Current page ${pageCount}`)
     // append csv file
 
     let rowContent = ''
 
     for await (const event of eventsPage) {
-      const csvRow = transformEventToCsvV3(event)
+      const csvRow = transformEventToCsvV3(event, context)
       rowContent += csvRow + '\n'
       eventItemCount++
     }
 
     await appendBlobClient.appendBlock(rowContent, Buffer.byteLength(rowContent))
-    logger.info(`Page ${pageCount} and ${eventItemCount} event items written to append blob`)
+    context.info(`Page ${pageCount} and ${eventItemCount} event items written to append blob`)
   }
 }
 

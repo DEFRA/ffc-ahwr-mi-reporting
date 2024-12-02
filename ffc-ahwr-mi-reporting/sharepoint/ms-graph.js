@@ -1,14 +1,13 @@
 const Wreck = require('@hapi/wreck')
 const config = require('../config/config')
 const azureAD = require('./azure-ad')
-const logger = require('../config/logging')
 
 const graphUrl = {
   sites: 'https://graph.microsoft.com/v1.0/sites'
 }
 
-const getSiteId = async (accessToken) => {
-  logger.info('Getting the site ID')
+const getSiteId = async (accessToken, context) => {
+  context.info('Getting the site ID')
   const response = await Wreck.get(
       `${graphUrl.sites}/${config.sharePoint.hostname}:/${config.sharePoint.sitePath}`,
       {
@@ -24,8 +23,8 @@ const getSiteId = async (accessToken) => {
   return response.payload.id
 }
 
-const getDriveId = async (siteId, accessToken) => {
-  logger.info(`Getting the drive ID: ${siteId.slice(0, 5)}...${siteId.slice(-5)}`)
+const getDriveId = async (siteId, accessToken, context) => {
+  context.info(`Getting the drive ID: ${siteId.slice(0, 5)}...${siteId.slice(-5)}`)
   const response = await Wreck.get(
       `${graphUrl.sites}/${siteId}/drives`,
       {
@@ -45,12 +44,12 @@ const getDriveId = async (siteId, accessToken) => {
   return drive.id
 }
 
-const uploadFile = async (pathToFile, fileName, fileContent) => {
-  logger.info(`Uploading file: fileName: ${fileName}, pathToFile: ${pathToFile}`)
+const uploadFile = async (pathToFile, fileName, fileContent, context) => {
+  context.info(`Uploading file: fileName: ${fileName}, pathToFile: ${pathToFile}`)
   try {
     const aadToken = await azureAD.acquireToken()
-    const siteId = await getSiteId(aadToken.accessToken)
-    const driveId = await getDriveId(siteId, aadToken.accessToken)
+    const siteId = await getSiteId(aadToken.accessToken, context)
+    const driveId = await getDriveId(siteId, aadToken.accessToken, context)
     const response = await Wreck.put(
       `${graphUrl.sites}/${siteId}/drives/${driveId}/root:/${encodeURIComponent(pathToFile)}/${encodeURIComponent(fileName.replace(/["*:<>?/|\\]/g, '').trim())}:/content`,
       {
@@ -64,7 +63,7 @@ const uploadFile = async (pathToFile, fileName, fileContent) => {
       throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
     }
   } catch (error) {
-    logger.error(`Error while uploading file: ${error.message}`)
+    context.error(`Error while uploading file: ${error.message}`)
     throw error
   }
 }

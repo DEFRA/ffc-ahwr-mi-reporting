@@ -3,7 +3,7 @@ const {
   processEntitiesByTimestampPaged,
   streamBlobToFile
 } = require('../../../ffc-ahwr-mi-reporting/storage/storage')
-const logger = require('../../../ffc-ahwr-mi-reporting/config/logging')
+const mockContext = require('../../mock/mock-context')
 
 jest.mock('@azure/storage-blob', () => ({
   BlobServiceClient: {
@@ -48,11 +48,11 @@ jest.mock('@azure/data-tables', () => ({
 jest.mock('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
 
 const consoleSpy = jest
-  .spyOn(logger, 'info')
+  .spyOn(mockContext, 'info')
 
 describe('Storage', () => {
   beforeEach(async () => {
-    await connect()
+    await connect(mockContext)
   })
 
   afterEach(() => {
@@ -62,14 +62,14 @@ describe('Storage', () => {
 
   describe('processEntitiesByTimestampPaged', () => {
     test('should process successfully when file already exists', async () => {
-      await processEntitiesByTimestampPaged('tableName', 'fileName')
+      await processEntitiesByTimestampPaged('tableName', 'fileName', mockContext)
 
       console.log(consoleSpy.mock.calls)
       expect(consoleSpy).toHaveBeenCalledWith('Page 1 and 6 event items written to append blob')
     })
 
     test('should process successfully when file does not exists', async () => {
-      await processEntitiesByTimestampPaged('tableName', 'fileNameThatDoesNotExist')
+      await processEntitiesByTimestampPaged('tableName', 'fileNameThatDoesNotExist', mockContext)
 
       console.log(consoleSpy.mock.calls)
       expect(consoleSpy).toHaveBeenCalledWith('Page 1 and 6 event items written to append blob')

@@ -3,7 +3,7 @@ const createFileName = require('../../../ffc-ahwr-mi-reporting/csv/create-csv-fi
 const { connect, processEntitiesByTimestampPaged } = require('../../../ffc-ahwr-mi-reporting/storage/storage')
 const { uploadFile } = require('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
 const buildAhwrMiReport = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/index')
-const logger = require('../../../ffc-ahwr-mi-reporting/config/logging')
+const mockContext = require('../../mock/mock-context')
 
 jest.mock('../../../ffc-ahwr-mi-reporting/config/config.js', () => ({
   containerName: 'reports',
@@ -23,7 +23,7 @@ jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage')
 jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
 
 const consoleSpy = jest
-  .spyOn(logger, 'info')
+  .spyOn(mockContext, 'info')
 
 describe('buildAhwrMiReport', () => {
   beforeEach(() => {
@@ -38,7 +38,7 @@ describe('buildAhwrMiReport', () => {
   test('should create and store report but not upload to SharePoint if feature toggle is disabled', async () => {
     featureToggle.sharePoint.enabled = false
 
-    await buildAhwrMiReport()
+    await buildAhwrMiReport(mockContext)
 
     expect(createFileName).toHaveBeenCalledWith('ahwr-mi-report-v3-')
     // TODO AHWR-96 contains AHWR, correct?
@@ -51,7 +51,7 @@ describe('buildAhwrMiReport', () => {
   test('should create report, store report and upload to SharePoint', async () => {
     featureToggle.sharePoint.enabled = true
 
-    await buildAhwrMiReport()
+    await buildAhwrMiReport(mockContext)
 
     expect(createFileName).toHaveBeenCalledWith('ahwr-mi-report-v3-')
     // TODO AHWR-96 contains AHWR, correct?

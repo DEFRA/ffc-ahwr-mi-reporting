@@ -1,5 +1,5 @@
 const { when, resetAllWhenMocks } = require('jest-when')
-const logger = require('../../../ffc-ahwr-mi-reporting/config/logging')
+const mockContext = require('../../mock/mock-context')
 
 const MOCK_NOW = new Date()
 const MOCK_ACQUIRE_TOKEN = jest.fn()
@@ -44,9 +44,9 @@ describe('msGraph', () => {
     }))
 
     logSpy = jest
-      .spyOn(logger, 'info')
+      .spyOn(mockContext, 'info')
     logErrorSpy = jest
-      .spyOn(logger, 'error')
+      .spyOn(mockContext, 'error')
 
     msGraph = require('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
   })
@@ -436,14 +436,16 @@ describe('msGraph', () => {
         msGraph.uploadFile(
           testCase.given.pathToFile,
           testCase.given.fileName,
-          testCase.given.fileContent
+          testCase.given.fileContent,
+          mockContext
         )
       ).rejects.toEqual(testCase.expect.error)
     } else {
       await msGraph.uploadFile(
         testCase.given.pathToFile,
         testCase.given.fileName,
-        testCase.given.fileContent
+        testCase.given.fileContent,
+        mockContext
       )
     }
 

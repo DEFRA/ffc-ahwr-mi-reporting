@@ -7,7 +7,6 @@ const {
   parseSheepTestResults,
   replaceCommasWithSpace
 } = require('../utils/parse-data')
-const logger = require('../config/logging')
 
 // Define the CSV column names
 const columns = [
@@ -74,9 +73,9 @@ const columns = [
 ]
 
 // Function to transform event data to CSV row format
-function transformEventToCsvV3 (event) {
+function transformEventToCsvV3 (event, context) {
   if (!event) {
-    logger.error('No event provided')
+    context.error('No event provided')
     return
   }
 
@@ -86,7 +85,7 @@ function transformEventToCsvV3 (event) {
   try {
     parsePayload = JSON.parse(event.Payload)
   } catch (error) {
-    logger.error('Parse event error', event, error)
+    context.error('Parse event error', event, error)
     return
   }
 
