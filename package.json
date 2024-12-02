@@ -29,6 +29,9 @@
     "pino": "^9.5.0"
   },
   "overrides": {
+    "@pnp/nodejs-commonjs": {
+      "@azure/msal-node": "2.9.2"
+    },
     "adal-node": {
       "axios": "1.7.8"
     },
