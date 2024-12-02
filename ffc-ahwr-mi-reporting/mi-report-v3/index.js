@@ -1,26 +1,17 @@
 const config = require('../config/config')
 const createFileName = require('../csv/create-csv-filename')
 const msGraph = require('../sharepoint/ms-graph')
+const logger = require('../config/logging')
 
 const { streamBlobToFile, processEntitiesByTimestampPaged, connect } = require('../storage/storage')
 
 const buildAhwrMiReport = async () => {
   const fileName = createFileName('ahwr-mi-report-v3-')
   const dstFolder = `${config.sharePoint.dstFolder}/${config.environment}/${new Date().getFullYear()}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}`
+  const logUploadIndicator = config.featureToggle.sharePoint.enabled ? 'and' : 'but not'
+  const logDstFolder = config.featureToggle.sharePoint.enabled ? dstFolder : ''
 
-  if (config.featureToggle.sharePoint.enabled) {
-    console.log(`${new Date().toISOString()} Creating, storing and uploading AHWR MI Report V3: ${JSON.stringify({
-      dstFolder,
-      fileName
-    })}`)
-  } else {
-    console.log(`${new Date().toISOString()} Creating, storing but not uploading AHWR MI Report V3: ${JSON.stringify({
-      fileName
-    })}`)
-  }
-
-  console.log(`fileName ${fileName}`)
-  console.log(`dstFolder ${dstFolder}`)
+  logger.info(`Creating, storing ${logUploadIndicator} uploading AHWR MI Report V3: ${logDstFolder} ${fileName}`)
 
   await connect()
   await processEntitiesByTimestampPaged(null, fileName)
@@ -31,16 +22,9 @@ const buildAhwrMiReport = async () => {
 
     // Upload the file to SharePoint using MS Graph API
     await msGraph.uploadFile(dstFolder, fileName, fileContent)
-
-    console.log(`${new Date().toISOString()} AHWR MI Report V3 has been stored and uploaded: ${JSON.stringify({
-      dstFolder,
-      fileName
-    })}`)
-  } else {
-    console.log(`${new Date().toISOString()} AHWR MI Report V3 has been stored but not uploaded: ${JSON.stringify({
-      fileName
-    })}`)
   }
+
+  logger.info(`AHWR MI Report V3 has been stored ${logUploadIndicator} uploaded`)
 }
 
 module.exports = buildAhwrMiReport

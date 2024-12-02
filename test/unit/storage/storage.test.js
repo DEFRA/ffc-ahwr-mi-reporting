@@ -3,6 +3,7 @@ const {
   processEntitiesByTimestampPaged,
   streamBlobToFile
 } = require('../../../ffc-ahwr-mi-reporting/storage/storage')
+const logger = require('../../../ffc-ahwr-mi-reporting/config/logging')
 
 jest.mock('@azure/storage-blob', () => ({
   BlobServiceClient: {
@@ -47,8 +48,7 @@ jest.mock('@azure/data-tables', () => ({
 jest.mock('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
 
 const consoleSpy = jest
-  .spyOn(console, 'log')
-  .mockImplementation(() => {})
+  .spyOn(logger, 'info')
 
 describe('Storage', () => {
   beforeEach(async () => {
