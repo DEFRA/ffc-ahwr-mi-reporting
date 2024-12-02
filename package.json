@@ -29,6 +29,9 @@
     "pino": "^9.5.0"
   },
   "overrides": {
+    "adal-node": {
+      "axios": "1.7.8"
+    },
     "jsonwebtoken": "9.0.0",
     "node-fetch": "2.6.7",
     "semver": "7.5.2"
