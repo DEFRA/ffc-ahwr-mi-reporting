@@ -4,8 +4,6 @@ const {
   getReferenceFromNestedData,
   getSbiFromPartitionKey,
   invalidClaimDataToString,
-  isInCheckWithSubStatus,
-  isInvalidDataEvent,
   parseSheepTestResults,
   replaceCommasWithSpace
 } = require('../utils/parse-data')
@@ -145,10 +143,10 @@ function transformEventToCsvV3 (event) {
   const relevantReviewForEndemicsReference = getReferenceFromNestedData(relevantReviewForEndemics)
   const latestEndemicsApplicationReference = getReferenceFromNestedData(latestEndemicsApplication)
   const latestVetVisitApplicationReference = getReferenceFromNestedData(latestVetVisitApplication)
-  const invalidClaimData = isInvalidDataEvent(type) ? invalidClaimDataToString(data) : ''
+  const invalidClaimData = type?.endsWith('-invalid') ? invalidClaimDataToString(data) : ''
   const sheepTestsString = sheepTests ? arrayToString(sheepTests) : ''
   const sheepTestResultsString = sheepTestResults ? parseSheepTestResults(sheepTestResults) : ''
-  const isSubStatus = isInCheckWithSubStatus(subStatus, statusId)
+  const isSubStatus = subStatus && statusId === 5
 
   let rowStatusId
   let rowType
