@@ -23,7 +23,7 @@ jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage')
 jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
 
 const consoleSpy = jest
-  .spyOn(mockContext, 'info')
+  .spyOn(mockContext.log, 'info')
 
 describe('buildAhwrMiReport', () => {
   beforeEach(() => {

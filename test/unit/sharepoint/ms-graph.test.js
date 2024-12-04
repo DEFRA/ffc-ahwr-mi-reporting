@@ -44,9 +44,9 @@ describe('msGraph', () => {
     }))
 
     logSpy = jest
-      .spyOn(mockContext, 'info')
+      .spyOn(mockContext.log, 'info')
     logErrorSpy = jest
-      .spyOn(mockContext, 'error')
+      .spyOn(mockContext.log, 'error')
 
     msGraph = require('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
   })

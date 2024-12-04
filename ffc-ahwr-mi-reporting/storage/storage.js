@@ -12,14 +12,14 @@ const { transformEventToCsvV3, columns } = require('../mi-report-v3/transformJso
 
 const initialiseContainers = async (context) => {
   if (!containersInitialised) {
-    context.info('Making sure blob containers exist')
+    context.log.info('Making sure blob containers exist')
     await container.createIfNotExists()
     containersInitialised = true
   }
 }
 
 const connect = async (context) => {
-  context.info(`Connecting to storage with connectionString containerName ${containerName} tableName ${tableName}`)
+  context.log.info(`Connecting to storage with connectionString containerName ${containerName} tableName ${tableName}`)
   blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
   container = blobServiceClient.getContainerClient(containerName)
   await initialiseContainers(context)
@@ -34,7 +34,7 @@ const processEntitiesByTimestampPaged = async (tableName, fileName, context) => 
     : tableClient
   ).listEntities({ queryOptions: { filter: queryFilter } })
 
-  context.info(`pageSize ${pageSize}`)
+  context.log.info(`pageSize ${pageSize}`)
 
   const eventsIterator = eventResults.byPage({ maxPageSize: pageSize })
 
@@ -49,7 +49,7 @@ const processEntitiesByTimestampPaged = async (tableName, fileName, context) => 
     await appendBlobClient.create()
     const headerContent = columns.join(',') + '\n'
     await appendBlobClient.appendBlock(headerContent, Buffer.byteLength(headerContent))
-    context.info('write CSV headers to append blob')
+    context.log.info('write CSV headers to append blob')
   }
 
   let pageCount = 0
@@ -57,7 +57,7 @@ const processEntitiesByTimestampPaged = async (tableName, fileName, context) => 
 
   for await (const eventsPage of eventsIterator) {
     pageCount++
-    context.info(`Current page ${pageCount}`)
+    context.log.info(`Current page ${pageCount}`)
     // append csv file
 
     let rowContent = ''
@@ -69,7 +69,7 @@ const processEntitiesByTimestampPaged = async (tableName, fileName, context) => 
     }
 
     await appendBlobClient.appendBlock(rowContent, Buffer.byteLength(rowContent))
-    context.info(`Page ${pageCount} and ${eventItemCount} event items written to append blob`)
+    context.log.info(`Page ${pageCount} and ${eventItemCount} event items written to append blob`)
   }
 }
 

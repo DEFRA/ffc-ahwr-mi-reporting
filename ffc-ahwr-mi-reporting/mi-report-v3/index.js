@@ -10,7 +10,7 @@ const buildAhwrMiReport = async (context) => {
   const logUploadIndicator = config.featureToggle.sharePoint.enabled ? 'and' : 'but not'
   const logDstFolder = config.featureToggle.sharePoint.enabled ? dstFolder : ''
 
-  context.info(`Creating, storing ${logUploadIndicator} uploading AHWR MI Report V3: ${logDstFolder} ${fileName}`)
+  context.log.info(`Creating, storing ${logUploadIndicator} uploading AHWR MI Report V3: ${logDstFolder} ${fileName}`)
 
   await connect(context)
   await processEntitiesByTimestampPaged(null, fileName, context)
@@ -23,7 +23,7 @@ const buildAhwrMiReport = async (context) => {
     await msGraph.uploadFile(dstFolder, fileName, fileContent, context)
   }
 
-  context.info(`AHWR MI Report V3 has been stored ${logUploadIndicator} uploaded`)
+  context.log.info(`AHWR MI Report V3 has been stored ${logUploadIndicator} uploaded`)
 }
 
 module.exports = buildAhwrMiReport

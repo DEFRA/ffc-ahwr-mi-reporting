@@ -48,7 +48,7 @@ jest.mock('@azure/data-tables', () => ({
 jest.mock('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
 
 const consoleSpy = jest
-  .spyOn(mockContext, 'info')
+  .spyOn(mockContext.log, 'info')
 
 describe('Storage', () => {
   beforeEach(async () => {

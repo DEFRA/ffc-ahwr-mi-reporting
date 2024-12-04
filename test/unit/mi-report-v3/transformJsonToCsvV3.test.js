@@ -5,7 +5,7 @@ jest.mock('@azure/storage-blob')
 jest.mock('fs')
 
 const consoleSpy = jest
-  .spyOn(mockContext, 'error')
+  .spyOn(mockContext.log, 'error')
 
 let result
 
