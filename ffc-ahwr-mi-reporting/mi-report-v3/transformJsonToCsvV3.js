@@ -4,8 +4,6 @@ const {
   getReferenceFromNestedData,
   getSbiFromPartitionKey,
   invalidClaimDataToString,
-  isInCheckWithSubStatus,
-  isInvalidDataEvent,
   parseSheepTestResults,
   replaceCommasWithSpace
 } = require('../utils/parse-data')
@@ -75,9 +73,9 @@ const columns = [
 ]
 
 // Function to transform event data to CSV row format
-function transformEventToCsvV3 (event) {
+function transformEventToCsvV3 (event, context) {
   if (!event) {
-    console.error('No event provided')
+    context.error('No event provided')
     return
   }
 
@@ -87,7 +85,7 @@ function transformEventToCsvV3 (event) {
   try {
     parsePayload = JSON.parse(event.Payload)
   } catch (error) {
-    console.error('Parse event error', event, error)
+    context.error('Parse event error', event, error)
     return
   }
 
@@ -144,10 +142,10 @@ function transformEventToCsvV3 (event) {
   const relevantReviewForEndemicsReference = getReferenceFromNestedData(relevantReviewForEndemics)
   const latestEndemicsApplicationReference = getReferenceFromNestedData(latestEndemicsApplication)
   const latestVetVisitApplicationReference = getReferenceFromNestedData(latestVetVisitApplication)
-  const invalidClaimData = isInvalidDataEvent(type) ? invalidClaimDataToString(data) : ''
+  const invalidClaimData = type?.endsWith('-invalid') ? invalidClaimDataToString(data) : ''
   const sheepTestsString = sheepTests ? arrayToString(sheepTests) : ''
   const sheepTestResultsString = sheepTestResults ? parseSheepTestResults(sheepTestResults) : ''
-  const isSubStatus = isInCheckWithSubStatus(subStatus, statusId)
+  const isSubStatus = subStatus && statusId === 5
 
   let rowStatusId
   let rowType
@@ -159,7 +157,7 @@ function transformEventToCsvV3 (event) {
     rowType = type
   }
 
-  const row = [
+  return [
     sbiFromPartitionKey,
     sessionId,
     rowType,
@@ -221,8 +219,6 @@ function transformEventToCsvV3 (event) {
     statusToString(rowStatusId ?? 0),
     eventStatus
   ].join(',')
-
-  return row
 }
 
 module.exports = { transformEventToCsvV3, columns }

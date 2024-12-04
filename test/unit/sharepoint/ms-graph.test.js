@@ -1,4 +1,5 @@
 const { when, resetAllWhenMocks } = require('jest-when')
+const mockContext = require('../../mock/mock-context')
 
 const MOCK_NOW = new Date()
 const MOCK_ACQUIRE_TOKEN = jest.fn()
@@ -7,6 +8,7 @@ const MOCK_DRIVE_ID = 'mock_drive_id'
 
 describe('msGraph', () => {
   let logSpy
+  let logErrorSpy
   let Wreck
   let msGraph
 
@@ -41,7 +43,10 @@ describe('msGraph', () => {
       })
     }))
 
-    logSpy = jest.spyOn(console, 'log')
+    logSpy = jest
+      .spyOn(mockContext, 'info')
+    logErrorSpy = jest
+      .spyOn(mockContext, 'error')
 
     msGraph = require('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
   })
@@ -113,19 +118,12 @@ describe('msGraph', () => {
         }
       },
       expect: {
-        consoleLogs: [
-          `${MOCK_NOW.toISOString()} Uploading file: ${JSON.stringify({
-            fileName: 'file_name',
-            pathToFile: 'folder/sub_folder'
-          })}`,
-          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
-            accessToken: 'acces...token'
-          })}`,
-          `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
-            siteId: 'mock_...te_id',
-            accessToken: 'acces...token'
-          })}`
-        ]
+        infoLogs: [
+          'Uploading file: fileName: file_name, pathToFile: folder/sub_folder',
+          'Getting the site ID',
+          'Getting the drive ID: mock_...te_id'
+        ],
+        errorLogs: []
       }
     },
     {
@@ -184,15 +182,12 @@ describe('msGraph', () => {
       },
       expect: {
         error: new Error('HTTP 400 (Bad Request)'),
-        consoleLogs: [
-          `${MOCK_NOW.toISOString()} Uploading file: ${JSON.stringify({
-            fileName: 'file_name',
-            pathToFile: 'folder/sub_folder'
-          })}`,
-          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
-            accessToken: 'acces...token'
-          })}`,
-          `${MOCK_NOW.toISOString()} Error while uploading file: HTTP 400 (Bad Request)`
+        infoLogs: [
+          'Uploading file: fileName: file_name, pathToFile: folder/sub_folder',
+          'Getting the site ID'
+        ],
+        errorLogs: [
+          'Error while uploading file: HTTP 400 (Bad Request)'
         ]
       }
     },
@@ -247,19 +242,13 @@ describe('msGraph', () => {
       },
       expect: {
         error: new Error('HTTP 400 (Bad Request)'),
-        consoleLogs: [
-          `${MOCK_NOW.toISOString()} Uploading file: ${JSON.stringify({
-            fileName: 'file_name',
-            pathToFile: 'folder/sub_folder'
-          })}`,
-          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
-            accessToken: 'acces...token'
-          })}`,
-          `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
-            siteId: 'mock_...te_id',
-            accessToken: 'acces...token'
-          })}`,
-          `${MOCK_NOW.toISOString()} Error while uploading file: HTTP 400 (Bad Request)`
+        infoLogs: [
+          'Uploading file: fileName: file_name, pathToFile: folder/sub_folder',
+          'Getting the site ID',
+          'Getting the drive ID: mock_...te_id'
+        ],
+        errorLogs: [
+          'Error while uploading file: HTTP 400 (Bad Request)'
         ]
       }
     },
@@ -323,19 +312,13 @@ describe('msGraph', () => {
         error: new Error(`No drive found: ${JSON.stringify({
           name: 'document_lib'
         })}`),
-        consoleLogs: [
-          `${MOCK_NOW.toISOString()} Uploading file: ${JSON.stringify({
-            fileName: 'file_name',
-            pathToFile: 'folder/sub_folder'
-          })}`,
-          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
-            accessToken: 'acces...token'
-          })}`,
-          `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
-            siteId: 'mock_...te_id',
-            accessToken: 'acces...token'
-          })}`,
-          `${MOCK_NOW.toISOString()} Error while uploading file: No drive found: ${JSON.stringify({
+        infoLogs: [
+          'Uploading file: fileName: file_name, pathToFile: folder/sub_folder',
+          'Getting the site ID',
+          'Getting the drive ID: mock_...te_id'
+        ],
+        errorLogs: [
+          `Error while uploading file: No drive found: ${JSON.stringify({
             name: 'document_lib'
           })}`
         ]
@@ -400,19 +383,13 @@ describe('msGraph', () => {
       },
       expect: {
         error: new Error('HTTP 500 (Internal Error)'),
-        consoleLogs: [
-          `${MOCK_NOW.toISOString()} Uploading file: ${JSON.stringify({
-            fileName: 'file_name',
-            pathToFile: 'folder/sub_folder'
-          })}`,
-          `${MOCK_NOW.toISOString()} Getting the site ID: ${JSON.stringify({
-            accessToken: 'acces...token'
-          })}`,
-          `${MOCK_NOW.toISOString()} Getting the drive ID: ${JSON.stringify({
-            siteId: 'mock_...te_id',
-            accessToken: 'acces...token'
-          })}`,
-          `${MOCK_NOW.toISOString()} Error while uploading file: HTTP 500 (Internal Error)`
+        infoLogs: [
+          'Uploading file: fileName: file_name, pathToFile: folder/sub_folder',
+          'Getting the site ID',
+          'Getting the drive ID: mock_...te_id'
+        ],
+        errorLogs: [
+          'Error while uploading file: HTTP 500 (Internal Error)'
         ]
       }
     }
@@ -459,20 +436,27 @@ describe('msGraph', () => {
         msGraph.uploadFile(
           testCase.given.pathToFile,
           testCase.given.fileName,
-          testCase.given.fileContent
+          testCase.given.fileContent,
+          mockContext
         )
       ).rejects.toEqual(testCase.expect.error)
     } else {
       await msGraph.uploadFile(
         testCase.given.pathToFile,
         testCase.given.fileName,
-        testCase.given.fileContent
+        testCase.given.fileContent,
+        mockContext
       )
     }
 
-    testCase.expect.consoleLogs.forEach(
+    testCase.expect.infoLogs.forEach(
       (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, consoleLog)
     )
-    expect(logSpy).toHaveBeenCalledTimes(testCase.expect.consoleLogs.length)
+    expect(logSpy).toHaveBeenCalledTimes(testCase.expect.infoLogs.length)
+
+    testCase.expect.errorLogs.forEach(
+      (errorLog, idx) => expect(logErrorSpy).toHaveBeenNthCalledWith(idx + 1, errorLog)
+    )
+    expect(logErrorSpy).toHaveBeenCalledTimes(testCase.expect.errorLogs.length)
   })
 })

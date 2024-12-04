@@ -1,6 +1,6 @@
 {
   "name": "ffc-ahwr-mi-reporting",
-  "version": "0.9.33",
+  "version": "0.9.34",
   "description": "Azure Function to create MI reports",
   "author": "Defra",
   "contributors": [
@@ -23,23 +23,19 @@
     "@azure/storage-blob": "^12.13.0",
     "@hapi/wreck": "^18.0.1",
     "@pnp/nodejs-commonjs": "^2.15.0",
-    "joi": "17.6.0",
-    "moment": "2.29.4",
-    "notifications-node-client": "^8.2.1"
+    "applicationinsights": "^2.9.1",
+    "joi": "17.13.3",
+    "moment": "2.29.4"
   },
   "overrides": {
     "@pnp/nodejs-commonjs": {
       "@azure/msal-node": "2.9.2"
     },
-    "notifications-node-client": {
-      "axios": "1.7.5"
-    },
-    "adal-node":{
-      "axios": "1.7.5"
+    "adal-node": {
+      "axios": "1.7.8"
     },
     "jsonwebtoken": "9.0.0",
     "node-fetch": "2.6.7",
-    "axios": "1.7.5",
     "semver": "7.5.2"
   },
   "devDependencies": {

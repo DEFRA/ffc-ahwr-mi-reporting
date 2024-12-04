@@ -2,7 +2,6 @@ const { queryEntitiesByTimestamp, connect } = require('../../ffc-ahwr-mi-reporti
 const buildAhwrMiReportV3 = require('../../ffc-ahwr-mi-reporting/mi-report-v3')
 const miReportFunction = require('../../ffc-ahwr-mi-reporting') // Adjust the path as necessary
 const mockEvents = []
-const mockSendEmail = jest.fn()
 const mockUpload = jest.fn()
 
 jest.mock('../../ffc-ahwr-mi-reporting/mi-report-v3')
@@ -20,12 +19,6 @@ jest.mock('@azure/data-tables', () => {
     }
   }
 })
-jest.mock('notifications-node-client', () => ({
-  NotifyClient: jest.fn().mockImplementation(() => ({
-    sendEmail: mockSendEmail,
-    prepareUpload: jest.fn().mockReturnValue({ })
-  }))
-}))
 jest.mock('../../ffc-ahwr-mi-reporting/storage/storage', () => {
   return {
     queryEntitiesByTimestamp: jest.fn().mockResolvedValue([{

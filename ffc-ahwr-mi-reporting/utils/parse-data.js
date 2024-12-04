@@ -16,8 +16,7 @@ const formatDate = (dateToFormat, currentDateFormat = 'YYYY-MM-DD', dateFormat =
 }
 
 const getReferenceFromNestedData = (data) => {
-  const referenceString = data ? data.reference : ''
-  return referenceString
+  return data ? data.reference : ''
 }
 
 const getSbiFromPartitionKey = (partitionKey) => partitionKey?.length > 9 ? partitionKey.slice(0, 9) : partitionKey
@@ -25,13 +24,8 @@ const getSbiFromPartitionKey = (partitionKey) => partitionKey?.length > 9 ? part
 const invalidClaimDataToString = (invalidDataEventData) => {
   const { sbi: sbiFromInvalidData, crn: crnFromInvalidData, sessionKey, exception: exceptionFromInvalidData, reference: referenceFromInvalidData } = invalidDataEventData
   // May not need to repeat some of these values, but better to include now then remove them later
-  const invalidInfo = `sbi:${sbiFromInvalidData} crn:${crnFromInvalidData} sessionKey:${sessionKey} exception:${exceptionFromInvalidData} reference:${referenceFromInvalidData}`
-  return invalidInfo
+  return `sbi:${sbiFromInvalidData} crn:${crnFromInvalidData} sessionKey:${sessionKey} exception:${exceptionFromInvalidData} reference:${referenceFromInvalidData}`
 }
-
-const isInCheckWithSubStatus = (subStatus, statusId) => subStatus && statusId === 5
-
-const isInvalidDataEvent = (eventType) => eventType?.endsWith('-invalid')
 
 const parseData = (events, type, key) => {
   let value = ''
@@ -97,8 +91,6 @@ module.exports = {
   getReferenceFromNestedData,
   getSbiFromPartitionKey,
   invalidClaimDataToString,
-  isInCheckWithSubStatus,
-  isInvalidDataEvent,
   parseData,
   parsePayload,
   parseSheepTestResults,
