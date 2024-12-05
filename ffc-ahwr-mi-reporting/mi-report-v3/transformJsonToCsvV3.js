@@ -75,7 +75,7 @@ const columns = [
 // Function to transform event data to CSV row format
 function transformEventToCsvV3 (event, context) {
   if (!event) {
-    context.error('No event provided')
+    context.log.error('No event provided')
     return
   }
 
@@ -85,7 +85,7 @@ function transformEventToCsvV3 (event, context) {
   try {
     parsePayload = JSON.parse(event.Payload)
   } catch (error) {
-    context.error('Parse event error', event, error)
+    context.log.error('Parse event error', event, error)
     return
   }
 

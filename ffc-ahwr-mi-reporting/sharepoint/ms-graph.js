@@ -7,7 +7,7 @@ const graphUrl = {
 }
 
 const getSiteId = async (accessToken, context) => {
-  context.info('Getting the site ID')
+  context.log.info('Getting the site ID')
   const response = await Wreck.get(
       `${graphUrl.sites}/${config.sharePoint.hostname}:/${config.sharePoint.sitePath}`,
       {
@@ -24,7 +24,7 @@ const getSiteId = async (accessToken, context) => {
 }
 
 const getDriveId = async (siteId, accessToken, context) => {
-  context.info(`Getting the drive ID: ${siteId.slice(0, 5)}...${siteId.slice(-5)}`)
+  context.log.info(`Getting the drive ID: ${siteId.slice(0, 5)}...${siteId.slice(-5)}`)
   const response = await Wreck.get(
       `${graphUrl.sites}/${siteId}/drives`,
       {
@@ -45,7 +45,7 @@ const getDriveId = async (siteId, accessToken, context) => {
 }
 
 const uploadFile = async (pathToFile, fileName, fileContent, context) => {
-  context.info(`Uploading file: fileName: ${fileName}, pathToFile: ${pathToFile}`)
+  context.log.info(`Uploading file: fileName: ${fileName}, pathToFile: ${pathToFile}`)
   try {
     const aadToken = await azureAD.acquireToken()
     const siteId = await getSiteId(aadToken.accessToken, context)
@@ -63,7 +63,7 @@ const uploadFile = async (pathToFile, fileName, fileContent, context) => {
       throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
     }
   } catch (error) {
-    context.error(`Error while uploading file: ${error.message}`)
+    context.log.error(`Error while uploading file: ${error.message}`)
     throw error
   }
 }

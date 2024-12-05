@@ -35,6 +35,12 @@ describe('formatDate(date)', () => {
       formatDate(testCase.given.date, testCase.when.format)
     ).toEqual(testCase.expect.formattedDate)
   })
+
+  test('formatDate called with custom desired format outputs as expected', () => {
+    const result = formatDate(new Date('2023-02-23T10:20:18.352Z'), moment.ISO_8601, 'DD-MMM-YYYY')
+
+    expect(result).toEqual('23-Feb-2023')
+  })
 })
 describe('arrayToString', () => {
   const inputData = ['shoes', 'socks', 'coat']
