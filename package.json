@@ -31,9 +31,6 @@
     "@pnp/nodejs-commonjs": {
       "@azure/msal-node": "^2.9.2"
     },
-    "notifications-node-client": {
-      "axios": "^1.7.8"
-    },
     "adal-node":{
       "axios": "^1.7.8"
     },
