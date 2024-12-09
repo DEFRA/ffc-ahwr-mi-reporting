@@ -5,7 +5,17 @@ azurePort="7081"
 set -e
 projectRoot="$(a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; cd "$a/.." || return; pwd)"
 
+# Determine which docker compose command is available
+if command -v docker compose &> /dev/null; then
+  compose_cmd="docker compose"
+elif command -v docker-compose &> /dev/null; then
+  compose_cmd="docker-compose"
+else
+  echo "Neither 'docker compose' nor 'docker-compose' is installed." >&2
+  exit 1
+fi
+
 cd "${projectRoot}"
 
-docker-compose down $@ && \
+$compose_cmd down $@ && \
     pgrep -f "^func start -p $azurePort" | xargs kill -9
