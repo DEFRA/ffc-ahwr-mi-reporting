@@ -5,6 +5,16 @@ projectRoot="$(a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; cd "$a/.." || return; p
 
 cd "${projectRoot}"
 
+# Determine which docker compose command is available
+if command -v docker compose &> /dev/null; then
+  compose_cmd="docker compose"
+elif command -v docker-compose &> /dev/null; then
+  compose_cmd="docker-compose"
+else
+  echo "Neither 'docker compose' nor 'docker-compose' is installed." >&2
+  exit 1
+fi
+
 while :; do
   case $1 in
     -d|--detached)
@@ -22,12 +32,12 @@ done
 
 
 if [ "${detached}" = "true" ]; then
-  docker-compose up -d &&
+  $compose_cmd up -d &&
     npm run start:detached
 elif [ "${verbose}" = "true" ]; then
-  docker-compose up -d &&
+  $compose_cmdup -d &&
     npm run start:verbose
 else
-  docker-compose up -d &&
+  $compose_cmd up -d &&
     npm run start
 fi
