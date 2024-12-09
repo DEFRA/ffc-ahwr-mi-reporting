@@ -1,4 +1,7 @@
 module.exports = {
   bindings: {},
-  log: jest.fn()
+  log: {
+    info: jest.fn(),
+    error: jest.fn()
+  }
 }

@@ -5,7 +5,7 @@ module.exports = async (context, miReportTimer) => {
   context.log('MI Report timer trigger function started', timeStamp)
 
   try {
-    await buildAhwrMiReport()
+    await buildAhwrMiReport(context)
   } catch (e) {
     context.log('MI report V3 failed: ', e)
   }
