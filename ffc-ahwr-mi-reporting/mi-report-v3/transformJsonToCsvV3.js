@@ -33,6 +33,7 @@ const columns = [
   'confirmCheckDetails',
   'eligibleSpecies', // old application journey
   'agreeSameSpecies',
+  'agreeMultipleSpecies',
   'agreeSpeciesNumbers',
   'agreeVisitTimings',
   'declaration',
@@ -101,6 +102,7 @@ function transformEventToCsvV3 (event, context) {
     confirmCheckDetails,
     eligibleSpecies,
     agreeSameSpecies,
+    agreeMultipleSpecies,
     agreeSpeciesNumbers,
     agreeVisitTimings,
     declaration,
@@ -181,6 +183,7 @@ function transformEventToCsvV3 (event, context) {
     confirmCheckDetails,
     eligibleSpecies,
     agreeSameSpecies,
+    agreeMultipleSpecies,
     agreeSpeciesNumbers,
     agreeVisitTimings,
     declaration,
