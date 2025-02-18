@@ -34,6 +34,7 @@ const columns = [
   'eligibleSpecies', // old application journey
   'agreeSameSpecies',
   'agreeSpeciesNumbers',
+  'agreeMultipleSpecies',
   'agreeVisitTimings',
   'declaration',
   'offerStatus',
@@ -69,8 +70,7 @@ const columns = [
   'invalidClaimData',
   'statusId',
   'statusName',
-  'eventStatus',
-  'agreeMultipleSpecies'
+  'eventStatus'
 ]
 
 // Function to transform event data to CSV row format
@@ -103,6 +103,7 @@ function transformEventToCsvV3 (event, context) {
     eligibleSpecies,
     agreeSameSpecies,
     agreeSpeciesNumbers,
+    agreeMultipleSpecies,
     agreeVisitTimings,
     declaration,
     offerStatus,
@@ -136,8 +137,7 @@ function transformEventToCsvV3 (event, context) {
     claimed,
     exception,
     statusId,
-    subStatus,
-    agreeMultipleSpecies
+    subStatus
   } = data ?? {}
   const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? {}
   const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? {}
@@ -184,6 +184,7 @@ function transformEventToCsvV3 (event, context) {
     eligibleSpecies,
     agreeSameSpecies,
     agreeSpeciesNumbers,
+    agreeMultipleSpecies,
     agreeVisitTimings,
     declaration,
     offerStatus,
@@ -219,8 +220,7 @@ function transformEventToCsvV3 (event, context) {
     replaceCommasWithSpace(invalidClaimData),
     rowStatusId,
     statusToString(rowStatusId ?? 0),
-    eventStatus,
-    agreeMultipleSpecies
+    eventStatus
   ].join(',')
 }
 
