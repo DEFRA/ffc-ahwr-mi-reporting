@@ -83,7 +83,6 @@ describe('transformEventToCsvV3', () => {
       expect(messageValue).toBe('Session set for tempReference and [object Object].')
       expect(concreteRefValue).toBe('IAHW-K9XY-SGYI')
       expect(tempRefValue).toBe('')
-
     })
 
     test('Csv row contains temp reference when correct key present', async () => {
