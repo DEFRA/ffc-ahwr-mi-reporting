@@ -1,15 +1,15 @@
 version: '3.9'
 
 services:
-  ffc-pay-event-azurite:
+  ffc-ahwr-mi-reporting-azurite:
     image: mcr.microsoft.com/azure-storage/azurite:3.30.0
-    command: "azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --loose"
+    command: "azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --loose --skipApiVersionCheck"
     volumes:
       - azurite_data:/data
     ports:
-      - "10015:10000"
-      - "10016:10001"
-      - "10017:10002"
+      - "10005:10000"
+      - "10006:10001"
+      - "10007:10002"
 
 volumes:
   azurite_data:

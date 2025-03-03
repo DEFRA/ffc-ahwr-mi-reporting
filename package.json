@@ -1,12 +1,8 @@
 {
   "name": "ffc-ahwr-mi-reporting",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Azure Function to create MI reports",
   "author": "Defra",
-  "contributors": [
-    "Steve Dickinson <steve.dickinson@defra.gov.uk>",
-    "Satish Chatap github.com/govTechSatish"
-  ],
   "scripts": {
     "lint": "standard",
     "lint-fix": "standard --fix",
