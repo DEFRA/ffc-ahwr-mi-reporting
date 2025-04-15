@@ -75,11 +75,11 @@ describe('miReportFunction', () => {
 
   beforeEach(() => {
     buildAhwrMiReportV3.mockImplementation(() => jest.fn())
-    const logMock = jest.fn();
-    logMock.error = jest.fn();
-    logMock.warn = jest.fn();
-    logMock.info = jest.fn();
-    logMock.verbose = jest.fn();
+    const logMock = jest.fn()
+    logMock.error = jest.fn()
+    logMock.warn = jest.fn()
+    logMock.info = jest.fn()
+    logMock.verbose = jest.fn()
 
     context = {
       log: logMock

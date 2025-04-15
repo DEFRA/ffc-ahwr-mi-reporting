@@ -70,7 +70,7 @@ const processEntitiesByTimestampPaged = async (tableName, fileName, context) => 
       } catch (err) {
         context.log.error('Failed to transform event to csv.', {
           error: err.message,
-          event,
+          event
         })
       }
     }
