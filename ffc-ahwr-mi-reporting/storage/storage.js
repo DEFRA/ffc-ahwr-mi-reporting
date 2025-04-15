@@ -61,11 +61,18 @@ const processEntitiesByTimestampPaged = async (tableName, fileName, context) => 
     // append csv file
 
     let rowContent = ''
-
+    
     for await (const event of eventsPage) {
-      const csvRow = transformEventToCsvV3(event, context)
-      rowContent += csvRow + '\n'
-      eventItemCount++
+      try {
+        const csvRow = transformEventToCsvV3(event, context)
+        rowContent += csvRow + '\n'
+        eventItemCount++
+      } catch (err) {
+        context.log.error('Failed to transform event to csv.', {
+          error: err.message,
+          event,
+        })
+      }
     }
 
     await appendBlobClient.appendBlock(rowContent, Buffer.byteLength(rowContent))

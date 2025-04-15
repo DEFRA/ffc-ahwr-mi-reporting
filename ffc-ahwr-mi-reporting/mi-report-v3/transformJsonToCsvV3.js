@@ -158,7 +158,6 @@ function transformEventToCsvV3 (event, context) {
     rowStatusId = statusId
     rowType = type
   }
-
   return [
     sbiFromPartitionKey,
     sessionId,
