@@ -10,6 +10,8 @@ let appendBlobClient
 
 const { transformEventToCsvV3, columns } = require('../mi-report-v3/transformJsonToCsvV3')
 
+const EVENT_YEAR_START = 2022
+
 const initialiseContainers = async (context) => {
   if (!containersInitialised) {
     context.log.info('Making sure blob containers exist')
@@ -26,13 +28,9 @@ const connect = async (context) => {
   tableClient = TableClient.fromConnectionString(connectionString, tableName, { allowInsecureConnection: true })
 }
 
-const processEntitiesByTimestampPaged = async (tableName, fileName, context) => {
-  const queryFilter = odata`Timestamp ge datetime'${new Date(2022, 1, 1).toISOString()}'`
-
-  const eventResults = (tableName
-    ? TableClient.fromConnectionString(connectionString, tableName, { allowInsecureConnection: true })
-    : tableClient
-  ).listEntities({ queryOptions: { filter: queryFilter } })
+const processEntitiesByTimestampPaged = async (fileName, context) => {
+  const queryFilter = odata`Timestamp ge datetime'${new Date(EVENT_YEAR_START, 1, 1).toISOString()}'`
+  const eventResults = tableClient.listEntities({ queryOptions: { filter: queryFilter } })
 
   context.log.info(`pageSize ${pageSize}`)
 
@@ -63,9 +61,16 @@ const processEntitiesByTimestampPaged = async (tableName, fileName, context) => 
     let rowContent = ''
 
     for await (const event of eventsPage) {
-      const csvRow = transformEventToCsvV3(event, context)
-      rowContent += csvRow + '\n'
-      eventItemCount++
+      try {
+        const csvRow = transformEventToCsvV3(event, context)
+        rowContent += csvRow + '\n'
+        eventItemCount++
+      } catch (err) {
+        context.log.error('Failed to transform event to csv.', {
+          error: err.message,
+          event
+        })
+      }
     }
 
     await appendBlobClient.appendBlock(rowContent, Buffer.byteLength(rowContent))
