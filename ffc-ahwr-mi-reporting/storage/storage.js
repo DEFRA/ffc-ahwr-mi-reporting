@@ -61,7 +61,7 @@ const processEntitiesByTimestampPaged = async (tableName, fileName, context) => 
     // append csv file
 
     let rowContent = ''
-    
+
     for await (const event of eventsPage) {
       try {
         const csvRow = transformEventToCsvV3(event, context)
