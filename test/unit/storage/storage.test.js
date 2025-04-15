@@ -118,14 +118,14 @@ describe('Storage', () => {
 
   describe('processEntitiesByTimestampPaged', () => {
     test('should process successfully when file already exists', async () => {
-      await processEntitiesByTimestampPaged('tableName', 'fileName', mockContext)
+      await processEntitiesByTimestampPaged('fileName', mockContext)
 
       expect(consoleSpy).toHaveBeenCalledWith('Page 1 and 2 event items written to append blob')
       expect(consoleSpy).toHaveBeenCalledWith('Page 2 and 3 event items written to append blob')
     })
 
     test('should process successfully when file does not exists', async () => {
-      await processEntitiesByTimestampPaged('tableName', 'fileNameThatDoesNotExist', mockContext)
+      await processEntitiesByTimestampPaged('fileNameThatDoesNotExist', mockContext)
 
       expect(consoleSpy).toHaveBeenCalledWith('Page 1 and 2 event items written to append blob')
       expect(consoleSpy).toHaveBeenCalledWith('Page 2 and 3 event items written to append blob')
@@ -138,7 +138,7 @@ describe('Storage', () => {
       transformEventToCsvV3.mockReturnValueOnce(row1)
       transformEventToCsvV3.mockReturnValueOnce(row2)
 
-      await processEntitiesByTimestampPaged('tableName', 'fileName', mockContext)
+      await processEntitiesByTimestampPaged('fileName', mockContext)
 
       expect(errorSpy).toHaveBeenCalledWith('Failed to transform event to csv.', {
         error: 'Something went wrong',
