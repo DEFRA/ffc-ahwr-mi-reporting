@@ -13,7 +13,7 @@ const buildAhwrMiReport = async (context) => {
   context.log.info(`Creating, storing ${logUploadIndicator} uploading AHWR MI Report V3: ${logDstFolder} ${fileName}`)
 
   await connect(context)
-  await processEntitiesByTimestampPaged(fileName, context)
+  await processEntitiesByTimestampPaged(null, fileName, context)
 
   if (config.featureToggle.sharePoint.enabled) {
     // Read the file from the local file system

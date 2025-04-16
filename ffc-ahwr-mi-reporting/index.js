@@ -7,8 +7,6 @@ module.exports = async (context, miReportTimer) => {
   try {
     await buildAhwrMiReport(context)
   } catch (e) {
-    // context.error('MI report V3 failed: ', e)
-    // throw e
     context.log('MI report V3 failed: ', e)
   }
 

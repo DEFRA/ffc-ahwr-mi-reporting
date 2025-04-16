@@ -75,14 +75,8 @@ describe('miReportFunction', () => {
 
   beforeEach(() => {
     buildAhwrMiReportV3.mockImplementation(() => jest.fn())
-    const logMock = jest.fn()
-    logMock.warn = jest.fn()
-    logMock.info = jest.fn()
-    logMock.verbose = jest.fn()
-
     context = {
-      log: logMock,
-      error: jest.fn()
+      log: jest.fn()
     }
     miReportTimer = {
       isPastDue: false
@@ -96,8 +90,9 @@ describe('miReportFunction', () => {
     queryEntitiesByTimestamp.mockResolvedValue(events)
     buildAhwrMiReportV3.mockRejectedValue(error)
 
-    expect(miReportFunction(context, miReportTimer)).rejects.toThrow('Test error')
-    expect(context.error).toHaveBeenCalledWith('MI report V3 failed: ', error)
+    await miReportFunction(context, miReportTimer)
+
+    expect(context.log).toHaveBeenCalledWith('MI report V3 failed: ', error)
   })
 
   test('should log if the timer is past due', async () => {
