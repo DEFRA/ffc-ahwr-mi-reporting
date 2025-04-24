@@ -1,27 +1,39 @@
 const Joi = require('joi')
 
-// Define config schema
-const schema = Joi.object({
-  sharePoint: {
-    enabled: Joi.boolean().optional().default(false)
-  }
-})
+function buildFeatureToggleConfig () {
+  // Define config schema
+  const schema = Joi.object({
+    sharePoint: {
+      enabled: Joi.boolean().optional().default(false)
+    },
+    flagReporting: {
+      enabled: Joi.boolean().optional().default(false)
+    }
+  })
 
-// Build config
-const config = {
-  sharePoint: {
-    enabled: process.env.SHAREPOINT_ENABLED
+  // Build config
+  const config = {
+    sharePoint: {
+      enabled: process.env.SHAREPOINT_ENABLED
+    },
+    flagReporting: {
+      enabled: process.env.FLAG_REPORTING_ENABLED === 'true'
+    }
   }
+
+  // Validate config
+  const result = schema.validate(config, {
+    abortEarly: false
+  })
+
+  // Throw if config is invalid
+  if (result.error) {
+    throw new Error(
+      `The feature toggle config is invalid: ${result.error.message}`
+    )
+  }
+
+  return config
 }
 
-// Validate config
-const result = schema.validate(config, {
-  abortEarly: false
-})
-
-// Throw if config is invalid
-if (result.error) {
-  throw new Error(`The feature toggle config is invalid: ${result.error.message}`)
-}
-
-module.exports = result.value
+module.exports = buildFeatureToggleConfig()

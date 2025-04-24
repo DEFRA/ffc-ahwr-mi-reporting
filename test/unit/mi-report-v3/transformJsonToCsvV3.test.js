@@ -1,3 +1,4 @@
+const config = require('../../../ffc-ahwr-mi-reporting/feature-toggle/config')
 const { transformEventToCsvV3 } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
 const mockContext = require('../../mock/mock-context')
 
@@ -105,6 +106,13 @@ describe('transformEventToCsvV3', () => {
       expect(messageValue).toBe('Session set for tempReference and tempReference.')
       expect(concreteRefValue).toBe('IAHW-K9XY-SGYI')
       expect(tempRefValue).toBe('TEMP-K9XY-SGYI')
+    })
+  })
+
+  describe('does nothing if FLAG_REPORTING_ENABLED is false, and event type is for flagging', () => {
+    it('returns early if config is disabled and event type is for flag creation', () => {
+      config.flagReporting.enabled = false
+      
     })
   })
 })
