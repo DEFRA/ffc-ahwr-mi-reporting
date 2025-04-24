@@ -63,8 +63,7 @@ const processEntitiesByTimestampPaged = async (fileName, context) => {
 
     for await (const event of eventsPage) {
       try {
-
-        if (!config.flagReporting.enabled && ['application:unflagged', 'application:flagged'].includes(event.properties?.action?.type)) {
+        if (!config.flagReporting.enabled && ['application:unflagged', 'application:flagged'].includes(event.EventType)) {
           context.log.info('Not creating row as Flag Reporting is not enabled.')
           continue
         }

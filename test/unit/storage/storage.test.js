@@ -57,7 +57,8 @@ jest.mock('@azure/data-tables', () => ({
                 raisedBy: 'admin',
                 raisedOn: '2025-01-27T16:22:17.015Z',
                 timestamp: '2025-01-27T16:22:17.021Z'
-              })
+              }),
+              EventType: 'application:status-updated:1'
             },
             {
               Payload: JSON.stringify({

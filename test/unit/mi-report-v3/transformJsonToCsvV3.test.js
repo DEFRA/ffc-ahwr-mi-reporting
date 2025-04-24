@@ -110,9 +110,8 @@ describe('transformEventToCsvV3', () => {
   })
 
   describe('does nothing if FLAG_REPORTING_ENABLED is false, and event type is for flagging', () => {
-    it('returns early if config is disabled and event type is for flag creation', () => {
+    test('returns early if config is disabled and event type is for flag creation', () => {
       config.flagReporting.enabled = false
-      
     })
   })
 })
