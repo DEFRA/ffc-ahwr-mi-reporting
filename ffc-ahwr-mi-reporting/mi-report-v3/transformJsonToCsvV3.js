@@ -7,6 +7,7 @@ const {
   parseSheepTestResults,
   replaceCommasWithSpace
 } = require('../utils/parse-data')
+const config = require('../feature-toggle/config')
 
 // Define the CSV column names
 const columns = [
@@ -73,8 +74,16 @@ const columns = [
   'eventStatus'
 ]
 
+const flagColumns = [
+  'applicationFlagId',
+  'applicationFlagDetail',
+  'flagAppliesToMh'
+]
+
+const buildColumns = () => config.flagReporting.enabled ? [...columns, ...flagColumns] : columns
+
 // Function to transform event data to CSV row format
-function transformEventToCsvV3 (event, context) {
+function transformEventToCsvV3(event, context) {
   if (!event) {
     context.log.error('No event provided')
     return
@@ -137,7 +146,10 @@ function transformEventToCsvV3 (event, context) {
     claimed,
     exception,
     statusId,
-    subStatus
+    subStatus,
+    flagId,
+    flagDetail,
+    flagAppliesToMh
   } = data ?? {}
   const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? {}
   const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? {}
@@ -158,6 +170,10 @@ function transformEventToCsvV3 (event, context) {
     rowStatusId = statusId
     rowType = type
   }
+
+  const flagData = config.flagReporting.enabled
+    ? [flagId, flagDetail, flagAppliesToMh]
+    : [];
 
   return [
     sbiFromPartitionKey,
@@ -220,8 +236,9 @@ function transformEventToCsvV3 (event, context) {
     replaceCommasWithSpace(invalidClaimData),
     rowStatusId,
     statusToString(rowStatusId ?? 0),
-    eventStatus
+    eventStatus,
+    ...flagData
   ].join(',')
 }
 
-module.exports = { transformEventToCsvV3, columns }
+module.exports = { transformEventToCsvV3, columns: buildColumns() }

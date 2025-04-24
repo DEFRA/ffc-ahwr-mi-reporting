@@ -7,6 +7,7 @@ const {
   transformEventToCsvV3
 } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
 const mockContext = require('../../mock/mock-context')
+const config = require('../../../ffc-ahwr-mi-reporting/feature-toggle/config')
 
 const mockAppendBlock = jest.fn().mockResolvedValue(true)
 
@@ -43,7 +44,7 @@ jest.mock('@azure/data-tables', () => ({
   TableClient: {
     fromConnectionString: jest.fn().mockReturnValue({
       listEntities: jest.fn().mockReturnValue({
-        byPage: jest.fn().mockImplementation(async function * () {
+        byPage: jest.fn().mockImplementation(async function* () {
           // First page
           yield [
             {
@@ -74,7 +75,34 @@ jest.mock('@azure/data-tables', () => ({
                 },
                 raisedBy: 'Jane Doe',
                 raisedOn: '2025-03-28T12:06:37.489Z'
-              })
+              }),
+              EventType: 'application-vetRcvs'
+            },
+            {
+              Payload: JSON.stringify({
+                type: 'application:flagged',
+                message: 'Application flagged',
+                data: {
+                  flagId: 'b6b76548-bd6e-45b3-b137-05d930004c9b',
+                  flagDetail: 'Declined multi herds agreement',
+                  flagAppliesToMh: true
+                },
+                raisedBy: 'Jane Doe',
+                raisedOn: '2025-03-28T12:06:37.489Z'
+              }),
+              EventType: 'application:flagged'
+            },
+            {
+              Payload: JSON.stringify({
+                type: 'application:unflagged',
+                message: 'Application flag removed',
+                data: {
+                  flagId: 'b6b76548-bd6e-45b3-b137-05d930004c9b'
+                },
+                raisedBy: 'Jane Doe',
+                raisedOn: '2025-03-28T12:06:37.489Z'
+              }),
+              EventType: 'application:unflagged'
             }
           ]
           // Second page
@@ -89,7 +117,8 @@ jest.mock('@azure/data-tables', () => ({
                 },
                 raisedBy: 'johndoe@google.com.test',
                 raisedOn: '2024-01-04T21:27:12.490Z'
-              })
+              }),
+              EventType: 'farmerApplyData-declaration'
             }
           ]
         })
@@ -110,6 +139,7 @@ const errorSpy = jest
 describe('Storage', () => {
   beforeEach(async () => {
     await connect(mockContext)
+    config.flagReporting.enabled = true
   })
 
   afterEach(() => {
@@ -144,6 +174,7 @@ describe('Storage', () => {
       expect(errorSpy).toHaveBeenCalledWith('Failed to transform event to csv.', {
         error: 'Something went wrong',
         event: {
+          EventType: "application:status-updated:1",
           Payload: JSON.stringify({
             type: 'application:status-updated:1',
             message: 'New application has been created',
@@ -162,6 +193,23 @@ describe('Storage', () => {
       expect(mockAppendBlock).toHaveBeenCalledWith(`${row2}\n`, Buffer.byteLength(`${row2}\n`))
       expect(mockAppendBlock).toHaveBeenCalledTimes(2)
     })
+  })
+
+  test('should skip application:flagged and application:unflagged events when flagReporting feature flag is not enabled', async () => {
+    config.flagReporting.enabled = false;
+    
+    await processEntitiesByTimestampPaged('fileName', mockContext)
+
+    expect(transformEventToCsvV3).not.toHaveBeenCalledWith(
+      expect.objectContaining({ EventType: 'application:flagged' }),
+      expect.anything()
+    )
+    expect(transformEventToCsvV3).not.toHaveBeenCalledWith(
+      expect.objectContaining({ EventType: 'application:unflagged' }),
+      expect.anything()
+    )
+    expect(mockAppendBlock).toHaveBeenCalledTimes(2)
+    expect(consoleSpy).toHaveBeenCalledWith('Not creating row as Flag Reporting is not enabled.')
   })
 
   describe('streamBlobToFile', () => {
