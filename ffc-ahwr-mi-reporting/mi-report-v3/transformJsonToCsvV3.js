@@ -84,7 +84,6 @@ const buildColumns = () => config.flagReporting.enabled ? [...columns, ...flagCo
 
 // Function to transform event data to CSV row format
 function transformEventToCsvV3 (event, context) {
-  console.log({ event })
   if (!event) {
     context.log.error('No event provided')
     return

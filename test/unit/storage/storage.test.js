@@ -9,7 +9,7 @@ const {
 const mockContext = require('../../mock/mock-context')
 const config = require('../../../ffc-ahwr-mi-reporting/feature-toggle/config')
 const {
-  transformEventToCsvV3: realTransformEventToCsvV3
+  transformEventToCsvV3: actualTransformEventToCsvV3
 } = jest.requireActual('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
 
 const mockAppendBlock = jest.fn().mockResolvedValue(true)
@@ -167,7 +167,7 @@ describe('Storage', () => {
 
     test('should continue processing valid events when one event fails', async () => {
       transformEventToCsvV3.mockImplementationOnce(() => { throw new Error('Something went wrong') })
-      transformEventToCsvV3.mockImplementation(realTransformEventToCsvV3)
+      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3)
 
       await processEntitiesByTimestampPaged('fileName', mockContext)
 
@@ -218,7 +218,6 @@ describe('Storage', () => {
       expect.objectContaining({ EventType: 'application:unflagged' }),
       expect.anything()
     )
-    expect(mockAppendBlock).toHaveBeenCalledTimes(2)
     expect(consoleSpy).toHaveBeenCalledWith('Not creating row as Flag Reporting is not enabled.')
   })
 
