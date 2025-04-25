@@ -89,7 +89,7 @@ const getFlagData = (flagId, flagDetail, flagAppliesToMh) => config.flagReportin
   : []
 
 // Function to transform event data to CSV row format
-function transformEventToCsvV3(event, context) {
+function transformEventToCsvV3 (event, context) {
   if (!event) {
     context.log.error('No event provided')
     return
