@@ -80,13 +80,16 @@ const flagColumns = [
   'flagAppliesToMh'
 ]
 
-const buildColumns = () => config.flagReporting.enabled ? [...columns, ...flagColumns] : columns
+const buildColumns = () => config.flagReporting.enabled
+  ? [...columns, ...flagColumns]
+  : columns
+
 const getFlagData = (flagId, flagDetail, flagAppliesToMh) => config.flagReporting.enabled
   ? [flagId, flagDetail, flagAppliesToMh]
   : []
 
 // Function to transform event data to CSV row format
-function transformEventToCsvV3 (event, context) {
+function transformEventToCsvV3(event, context) {
   if (!event) {
     context.log.error('No event provided')
     return
