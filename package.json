@@ -1,11 +1,11 @@
 {
   "name": "ffc-ahwr-mi-reporting",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "description": "Azure Function to create MI reports",
   "author": "Defra",
   "scripts": {
     "lint": "standard",
-    "lint-fix": "standard --fix",
+    "lint:fix": "standard --fix",
     "start": "func start -p 7081 --verbose",
     "start:detached": "func start -p 7081 1> /dev/null 2> /dev/null &",
     "start:verbose": "func start -p 7081 --verbose",

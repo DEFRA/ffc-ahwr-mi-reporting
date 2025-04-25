@@ -9,6 +9,7 @@ let containersInitialised
 let appendBlobClient
 
 const { transformEventToCsvV3, columns } = require('../mi-report-v3/transformJsonToCsvV3')
+const config = require('../feature-toggle/config')
 
 const EVENT_YEAR_START = 2022
 
@@ -61,6 +62,11 @@ const processEntitiesByTimestampPaged = async (fileName, context) => {
     let rowContent = ''
 
     for await (const event of eventsPage) {
+      if (!config.flagReporting.enabled && ['application:unflagged', 'application:flagged'].includes(event.EventType)) {
+        context.log.info('Not creating row as Flag Reporting is not enabled.')
+        continue
+      }
+
       try {
         const csvRow = transformEventToCsvV3(event, context)
         rowContent += csvRow + '\n'
