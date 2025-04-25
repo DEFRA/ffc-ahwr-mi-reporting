@@ -83,7 +83,8 @@ const flagColumns = [
 const buildColumns = () => config.flagReporting.enabled ? [...columns, ...flagColumns] : columns
 
 // Function to transform event data to CSV row format
-function transformEventToCsvV3(event, context) {
+function transformEventToCsvV3 (event, context) {
+  console.log({ event })
   if (!event) {
     context.log.error('No event provided')
     return
@@ -173,7 +174,7 @@ function transformEventToCsvV3(event, context) {
 
   const flagData = config.flagReporting.enabled
     ? [flagId, flagDetail, flagAppliesToMh]
-    : [];
+    : []
 
   return [
     sbiFromPartitionKey,
