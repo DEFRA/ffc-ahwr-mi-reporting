@@ -62,12 +62,12 @@ const processEntitiesByTimestampPaged = async (fileName, context) => {
     let rowContent = ''
 
     for await (const event of eventsPage) {
-      try {
-        if (!config.flagReporting.enabled && ['application:unflagged', 'application:flagged'].includes(event.EventType)) {
-          context.log.info('Not creating row as Flag Reporting is not enabled.')
-          continue
-        }
+      if (!config.flagReporting.enabled && ['application:unflagged', 'application:flagged'].includes(event.EventType)) {
+        context.log.info('Not creating row as Flag Reporting is not enabled.')
+        continue
+      }
 
+      try {
         const csvRow = transformEventToCsvV3(event, context)
         rowContent += csvRow + '\n'
         eventItemCount++
