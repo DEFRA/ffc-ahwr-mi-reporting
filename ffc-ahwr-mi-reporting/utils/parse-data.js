@@ -85,11 +85,50 @@ const replaceCommasWithSpace = (stringToEdit) => {
   return stringToEdit ? stringToEdit.replace(/,/g, ' ') : ''
 }
 
+const getVisitDateFromPossibleSources = (visitDateValue, updatedProperty, updatedValue) => {
+  if (visitDateValue) {
+    return visitDateValue
+  }
+  if (updatedProperty === 'visitDate' || updatedProperty === 'dateOfVisit') {
+    return updatedValue
+  }
+
+  return ''
+}
+
+const getVetNameFromPossibleSources = (vetNameValue, updatedProperty, updatedValue) => {
+  if (vetNameValue) {
+    return vetNameValue
+  }
+  if (updatedProperty === 'vetName' || updatedProperty === 'vetsName') {
+    return updatedValue
+  }
+
+  return ''
+}
+
+const getVetRcvsFromPossibleSources = (vetRcvsValue, alternateVetRcvsValue, updatedProperty, updatedValue) => {
+  if (vetRcvsValue) {
+    return vetRcvsValue
+  }
+  if (alternateVetRcvsValue) {
+    return alternateVetRcvsValue
+  }
+  if (updatedProperty === 'vetRcvs' || updatedProperty === 'vetRCVSNumber') {
+    return updatedValue
+  }
+
+  return ''
+}
+
 module.exports = {
   arrayToString,
   formatDate,
   getReferenceFromNestedData,
   getSbiFromPartitionKey,
+  getVetNameFromPossibleSources,
+  getVetRcvsFromPossibleSources,
+  getVisitDateFromPossibleSources,
   invalidClaimDataToString,
   parseData,
   parsePayload,

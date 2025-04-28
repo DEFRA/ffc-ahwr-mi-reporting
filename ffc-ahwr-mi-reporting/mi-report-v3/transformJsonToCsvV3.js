@@ -5,7 +5,7 @@ const {
   getSbiFromPartitionKey,
   invalidClaimDataToString,
   parseSheepTestResults,
-  replaceCommasWithSpace
+  replaceCommasWithSpace, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources, getVisitDateFromPossibleSources
 } = require('../utils/parse-data')
 const config = require('../feature-toggle/config')
 
@@ -155,7 +155,9 @@ function transformEventToCsvV3 (event, context) {
     subStatus,
     flagId,
     flagDetail,
-    flagAppliesToMh
+    flagAppliesToMh,
+    updatedProperty,
+    newValue
   } = data ?? {}
   const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? {}
   const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? {}
@@ -211,10 +213,10 @@ function transformEventToCsvV3 (event, context) {
     whichReview,
     detailsCorrect,
     typeOfLivestock,
-    visitDate,
+    getVisitDateFromPossibleSources(visitDate, updatedProperty, newValue),
     dateOfTesting,
-    replaceCommasWithSpace(vetName),
-    vetRcvs ?? vetRCVSNumber,
+    replaceCommasWithSpace(getVetNameFromPossibleSources(vetName, updatedProperty, newValue)),
+    getVetRcvsFromPossibleSources(vetRcvs, vetRCVSNumber, updatedProperty, newValue),
     urnResult,
     herdVaccinationStatus,
     numberOfOralFluidSamples,
