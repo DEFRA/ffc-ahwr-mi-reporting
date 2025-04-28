@@ -1,7 +1,7 @@
 const moment = require('moment')
 const {
   formatDate, parseData, parsePayload, arrayToString, getReferenceFromNestedData, getSbiFromPartitionKey,
-  replaceCommasWithSpace
+  replaceCommasWithSpace, getVisitDateFromPossibleSources, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources
 } = require('../../../ffc-ahwr-mi-reporting/utils/parse-data')
 
 describe('formatDate(date)', () => {
@@ -102,6 +102,80 @@ describe('replaceCommasWithSpace', () => {
   })
   test('returns blank string when input is undefined', () => {
     const result = replaceCommasWithSpace(undefined)
+
+    expect(result).toEqual('')
+  })
+})
+
+describe('getVisitDateFromPossibleSources', () => {
+  test('returns visitDateValue when present', () => {
+    const result = getVisitDateFromPossibleSources('2024-01-01', undefined, undefined)
+
+    expect(result).toEqual('2024-01-01')
+  })
+  test('returns updatedValue when updatedProperty is visitDate', () => {
+    const result = getVisitDateFromPossibleSources(undefined, 'visitDate', '2024-01-02')
+
+    expect(result).toEqual('2024-01-02')
+  })
+  test('returns updatedValue when updatedProperty is dateOfVisit', () => {
+    const result = getVisitDateFromPossibleSources(undefined, 'dateOfVisit', '2024-01-02')
+
+    expect(result).toEqual('2024-01-02')
+  })
+  test('returns empty string when other updated property', () => {
+    const result = getVisitDateFromPossibleSources(undefined, 'vetName', 'Ken')
+
+    expect(result).toEqual('')
+  })
+})
+
+describe('getVetNameFromPossibleSources', () => {
+  test('returns vetNameValue when present', () => {
+    const result = getVetNameFromPossibleSources('some vet', undefined, undefined)
+
+    expect(result).toEqual('some vet')
+  })
+  test('returns updatedValue when updatedProperty is vetName', () => {
+    const result = getVetNameFromPossibleSources(undefined, 'vetName', 'Terry')
+
+    expect(result).toEqual('Terry')
+  })
+  test('returns updatedValue when updatedProperty is vetsName', () => {
+    const result = getVetNameFromPossibleSources(undefined, 'vetsName', 'Kerry')
+
+    expect(result).toEqual('Kerry')
+  })
+  test('returns empty string when other updated property', () => {
+    const result = getVetNameFromPossibleSources(undefined, 'vetRcvs', '1111111')
+
+    expect(result).toEqual('')
+  })
+})
+
+describe('getVetRcvsFromPossibleSources', () => {
+  test('returns vetRcvsValue when present', () => {
+    const result = getVetRcvsFromPossibleSources('1234567', '7654321', undefined, undefined)
+
+    expect(result).toEqual('1234567')
+  })
+  test('returns alternateVetRcvsValue when present', () => {
+    const result = getVetRcvsFromPossibleSources(undefined, '7654321', undefined, undefined)
+
+    expect(result).toEqual('7654321')
+  })
+  test('returns updatedValue when updatedProperty is vetRcvs', () => {
+    const result = getVetRcvsFromPossibleSources(undefined, undefined, 'vetRcvs', '4444444')
+
+    expect(result).toEqual('4444444')
+  })
+  test('returns updatedValue when updatedProperty is vetRCVSNumber', () => {
+    const result = getVetRcvsFromPossibleSources(undefined, undefined, 'vetRCVSNumber', '5555555')
+
+    expect(result).toEqual('5555555')
+  })
+  test('returns empty string when other updated property', () => {
+    const result = getVetRcvsFromPossibleSources(undefined, undefined, 'vetsName', 'Bill')
 
     expect(result).toEqual('')
   })

@@ -20,7 +20,8 @@ There are three distinct types of events:
 
 !Support for multiple agreements!
 
-Currently, claim events associated with a specific agreement are distinguished through reference using a "claim-reference" event. Subsequently, the remaining claim events are grouped together based on the SessionId. Hence, it is crucial that two claims occur utilizing separate HTTP sessions to ensure accurate grouping.
+Currently, claim events associated with a specific agreement are distinguished through reference using a "claim-reference" event. 
+Subsequently, the remaining claim events are grouped together based on the SessionId. Hence, it is crucial that two claims occur utilizing separate HTTP sessions to ensure accurate grouping.
 
 ## Local development
 In order to assist with local development you can trigger the reports to run every minute.
