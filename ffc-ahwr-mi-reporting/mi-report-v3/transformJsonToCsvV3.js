@@ -77,15 +77,16 @@ const columns = [
 const flagColumns = [
   'applicationFlagId',
   'applicationFlagDetail',
-  'flagAppliesToMh'
+  'flagAppliesToMh',
+  'flagDeletedNote'
 ]
 
 const buildColumns = () => config.flagReporting.enabled
   ? [...columns, ...flagColumns]
   : columns
 
-const getFlagData = (flagId, flagDetail, flagAppliesToMh) => config.flagReporting.enabled
-  ? [flagId, flagDetail, flagAppliesToMh]
+const getFlagData = ({ flagId, flagDetail, flagAppliesToMh, deletedNote }) => config.flagReporting.enabled
+  ? [flagId, flagDetail, flagAppliesToMh, deletedNote]
   : []
 
 // Function to transform event data to CSV row format
@@ -156,6 +157,7 @@ function transformEventToCsvV3 (event, context) {
     flagId,
     flagDetail,
     flagAppliesToMh,
+    deletedNote,
     updatedProperty,
     newValue
   } = data ?? {}
@@ -179,7 +181,7 @@ function transformEventToCsvV3 (event, context) {
     rowType = type
   }
 
-  const flagData = getFlagData(flagId, flagDetail, flagAppliesToMh)
+  const flagData = getFlagData({ flagId, flagDetail, flagAppliesToMh, deletedNote })
 
   return [
     sbiFromPartitionKey,
