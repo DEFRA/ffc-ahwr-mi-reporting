@@ -1,6 +1,7 @@
 const config = require('../../../ffc-ahwr-mi-reporting/feature-toggle/config')
 const { transformEventToCsvV3 } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
 const mockContext = require('../../mock/mock-context')
+const { randomUUID } = require('node:crypto')
 
 jest.mock('@azure/storage-blob')
 jest.mock('fs')
@@ -40,9 +41,10 @@ describe('transformEventToCsvV3', () => {
 
   test('returns csv row with empty flag data when event provided and flag reporting feature flag is enabled', async () => {
     config.flagReporting.enabled = true
+    const uuid = randomUUID()
     const event = {
       partitionKey: '123456',
-      SessionId: 'no-session',
+      SessionId: uuid,
       EventType: 'farmerApplyData-organisation',
       EventRaised: new Date().toISOString(),
       Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-1234-ABCD","organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","orgEmail":"brownorg@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom","crn":"0123456789","frn":"9876543210"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
@@ -50,7 +52,7 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe('123456,no-session,farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,')
+    expect(result).toBe(`123456,${uuid},farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
   })
 
   test('returns undefined when event contains invalid JSON in Payload field', async () => {
@@ -130,9 +132,10 @@ describe('transformEventToCsvV3', () => {
 
   test('returns csv row with flag reporting data when flag reporting feature flag is enabled', async () => {
     config.flagReporting.enabled = true
+    const uuid = randomUUID()
     const event = {
       partitionKey: '123456',
-      SessionId: 'no-session',
+      SessionId: uuid,
       EventType: 'application-flagged',
       EventRaised: new Date().toISOString(),
       Payload: JSON.stringify({
@@ -150,6 +153,6 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe('123456,no-session,application-flagged,Application flagged,,,,,,,,,,,,,,Jane Doe,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,b6b76548-bd6e-45b3-b137-05d930004c9b,Declined multi herds agreement,true,')
+    expect(result).toBe(`123456,${uuid},application-flagged,Application flagged,,,,,,,,,,,,,,Jane Doe,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,b6b76548-bd6e-45b3-b137-05d930004c9b,Declined multi herds agreement,true,`)
   })
 })
