@@ -100,14 +100,20 @@ describe('replaceCommasWithSpace', () => {
 
     expect(result).toEqual('well  this is awkward  maybe')
   })
-  test('returns whatever value was inputted, if its not a string', () => {
-    const result = replaceCommasWithSpace(undefined)
-    const result2 = replaceCommasWithSpace(123)
-    const result3 = replaceCommasWithSpace(['things', 123])
+  test('returns whatever value was inputted if its not a string', () => {
+    const result1 = replaceCommasWithSpace(123)
+    const result2 = replaceCommasWithSpace(['things', 123])
 
-    expect(result).toEqual(undefined)
-    expect(result2).toEqual(123)
-    expect(result3).toEqual(['things', 123])
+    expect(result1).toEqual(123)
+    expect(result2).toEqual(['things', 123])
+  })
+
+  test('returns an empty string for undefined or null', () => {
+    const result1 = replaceCommasWithSpace(undefined)
+    const result2 = replaceCommasWithSpace(null)
+
+    expect(result1).toEqual('')
+    expect(result2).toEqual('')
   })
 })
 
