@@ -187,7 +187,7 @@ function transformEventToCsvV3 (event, context) {
     sbiFromPartitionKey,
     sessionId,
     rowType,
-    replaceCommasWithSpace(message),
+    message,
     reference,
     applicationReference,
     tempReference,
@@ -196,12 +196,12 @@ function transformEventToCsvV3 (event, context) {
     sbi,
     crn,
     frn,
-    replaceCommasWithSpace(farmerName),
-    replaceCommasWithSpace(name),
+    farmerName,
+    name,
     email,
     orgEmail,
-    replaceCommasWithSpace(address),
-    replaceCommasWithSpace(raisedBy),
+    address,
+    raisedBy,
     raisedOn,
     journey,
     confirmCheckDetails,
@@ -217,7 +217,7 @@ function transformEventToCsvV3 (event, context) {
     typeOfLivestock,
     getVisitDateFromPossibleSources(visitDate, updatedProperty, newValue),
     dateOfTesting,
-    replaceCommasWithSpace(getVetNameFromPossibleSources(vetName, updatedProperty, newValue)),
+    getVetNameFromPossibleSources(vetName, updatedProperty, newValue),
     getVetRcvsFromPossibleSources(vetRcvs, vetRCVSNumber, updatedProperty, newValue),
     urnResult,
     herdVaccinationStatus,
@@ -240,13 +240,13 @@ function transformEventToCsvV3 (event, context) {
     latestVetVisitApplicationReference,
     relevantReviewForEndemicsReference,
     claimed,
-    replaceCommasWithSpace(exception),
-    replaceCommasWithSpace(invalidClaimData),
+    exception,
+    invalidClaimData,
     rowStatusId,
     statusToString(rowStatusId ?? 0),
     eventStatus,
     ...flagData
-  ].join(',')
+  ].map(item => replaceCommasWithSpace(item)).join(',')
 }
 
 module.exports = { transformEventToCsvV3, columns: buildColumns() }

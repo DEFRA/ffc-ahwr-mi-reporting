@@ -81,8 +81,16 @@ const parseSheepTestResults = (sheepTestResults) => {
   return result.join('  ')
 }
 
-const replaceCommasWithSpace = (stringToEdit) => {
-  return stringToEdit ? stringToEdit.replace(/,/g, ' ') : ''
+const replaceCommasWithSpace = (valueToEdit) => {
+  if (valueToEdit === null || valueToEdit === undefined) {
+    return ''
+  }
+
+  if (typeof valueToEdit !== 'string') {
+    return valueToEdit
+  }
+
+  return valueToEdit.replace(/,/g, ' ')
 }
 
 const getVisitDateFromPossibleSources = (visitDateValue, updatedProperty, updatedValue) => {
