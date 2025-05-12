@@ -129,6 +129,18 @@ const getVetRcvsFromPossibleSources = (vetRcvsValue, alternateVetRcvsValue, upda
   return ''
 }
 
+const getTestResultFromPossibleSources = (testResults, updatedProperty, updatedValue) => {
+  if (testResults) {
+    return testResults
+  }
+
+  if (updatedProperty === 'testResults') {
+    return updatedValue
+  }
+
+  return ''
+}
+
 module.exports = {
   arrayToString,
   formatDate,
@@ -141,5 +153,6 @@ module.exports = {
   parseData,
   parsePayload,
   parseSheepTestResults,
-  replaceCommasWithSpace
+  replaceCommasWithSpace,
+  getTestResultFromPossibleSources
 }
