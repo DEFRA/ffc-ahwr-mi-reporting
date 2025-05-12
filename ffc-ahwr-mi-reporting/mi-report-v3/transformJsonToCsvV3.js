@@ -5,7 +5,7 @@ const {
   getSbiFromPartitionKey,
   invalidClaimDataToString,
   parseSheepTestResults,
-  replaceCommasWithSpace, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources, getVisitDateFromPossibleSources
+  replaceCommasWithSpace, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources, getVisitDateFromPossibleSources, getTestResultFromPossibleSources
 } = require('../utils/parse-data')
 const config = require('../feature-toggle/config')
 
@@ -224,7 +224,7 @@ function transformEventToCsvV3 (event, context) {
     numberOfOralFluidSamples,
     numberOfSamplesTested,
     animalsTested,
-    testResults,
+    getTestResultFromPossibleSources(testResults, updatedProperty, newValue),
     vetVisitsReviewTestResults,
     sheepEndemicsPackage,
     sheepTestsString,
