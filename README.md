@@ -4,7 +4,7 @@ FFC AHWR MI reporting
 
 ## mi-report
 
-Each record depicts the progression of an agreement's journey, commencing with the application stage and concluding at the claim stage.
+Each record depicts the progression of an agreement or claim's journey.
 
 The report is generated based on events from the Azure Storage 'ahwreventstore' table (env.STORAGE_CONNECTION_STRING)
 
