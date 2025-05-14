@@ -8,10 +8,13 @@ module.exports = async (context, miReportTimer) => {
     await buildAhwrMiReport(context)
   } catch (e) {
     context.log.error('MI report V3 failed: ', e)
+    const errorMessage = 'Failed to build MI Report'
     context.res = {
       status: 500,
-      body: 'Failed to build MI Report'
+      body: errorMessage
     }
+
+    throw new Error(errorMessage)
   }
 
   if (miReportTimer.isPastDue) {
