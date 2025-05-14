@@ -4,15 +4,7 @@ module.exports = async (context, miReportTimer) => {
   const timeStamp = new Date().toISOString()
   context.log('MI Report timer trigger function started', timeStamp)
 
-  try {
-    await buildAhwrMiReport(context)
-  } catch (e) {
-    context.log.error('MI report V3 failed: ', e)
-    context.res = {
-      status: 500,
-      body: 'Failed to build MI Report'
-    }
-  }
+  await buildAhwrMiReport(context)
 
   if (miReportTimer.isPastDue) {
     context.log('Node is running late')
