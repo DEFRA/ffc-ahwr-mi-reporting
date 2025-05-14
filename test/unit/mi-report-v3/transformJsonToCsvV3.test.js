@@ -155,4 +155,43 @@ describe('transformEventToCsvV3', () => {
 
     expect(result).toBe(`123456,${uuid},application-flagged,Application flagged,,,,,,,,,,,,,,Jane Doe,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,b6b76548-bd6e-45b3-b137-05d930004c9b,Declined multi herds agreement,true,`)
   })
+
+  test('returns csv row with multi herds data when multi herds feature flag is enabled', async () => {
+    config.flagReporting.enabled = true
+    config.multiHerds.enabled = true
+    const uuid = randomUUID()
+    const tempHerdId = randomUUID()
+    const herdId = randomUUID()
+    const event = {
+      partitionKey: '123456',
+      SessionId: uuid,
+      EventType: 'herd-created',
+      EventRaised: new Date().toISOString(),
+      Payload: JSON.stringify({
+        type: 'herd-created',
+        message: 'Herd created',
+        data: {
+          tempHerdId,
+          herdId,
+          herdVersion: 1,
+          herdName: 'Porkers',
+          herdSpecies: 'pigs',
+          herdCph: '123456789',
+          herdReasonManagementNeeds: true,
+          herdReasonUniqueHealth: true,
+          herdReasonDifferentBreed: true,
+          herdReasonOtherPurpose: true,
+          herdReasonKeptSeparate: true,
+          herdReasonOnlyHerd: true,
+          herdReasonOther: true
+        },
+        raisedBy: 'Admin',
+        raisedOn: '2025-03-28T12:06:37.489Z'
+      })
+    }
+
+    const result = transformEventToCsvV3(event, mockContext)
+
+    expect(result).toBe(`123456,${uuid},herd-created,Herd created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,${tempHerdId},${herdId},1,Porkers,pigs,123456789,true,true,true,true,true,true,true`)
+  })
 })
