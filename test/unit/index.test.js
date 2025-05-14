@@ -96,13 +96,7 @@ describe('miReportFunction', () => {
     queryEntitiesByTimestamp.mockResolvedValue(events)
     buildAhwrMiReportV3.mockRejectedValue(error)
 
-    await miReportFunction(context, miReportTimer)
-
-    expect(context.log.error).toHaveBeenCalledWith('MI report V3 failed: ', error)
-    expect(context.res).toEqual({
-      status: 500,
-      body: 'Failed to build MI Report'
-    })
+    expect(async () => await miReportFunction(context, miReportTimer)).rejects.toThrow('Failed to build MI Report')
   })
 
   test('should log if the timer is past due', async () => {
