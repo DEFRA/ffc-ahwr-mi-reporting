@@ -309,4 +309,4 @@ function transformEventToCsvV3 (event, context) {
   ].map(item => replaceCommasWithSpace(item)).join(',')
 }
 
-module.exports = { transformEventToCsvV3, columns: buildColumns() }
+module.exports = { transformEventToCsvV3, buildColumns }

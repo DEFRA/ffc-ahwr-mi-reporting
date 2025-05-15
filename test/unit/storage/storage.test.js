@@ -4,7 +4,8 @@ const {
   streamBlobToFile
 } = require('../../../ffc-ahwr-mi-reporting/storage/storage')
 const {
-  transformEventToCsvV3
+  transformEventToCsvV3,
+  buildColumns
 } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
 const mockContext = require('../../mock/mock-context')
 const config = require('../../../ffc-ahwr-mi-reporting/feature-toggle/config')
@@ -159,6 +160,7 @@ describe('Storage', () => {
     })
 
     test('should process successfully when file does not exists', async () => {
+      buildColumns.mockImplementation(() => ['someColumn', 'anotherColumn'])
       await processEntitiesByTimestampPaged('fileNameThatDoesNotExist', mockContext)
 
       expect(consoleSpy).toHaveBeenCalledWith('Page 1 and 4 event items written to append blob')

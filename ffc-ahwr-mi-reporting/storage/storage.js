@@ -1,15 +1,14 @@
 const { TableClient, odata } = require('@azure/data-tables')
 const { BlobServiceClient } = require('@azure/storage-blob')
 const { connectionString, containerName, tableName, pageSize } = require('../config/config')
+const { transformEventToCsvV3, buildColumns } = require('../mi-report-v3/transformJsonToCsvV3')
+const config = require('../feature-toggle/config')
 
 let tableClient
 let blobServiceClient
 let container
 let containersInitialised
 let appendBlobClient
-
-const { transformEventToCsvV3, columns } = require('../mi-report-v3/transformJsonToCsvV3')
-const config = require('../feature-toggle/config')
 
 const EVENT_YEAR_START = 2022
 
@@ -46,7 +45,7 @@ const processEntitiesByTimestampPaged = async (fileName, context) => {
   if (!exists) {
     // If the blob doesn't exist, create it
     await appendBlobClient.create()
-    const headerContent = columns.join(',') + '\n'
+    const headerContent = buildColumns().join(',') + '\n'
     await appendBlobClient.appendBlock(headerContent, Buffer.byteLength(headerContent))
     context.log.info('write CSV headers to append blob')
   }
