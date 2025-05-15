@@ -10,7 +10,7 @@ const {
 const config = require('../feature-toggle/config')
 
 // Define the CSV column names
-const columns = [
+const defaultColumns = [
   'sbiFromPartitionKey',
   'sessionId',
   'eventType', // type
@@ -99,7 +99,7 @@ const multiHerdsColumns = [
 
 const buildColumns = () => {
   return [
-    ...columns,
+    ...defaultColumns,
     ...(config.flagReporting.enabled ? flagColumns : []),
     ...(config.multiHerds.enabled ? multiHerdsColumns : [])
   ]
@@ -309,4 +309,4 @@ function transformEventToCsvV3 (event, context) {
   ].map(item => replaceCommasWithSpace(item)).join(',')
 }
 
-module.exports = { transformEventToCsvV3, buildColumns }
+module.exports = { transformEventToCsvV3, buildColumns, defaultColumns, flagColumns, multiHerdsColumns }

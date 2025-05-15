@@ -1,5 +1,5 @@
 const config = require('../../../ffc-ahwr-mi-reporting/feature-toggle/config')
-const { transformEventToCsvV3 } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
+const { transformEventToCsvV3, buildColumns, defaultColumns, flagColumns, multiHerdsColumns } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
 const mockContext = require('../../mock/mock-context')
 const { randomUUID } = require('node:crypto')
 
@@ -193,5 +193,47 @@ describe('transformEventToCsvV3', () => {
     const result = transformEventToCsvV3(event, mockContext)
 
     expect(result).toBe(`123456,${uuid},herd-created,Herd created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,${tempHerdId},${herdId},1,Porkers,pigs,123456789,true,true,true,true,true,true,true`)
+  })
+
+  test('returns some base information from the event when no data object is found in the payload', async () => {
+    config.flagReporting.enabled = false
+    config.multiHerds.enabled = false
+    const uuid = randomUUID()
+    const event = {
+      partitionKey: '123456',
+      SessionId: uuid,
+      EventType: 'application-created',
+      EventRaised: new Date().toISOString(),
+      Payload: JSON.stringify({
+        type: 'application-created',
+        message: 'Application created',
+        raisedBy: 'Admin',
+        raisedOn: '2025-03-28T12:06:37.489Z'
+      })
+    }
+
+    const result = transformEventToCsvV3(event, mockContext)
+
+    expect(result).toBe(`123456,${uuid},application-created,Application created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
+  })
+})
+
+describe('buildColumns', () => {
+  test('it returns the default columns when flagging and multi herds disabled', () => {
+    config.flagReporting.enabled = false
+    config.multiHerds.enabled = false
+    expect(buildColumns()).toEqual(defaultColumns)
+  })
+
+  test('it returns the default columns plus the flagging columns when flagging is enabled but multi herds is disabled', () => {
+    config.flagReporting.enabled = true
+    config.multiHerds.enabled = false
+    expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns])
+  })
+
+  test('it returns all of the columns when flagging is enabled and multi herds is enabled', () => {
+    config.flagReporting.enabled = true
+    config.multiHerds.enabled = true
+    expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns, ...multiHerdsColumns])
   })
 })
