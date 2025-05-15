@@ -8,6 +8,9 @@ function buildFeatureToggleConfig () {
     },
     flagReporting: {
       enabled: Joi.boolean().optional().default(false)
+    },
+    multiHerds: {
+      enabled: Joi.boolean().optional().default(false)
     }
   })
 
@@ -18,6 +21,9 @@ function buildFeatureToggleConfig () {
     },
     flagReporting: {
       enabled: process.env.FLAG_REPORTING_ENABLED === 'true'
+    },
+    multiHerds: {
+      enabled: process.env.MULTI_HERDS_ENABLED === 'true'
     }
   }
 

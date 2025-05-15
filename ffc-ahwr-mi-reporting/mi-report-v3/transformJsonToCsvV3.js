@@ -10,7 +10,7 @@ const {
 const config = require('../feature-toggle/config')
 
 // Define the CSV column names
-const columns = [
+const defaultColumns = [
   'sbiFromPartitionKey',
   'sessionId',
   'eventType', // type
@@ -78,16 +78,48 @@ const flagColumns = [
   'applicationFlagId',
   'applicationFlagDetail',
   'flagAppliesToMh',
-  'flagDeletedNote'
+  'applicationFlagRemovedDetail'
 ]
 
-const buildColumns = () => config.flagReporting.enabled
-  ? [...columns, ...flagColumns]
-  : columns
+const multiHerdsColumns = [
+  'tempHerdId',
+  'herdId',
+  'herdVersion',
+  'herdName',
+  'herdSpecies',
+  'herdCph',
+  'herdReasonManagementNeeds',
+  'herdReasonUniqueHealth',
+  'herdReasonDifferentBreed',
+  'herdReasonOtherPurpose',
+  'herdReasonKeptSeparate',
+  'herdReasonOnlyHerd',
+  'herdReasonOther'
+]
 
-const getFlagData = ({ flagId, flagDetail, flagAppliesToMh, deletedNote }) => config.flagReporting.enabled
-  ? [flagId, flagDetail, flagAppliesToMh, deletedNote]
-  : []
+const buildColumns = () => {
+  return [
+    ...defaultColumns,
+    ...(config.flagReporting.enabled ? flagColumns : []),
+    ...(config.multiHerds.enabled ? multiHerdsColumns : [])
+  ]
+}
+
+const getFlagData = (...args) => {
+  if (!config.flagReporting.enabled) {
+    return []
+  }
+
+  return args
+}
+
+const getHerdData = (...args) => {
+  if (!config.multiHerds.enabled) {
+    return []
+  }
+
+  return args
+}
 
 // Function to transform event data to CSV row format
 function transformEventToCsvV3 (event, context) {
@@ -158,6 +190,19 @@ function transformEventToCsvV3 (event, context) {
     flagDetail,
     flagAppliesToMh,
     deletedNote,
+    tempHerdId,
+    herdId,
+    herdVersion,
+    herdName,
+    herdSpecies,
+    herdCph,
+    herdReasonManagementNeeds,
+    herdReasonUniqueHealth,
+    herdReasonDifferentBreed,
+    herdReasonOtherPurpose,
+    herdReasonKeptSeparate,
+    herdReasonOnlyHerd,
+    herdReasonOther,
     updatedProperty,
     newValue
   } = data ?? {}
@@ -181,7 +226,21 @@ function transformEventToCsvV3 (event, context) {
     rowType = type
   }
 
-  const flagData = getFlagData({ flagId, flagDetail, flagAppliesToMh, deletedNote })
+  const flagData = getFlagData(flagId, flagDetail, flagAppliesToMh, deletedNote)
+  const herdData = getHerdData(
+    tempHerdId,
+    herdId,
+    herdVersion,
+    herdName,
+    herdSpecies,
+    herdCph,
+    herdReasonManagementNeeds,
+    herdReasonUniqueHealth,
+    herdReasonDifferentBreed,
+    herdReasonOtherPurpose,
+    herdReasonKeptSeparate,
+    herdReasonOnlyHerd,
+    herdReasonOther)
 
   return [
     sbiFromPartitionKey,
@@ -245,8 +304,9 @@ function transformEventToCsvV3 (event, context) {
     rowStatusId,
     statusToString(rowStatusId ?? 0),
     eventStatus,
-    ...flagData
+    ...flagData,
+    ...herdData
   ].map(item => replaceCommasWithSpace(item)).join(',')
 }
 
-module.exports = { transformEventToCsvV3, columns: buildColumns() }
+module.exports = { transformEventToCsvV3, buildColumns, defaultColumns, flagColumns, multiHerdsColumns }
