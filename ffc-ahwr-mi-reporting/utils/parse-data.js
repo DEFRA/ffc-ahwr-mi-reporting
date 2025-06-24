@@ -54,7 +54,11 @@ const parsePayload = (events, eventType) => {
   return latestEvent?.Payload ? JSON.parse(latestEvent?.Payload) : {}
 }
 
-const parseSheepTestResults = (sheepTestResults) => {
+const parseSheepTestResults = (sheepTestResults, updatedProperty, newValue) => {
+  if (!sheepTestResults && updatedProperty !== 'sheepTestResults') {
+    return ''
+  }
+
   const result = []
 
   const flatten = (item) => {
@@ -77,7 +81,7 @@ const parseSheepTestResults = (sheepTestResults) => {
     }
   }
 
-  flatten(sheepTestResults)
+  flatten(sheepTestResults ?? newValue)
   return result.join('  ')
 }
 

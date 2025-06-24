@@ -35,7 +35,7 @@ while :; do
 done
 
 if [ "${fix_lint}" = "true" ]; then
-  npm run lint-fix
+  npm run lint:fix
 fi
 
 # Run tests

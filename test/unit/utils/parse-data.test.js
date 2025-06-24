@@ -2,7 +2,7 @@ const moment = require('moment')
 const {
   formatDate, parseData, parsePayload, arrayToString, getReferenceFromNestedData, getSbiFromPartitionKey,
   replaceCommasWithSpace, getVisitDateFromPossibleSources, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources,
-  getTestResultFromPossibleSources
+  getTestResultFromPossibleSources, parseSheepTestResults
 } = require('../../../ffc-ahwr-mi-reporting/utils/parse-data')
 
 describe('formatDate(date)', () => {
@@ -253,5 +253,36 @@ describe('parseData and parsePayload', () => {
 
     expect(result.type).toEqual('farmerApplyData-organisation')
     expect(result.message).toEqual('Session set for farmerApplyData and organisation.')
+  })
+})
+
+describe('parseSheepTestResults', () => {
+  test('returns empty string when no sheepTestResults and updatedProperty is not sheepTestResults', () => {
+    const result = parseSheepTestResults(undefined, 'testResults', 'negative')
+
+    expect(result).toEqual('')
+  })
+
+  test('returns empty string when sheepTestResults is empty', () => {
+    const result = parseSheepTestResults([], undefined, undefined)
+
+    expect(result).toEqual('')
+  })
+
+  test('returns formatted string from sheepTestResults', () => {
+    const sheepTestResults = [
+      { diseaseType: 'Bluetongue', result: 'positive' },
+      { diseaseType: 'Scrapie', result: 'negative' }
+    ]
+    const result = parseSheepTestResults(sheepTestResults, undefined, undefined)
+
+    expect(result).toEqual('Bluetongue  result positive  Scrapie  result negative')
+  })
+
+  test('returns formatted string from updatedProperty', () => {
+    const sheepTestResults = [{ result: 'clinicalSymptomsPresent', diseaseType: 'liverFluke' }]
+    const result = parseSheepTestResults(sheepTestResults, undefined, undefined)
+
+    expect(result).toEqual('liverFluke  result clinicalSymptomsPresent')
   })
 })

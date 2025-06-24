@@ -84,6 +84,29 @@ describe('transformEventToCsvV3', () => {
     expect(result).toBe('123456,789123456,application:status-updated:12,New stage execution has been created,AHWR-04DC-5073,,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,')
   })
 
+  describe('sheepTestResults', () => {
+    test('sheepTestResults populated from manual override', async () => {
+      const uuid = '3af96f82-a93c-40a5-a6b8-5c8daf8a556a'
+      const event = {
+        partitionKey: '123456',
+        SessionId: uuid,
+        EventType: 'claim-sheepTestResults',
+        EventRaised: new Date().toISOString(),
+        Payload: JSON.stringify({
+          type: 'claim-sheepTestResults',
+          message: 'Claim data updated',
+          raisedBy: 'Admin2',
+          raisedOn: '2025-03-28T12:06:37.489Z',
+          data: JSON.parse('{ "applicationReference": "IAHW-414E-A563", "reference": "FUSH-847A-8D52", "updatedProperty": "sheepTestResults", "newValue": [{"result": "clinicalSymptomsPresent", "diseaseType": "liverFluke"}], "oldValue": [{"result": "clinicalSymptomsNotPresent", "diseaseType": "liverFluke"}], "note": "Test result manually amended from Liverfluke (symptoms not present) to Liverfluke (symptoms present)"}')
+        })
+      }
+      const resultAsColVals = transformEventToCsvV3(event, mockContext).split(',')
+
+      const sheepResultValue = resultAsColVals[44]
+      expect(sheepResultValue).toBe('liverFluke  result clinicalSymptomsPresent')
+    })
+  })
+
   describe('temp reference events', () => {
     test('Csv row does not contain temp reference when malformed key present', async () => {
       const event = {

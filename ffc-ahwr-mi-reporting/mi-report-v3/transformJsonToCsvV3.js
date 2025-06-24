@@ -213,7 +213,7 @@ function transformEventToCsvV3 (event, context) {
   const latestVetVisitApplicationReference = getReferenceFromNestedData(latestVetVisitApplication)
   const invalidClaimData = type?.endsWith('-invalid') ? invalidClaimDataToString(data) : ''
   const sheepTestsString = sheepTests ? arrayToString(sheepTests) : ''
-  const sheepTestResultsString = sheepTestResults ? parseSheepTestResults(sheepTestResults) : ''
+  const sheepTestResultsString = parseSheepTestResults(sheepTestResults, updatedProperty, newValue)
   const isSubStatus = subStatus && statusId === 5
 
   let rowStatusId
