@@ -1,6 +1,6 @@
 {
   "name": "ffc-ahwr-mi-reporting",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "Azure Function to create MI reports",
   "author": "Defra",
   "scripts": {
@@ -9,7 +9,7 @@
     "start": "func start -p 7081 --verbose",
     "start:detached": "func start -p 7081 1> /dev/null 2> /dev/null &",
     "start:verbose": "func start -p 7081 --verbose",
-    "test": "jest",
+    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest",
     "test:watch": "jest --coverage=false --onlyChanged --watch",
     "pretest": "npm run lint"
   },
@@ -20,6 +20,7 @@
     "@hapi/wreck": "^18.0.1",
     "@pnp/nodejs-commonjs": "^2.15.0",
     "applicationinsights": "^2.9.1",
+    "ffc-ahwr-common-library": "^2.2.3",
     "joi": "17.13.3",
     "moment": "2.29.4"
   },
@@ -27,7 +28,7 @@
     "@pnp/nodejs-commonjs": {
       "@azure/msal-node": "^2.9.2"
     },
-    "adal-node":{
+    "adal-node": {
       "axios": "^1.8.2"
     },
     "jsonwebtoken": "^9.0.0",

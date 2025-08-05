@@ -6,10 +6,7 @@ function buildFeatureToggleConfig () {
     sharePoint: {
       enabled: Joi.boolean().optional().default(false)
     },
-    flagReporting: {
-      enabled: Joi.boolean().optional().default(false)
-    },
-    multiHerds: {
+    pigUpdates: {
       enabled: Joi.boolean().optional().default(false)
     }
   })
@@ -19,11 +16,8 @@ function buildFeatureToggleConfig () {
     sharePoint: {
       enabled: process.env.SHAREPOINT_ENABLED
     },
-    flagReporting: {
-      enabled: process.env.FLAG_REPORTING_ENABLED === 'true'
-    },
-    multiHerds: {
-      enabled: process.env.MULTI_HERDS_ENABLED === 'true'
+    pigUpdates: {
+      enabled: process.env.PIG_UPDATES_ENABLED === 'true'
     }
   }
 

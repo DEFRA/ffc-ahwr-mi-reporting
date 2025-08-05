@@ -2,7 +2,6 @@ const { TableClient, odata } = require('@azure/data-tables')
 const { BlobServiceClient } = require('@azure/storage-blob')
 const { connectionString, containerName, tableName, pageSize } = require('../config/config')
 const { transformEventToCsvV3, buildColumns } = require('../mi-report-v3/transformJsonToCsvV3')
-const config = require('../feature-toggle/config')
 
 let tableClient
 let blobServiceClient
@@ -61,13 +60,8 @@ const processEntitiesByTimestampPaged = async (fileName, context) => {
     let rowContent = ''
 
     for await (const event of eventsPage) {
-      if (!config.flagReporting.enabled && ['application:unflagged', 'application:flagged'].includes(event.EventType)) {
-        context.log.info('Not creating row as Flag Reporting is not enabled.')
-        continue
-      }
-
       try {
-        const csvRow = transformEventToCsvV3(event, context)
+        const csvRow = await transformEventToCsvV3(event, context)
         rowContent += csvRow + '\n'
         eventItemCount++
       } catch (err) {
