@@ -1,5 +1,5 @@
 const config = require('../../../ffc-ahwr-mi-reporting/feature-toggle/config')
-const { transformEventToCsvV3, buildColumns, defaultColumns, flagColumns, multiHerdsColumns } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
+const { transformEventToCsvV3, buildColumns, defaultColumns, flagColumns, multiHerdsColumns, pigUpdatesColumns } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
 const mockContext = require('../../mock/mock-context')
 const { randomUUID } = require('node:crypto')
 
@@ -11,7 +11,7 @@ const consoleSpy = jest
 
 describe('transformEventToCsvV3', () => {
   beforeEach(() => {
-    config.flagReporting.enabled = false
+    config.pigUpdates.enabled = false
   })
 
   afterEach(() => {
@@ -36,11 +36,10 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe('123456,789123456,farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,')
+    expect(result).toBe('123456,789123456,farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,')
   })
 
-  test('returns csv row with empty flag data when event provided and flag reporting feature flag is enabled', async () => {
-    config.flagReporting.enabled = true
+  test('returns csv row with empty flag data when event provided', async () => {
     const uuid = randomUUID()
     const event = {
       partitionKey: '123456',
@@ -52,7 +51,7 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe(`123456,${uuid},farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
+    expect(result).toBe(`123456,${uuid},farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
   })
 
   test('returns undefined when event contains invalid JSON in Payload field', async () => {
@@ -81,7 +80,7 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe('123456,789123456,application:status-updated:12,New stage execution has been created,AHWR-04DC-5073,,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,')
+    expect(result).toBe('123456,789123456,application:status-updated:12,New stage execution has been created,AHWR-04DC-5073,,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,,,,,,,,,,,,,,,,,,')
   })
 
   describe('sheepTestResults', () => {
@@ -100,7 +99,7 @@ describe('transformEventToCsvV3', () => {
           data: JSON.parse('{ "applicationReference": "IAHW-414E-A563", "reference": "FUSH-847A-8D52", "updatedProperty": "sheepTestResults", "newValue": [{"result": "clinicalSymptomsPresent", "diseaseType": "liverFluke"}], "oldValue": [{"result": "clinicalSymptomsNotPresent", "diseaseType": "liverFluke"}], "note": "Test result manually amended from Liverfluke (symptoms not present) to Liverfluke (symptoms present)"}')
         })
       }
-      const resultAsColVals = transformEventToCsvV3(event, mockContext).split(',')
+      const resultAsColVals = (transformEventToCsvV3(event, mockContext)).split(',')
 
       const sheepResultValue = resultAsColVals[44]
       expect(sheepResultValue).toBe('liverFluke  result clinicalSymptomsPresent')
@@ -117,7 +116,7 @@ describe('transformEventToCsvV3', () => {
         Payload: '{"type":"tempReference-[object Object]","message":"Session set for tempReference and [object Object].","data":{"reference":"IAHW-K9XY-SGYI","[object Object]":"TEMP-K9XY-SGYI","ip":"40.81.156.55"},"raisedBy":"nobody@noone.com.test","raisedOn":"2025-02-11T11:44:41.319Z"}'
       }
 
-      const resultAsColVals = transformEventToCsvV3(event, mockContext).split(',')
+      const resultAsColVals = (transformEventToCsvV3(event, mockContext)).split(',')
 
       const eventTypeValue = resultAsColVals[2]
       const messageValue = resultAsColVals[3]
@@ -139,7 +138,7 @@ describe('transformEventToCsvV3', () => {
         Payload: '{"type":"tempReference-tempReference","message":"Session set for tempReference and tempReference.","data":{"reference":"IAHW-K9XY-SGYI","tempReference":"TEMP-K9XY-SGYI","ip":"40.81.156.55"},"raisedBy":"nobody@noone.com.test","raisedOn":"2025-02-11T11:44:41.319Z"}'
       }
 
-      const resultAsColVals = transformEventToCsvV3(event, mockContext).split(',')
+      const resultAsColVals = (transformEventToCsvV3(event, mockContext)).split(',')
 
       const eventTypeValue = resultAsColVals[2]
       const messageValue = resultAsColVals[3]
@@ -153,8 +152,7 @@ describe('transformEventToCsvV3', () => {
     })
   })
 
-  test('returns csv row with flag reporting data when flag reporting feature flag is enabled', async () => {
-    config.flagReporting.enabled = true
+  test('returns csv row with flag reporting data', async () => {
     const uuid = randomUUID()
     const event = {
       partitionKey: '123456',
@@ -176,12 +174,10 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe(`123456,${uuid},application-flagged,Application flagged,,,,,,,,,,,,,,Jane Doe,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,b6b76548-bd6e-45b3-b137-05d930004c9b,Declined multi herds agreement,true,`)
+    expect(result).toBe(`123456,${uuid},application-flagged,Application flagged,,,,,,,,,,,,,,Jane Doe,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,b6b76548-bd6e-45b3-b137-05d930004c9b,Declined multi herds agreement,true,,,,,,,,,,,,,,`)
   })
 
-  test('returns csv row with multi herds data when multi herds feature flag is enabled', async () => {
-    config.flagReporting.enabled = true
-    config.multiHerds.enabled = true
+  test('returns csv row with multi herds data', async () => {
     const uuid = randomUUID()
     const tempHerdId = randomUUID()
     const herdId = randomUUID()
@@ -219,8 +215,6 @@ describe('transformEventToCsvV3', () => {
   })
 
   test('returns some base information from the event when no data object is found in the payload', async () => {
-    config.flagReporting.enabled = false
-    config.multiHerds.enabled = false
     const uuid = randomUUID()
     const event = {
       partitionKey: '123456',
@@ -237,26 +231,44 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe(`123456,${uuid},application-created,Application created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
+    expect(result).toBe(`123456,${uuid},application-created,Application created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
+  })
+
+  test('returns csv row with pig updates data when pig updates is enabled', async () => {
+    config.pigUpdates.enabled = true
+    const uuid = randomUUID()
+    const event = {
+      partitionKey: '123456',
+      SessionId: uuid,
+      EventType: 'herd-created',
+      EventRaised: new Date().toISOString(),
+      Payload: JSON.stringify({
+        type: 'claim-pigsGeneticSequencing',
+        message: 'Session set for claim and pigsGeneticSequencing.',
+        data: {
+          reference: 'TEMP-CLAIM-HTPH-6CKK',
+          applicationReference: 'IAHW-8UZM-S5CE',
+          pigsGeneticSequencing: 'mlv'
+        },
+        raisedBy: 'peterevansu@snavereteps.com.test',
+        raisedOn: '2025-07-16T14:39:06.571Z'
+      })
+    }
+
+    const result = transformEventToCsvV3(event, mockContext)
+
+    expect(result).toBe(`123456,${uuid},claim-pigsGeneticSequencing,Session set for claim and pigsGeneticSequencing.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Modified Live virus (MLV) only`)
   })
 })
 
 describe('buildColumns', () => {
-  test('it returns the default columns when flagging and multi herds disabled', () => {
-    config.flagReporting.enabled = false
-    config.multiHerds.enabled = false
-    expect(buildColumns()).toEqual(defaultColumns)
-  })
-
-  test('it returns the default columns plus the flagging columns when flagging is enabled but multi herds is disabled', () => {
-    config.flagReporting.enabled = true
-    config.multiHerds.enabled = false
-    expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns])
-  })
-
-  test('it returns all of the columns when flagging is enabled and multi herds is enabled', () => {
-    config.flagReporting.enabled = true
-    config.multiHerds.enabled = true
+  test('it returns the default columns, flag columns, and multiHerds columns when pig updates is disabled', () => {
+    config.pigUpdates.enabled = false
     expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns, ...multiHerdsColumns])
+  })
+
+  test('it returns the default columns, flag columns, multiHerds columns, and pig updates columns when pig updates is enabled', () => {
+    config.pigUpdates.enabled = true
+    expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns, ...multiHerdsColumns, ...pigUpdatesColumns])
   })
 })

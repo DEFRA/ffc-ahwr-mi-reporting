@@ -8,6 +8,7 @@ const {
   replaceCommasWithSpace, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources, getVisitDateFromPossibleSources, getTestResultFromPossibleSources
 } = require('../utils/parse-data')
 const config = require('../feature-toggle/config')
+const { PIG_GENETIC_SEQUENCING_VALUES } = require('./pig-genetic-sequencing-values')
 
 // Define the CSV column names
 const defaultColumns = [
@@ -97,28 +98,42 @@ const multiHerdsColumns = [
   'herdReasonOther'
 ]
 
+const pigUpdatesColumns = [
+  'pigsElisaTestResult',
+  'pigsPcrTestResult',
+  'pigsGeneticSequencing'
+]
+
 const buildColumns = () => {
   return [
     ...defaultColumns,
-    ...(config.flagReporting.enabled ? flagColumns : []),
-    ...(config.multiHerds.enabled ? multiHerdsColumns : [])
+    ...flagColumns,
+    ...multiHerdsColumns,
+    ...(config.pigUpdates.enabled ? pigUpdatesColumns : [])
   ]
 }
 
-const getFlagData = (...args) => {
-  if (!config.flagReporting.enabled) {
+const getData = (...args) => {
+  return args
+}
+
+const getPigUpdatesData = (...args) => {
+  if (!config.pigUpdates.enabled) {
     return []
   }
 
   return args
 }
 
-const getHerdData = (...args) => {
-  if (!config.multiHerds.enabled) {
-    return []
+const formatPigsGeneticSequencing = (geneticSequencingResult) => {
+  if (!geneticSequencingResult) {
+    return ''
   }
 
-  return args
+  const geneticSequencingLabel = PIG_GENETIC_SEQUENCING_VALUES.find(
+    (keyValuePair) => keyValuePair.value === geneticSequencingResult).label
+
+  return geneticSequencingLabel
 }
 
 // Function to transform event data to CSV row format
@@ -128,17 +143,18 @@ function transformEventToCsvV3 (event, context) {
     return
   }
 
-  const { partitionKey, SessionId: sessionId, Status: eventStatus } = event
+  const { partitionKey, SessionId: sessionId, Status: eventStatus, Payload: payload } = event
   const sbiFromPartitionKey = getSbiFromPartitionKey(partitionKey)
-  let parsePayload = ''
+  let parsedPayload
+
   try {
-    parsePayload = JSON.parse(event.Payload)
+    parsedPayload = JSON.parse(payload)
   } catch (error) {
     context.log.error('Parse event error', event, error)
     return
   }
 
-  const { type, data, raisedBy, raisedOn, message } = parsePayload
+  const { type, data, raisedBy, raisedOn, message } = parsedPayload
   const {
     organisation,
     reference,
@@ -204,7 +220,10 @@ function transformEventToCsvV3 (event, context) {
     herdReasonOnlyHerd,
     herdReasonOther,
     updatedProperty,
-    newValue
+    newValue,
+    pigsElisaTestResult,
+    pigsPcrTestResult,
+    pigsGeneticSequencing
   } = data ?? {}
   const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? {}
   const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? {}
@@ -226,8 +245,8 @@ function transformEventToCsvV3 (event, context) {
     rowType = type
   }
 
-  const flagData = getFlagData(flagId, flagDetail, flagAppliesToMh, deletedNote)
-  const herdData = getHerdData(
+  const flagData = getData(flagId, flagDetail, flagAppliesToMh, deletedNote)
+  const herdData = getData(
     tempHerdId,
     herdId,
     herdVersion,
@@ -241,6 +260,7 @@ function transformEventToCsvV3 (event, context) {
     herdReasonKeptSeparate,
     herdReasonOnlyHerd,
     herdReasonOther)
+  const pigUpdatesData = getPigUpdatesData(pigsElisaTestResult, pigsPcrTestResult, formatPigsGeneticSequencing(pigsGeneticSequencing))
 
   return [
     sbiFromPartitionKey,
@@ -305,8 +325,9 @@ function transformEventToCsvV3 (event, context) {
     statusToString(rowStatusId ?? 0),
     eventStatus,
     ...flagData,
-    ...herdData
+    ...herdData,
+    ...pigUpdatesData
   ].map(item => replaceCommasWithSpace(item)).join(',')
 }
 
-module.exports = { transformEventToCsvV3, buildColumns, defaultColumns, flagColumns, multiHerdsColumns }
+module.exports = { transformEventToCsvV3, buildColumns, defaultColumns, flagColumns, multiHerdsColumns, pigUpdatesColumns }

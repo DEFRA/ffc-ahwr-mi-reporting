@@ -8,7 +8,6 @@ const {
   buildColumns
 } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
 const mockContext = require('../../mock/mock-context')
-const config = require('../../../ffc-ahwr-mi-reporting/feature-toggle/config')
 const {
   transformEventToCsvV3: actualTransformEventToCsvV3
 } = jest.requireActual('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
@@ -143,7 +142,6 @@ const errorSpy = jest
 describe('Storage', () => {
   beforeEach(async () => {
     await connect(mockContext)
-    config.flagReporting.enabled = true
   })
 
   afterEach(() => {
@@ -205,22 +203,6 @@ describe('Storage', () => {
       }
       expect(rows).not.toContain('application:status-updated:1')
     })
-  })
-
-  test('should skip application:flagged and application:unflagged events when flagReporting feature flag is not enabled', async () => {
-    config.flagReporting.enabled = false
-
-    await processEntitiesByTimestampPaged('fileName', mockContext)
-
-    expect(transformEventToCsvV3).not.toHaveBeenCalledWith(
-      expect.objectContaining({ EventType: 'application:flagged' }),
-      expect.anything()
-    )
-    expect(transformEventToCsvV3).not.toHaveBeenCalledWith(
-      expect.objectContaining({ EventType: 'application:unflagged' }),
-      expect.anything()
-    )
-    expect(consoleSpy).toHaveBeenCalledWith('Not creating row as Flag Reporting is not enabled.')
   })
 
   describe('streamBlobToFile', () => {
