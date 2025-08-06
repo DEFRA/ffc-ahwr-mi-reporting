@@ -5,15 +5,6 @@ const { randomUUID } = require('node:crypto')
 
 jest.mock('@azure/storage-blob')
 jest.mock('fs')
-jest.mock('../../../ffc-ahwr-mi-reporting/mi-report-v3/get-pig-genetic-sequencing-values', () => ({
-  getPigGeneticSequencingValues: jest.fn().mockResolvedValue([
-    { label: 'Modified Live virus (MLV) only', value: 'mlv' },
-    { label: 'Wild Type (WT) PRRS 1 only', value: 'prrs1' },
-    { label: '(WT) PRRS 1 plus MLV or recombination', value: 'prrs1Plus' },
-    { label: 'Recombination only', value: 'recomb' },
-    { label: 'Any PRRS 2 (reportable by the laboratory)', value: 'prrs2' }
-  ])
-}))
 
 const consoleSpy = jest
   .spyOn(mockContext.log, 'error')
@@ -28,7 +19,7 @@ describe('transformEventToCsvV3', () => {
   })
 
   test('returns undefined when no event provided', async () => {
-    const result = await transformEventToCsvV3(undefined, mockContext)
+    const result = transformEventToCsvV3(undefined, mockContext)
 
     expect(consoleSpy).toHaveBeenCalledWith('No event provided')
     expect(result).toBe(undefined)
@@ -43,7 +34,7 @@ describe('transformEventToCsvV3', () => {
       Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-1234-ABCD","organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","orgEmail":"brownorg@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom","crn":"0123456789","frn":"9876543210"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
     }
 
-    const result = await transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext)
 
     expect(result).toBe('123456,789123456,farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,')
   })
@@ -58,7 +49,7 @@ describe('transformEventToCsvV3', () => {
       Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-1234-ABCD","organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","orgEmail":"brownorg@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom","crn":"0123456789","frn":"9876543210"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
     }
 
-    const result = await transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext)
 
     expect(result).toBe(`123456,${uuid},farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
   })
@@ -72,7 +63,7 @@ describe('transformEventToCsvV3', () => {
       Payload: ''
     }
 
-    const result = await transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext)
 
     expect(consoleSpy).toHaveBeenCalledWith('Parse event error', expect.anything(), expect.anything())
     expect(result).toBe(undefined)
@@ -87,7 +78,7 @@ describe('transformEventToCsvV3', () => {
       Payload: '{"type":"application:status-updated:5","message":"New stage execution has been created","data":{"reference":"AHWR-04DC-5073","statusId":5,"subStatus":"Recommend to pay"},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
     }
 
-    const result = await transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext)
 
     expect(result).toBe('123456,789123456,application:status-updated:12,New stage execution has been created,AHWR-04DC-5073,,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,,,,,,,,,,,,,,,,,,')
   })
@@ -108,7 +99,7 @@ describe('transformEventToCsvV3', () => {
           data: JSON.parse('{ "applicationReference": "IAHW-414E-A563", "reference": "FUSH-847A-8D52", "updatedProperty": "sheepTestResults", "newValue": [{"result": "clinicalSymptomsPresent", "diseaseType": "liverFluke"}], "oldValue": [{"result": "clinicalSymptomsNotPresent", "diseaseType": "liverFluke"}], "note": "Test result manually amended from Liverfluke (symptoms not present) to Liverfluke (symptoms present)"}')
         })
       }
-      const resultAsColVals = (await transformEventToCsvV3(event, mockContext)).split(',')
+      const resultAsColVals = (transformEventToCsvV3(event, mockContext)).split(',')
 
       const sheepResultValue = resultAsColVals[44]
       expect(sheepResultValue).toBe('liverFluke  result clinicalSymptomsPresent')
@@ -125,7 +116,7 @@ describe('transformEventToCsvV3', () => {
         Payload: '{"type":"tempReference-[object Object]","message":"Session set for tempReference and [object Object].","data":{"reference":"IAHW-K9XY-SGYI","[object Object]":"TEMP-K9XY-SGYI","ip":"40.81.156.55"},"raisedBy":"nobody@noone.com.test","raisedOn":"2025-02-11T11:44:41.319Z"}'
       }
 
-      const resultAsColVals = (await transformEventToCsvV3(event, mockContext)).split(',')
+      const resultAsColVals = (transformEventToCsvV3(event, mockContext)).split(',')
 
       const eventTypeValue = resultAsColVals[2]
       const messageValue = resultAsColVals[3]
@@ -147,7 +138,7 @@ describe('transformEventToCsvV3', () => {
         Payload: '{"type":"tempReference-tempReference","message":"Session set for tempReference and tempReference.","data":{"reference":"IAHW-K9XY-SGYI","tempReference":"TEMP-K9XY-SGYI","ip":"40.81.156.55"},"raisedBy":"nobody@noone.com.test","raisedOn":"2025-02-11T11:44:41.319Z"}'
       }
 
-      const resultAsColVals = (await transformEventToCsvV3(event, mockContext)).split(',')
+      const resultAsColVals = (transformEventToCsvV3(event, mockContext)).split(',')
 
       const eventTypeValue = resultAsColVals[2]
       const messageValue = resultAsColVals[3]
@@ -181,7 +172,7 @@ describe('transformEventToCsvV3', () => {
       })
     }
 
-    const result = await transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext)
 
     expect(result).toBe(`123456,${uuid},application-flagged,Application flagged,,,,,,,,,,,,,,Jane Doe,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,b6b76548-bd6e-45b3-b137-05d930004c9b,Declined multi herds agreement,true,,,,,,,,,,,,,,`)
   })
@@ -218,7 +209,7 @@ describe('transformEventToCsvV3', () => {
       })
     }
 
-    const result = await transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext)
 
     expect(result).toBe(`123456,${uuid},herd-created,Herd created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,${tempHerdId},${herdId},1,Porkers,pigs,123456789,true,true,true,true,true,true,true`)
   })
@@ -238,7 +229,7 @@ describe('transformEventToCsvV3', () => {
       })
     }
 
-    const result = await transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext)
 
     expect(result).toBe(`123456,${uuid},application-created,Application created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
   })
@@ -264,7 +255,7 @@ describe('transformEventToCsvV3', () => {
       })
     }
 
-    const result = await transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext)
 
     expect(result).toBe(`123456,${uuid},claim-pigsGeneticSequencing,Session set for claim and pigsGeneticSequencing.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Modified Live virus (MLV) only`)
   })

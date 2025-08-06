@@ -14,10 +14,6 @@ const {
 
 const mockAppendBlock = jest.fn().mockResolvedValue(true)
 
-jest.mock('../../../ffc-ahwr-mi-reporting/mi-report-v3/get-pig-genetic-sequencing-values', () => ({
-  getPigGeneticSequencingValues: jest.fn()
-}))
-
 jest.mock('@azure/storage-blob', () => ({
   BlobServiceClient: {
     fromConnectionString: jest.fn().mockReturnValue({

@@ -21,9 +21,6 @@ jest.mock('../../../ffc-ahwr-mi-reporting/config/config.js', () => ({
 jest.mock('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename')
 jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage')
 jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
-jest.mock('../../../ffc-ahwr-mi-reporting/mi-report-v3/get-pig-genetic-sequencing-values', () => ({
-  getPigGeneticSequencingValues: jest.fn()
-}))
 
 const consoleSpy = jest
   .spyOn(mockContext.log, 'info')

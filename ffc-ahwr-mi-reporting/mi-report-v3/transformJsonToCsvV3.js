@@ -8,7 +8,7 @@ const {
   replaceCommasWithSpace, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources, getVisitDateFromPossibleSources, getTestResultFromPossibleSources
 } = require('../utils/parse-data')
 const config = require('../feature-toggle/config')
-const { getPigGeneticSequencingValues } = require('./get-pig-genetic-sequencing-values')
+const { PIG_GENETIC_SEQUENCING_VALUES } = require('./pig-genetic-sequencing-values')
 
 // Define the CSV column names
 const defaultColumns = [
@@ -125,12 +125,10 @@ const getPigUpdatesData = (...args) => {
   return args
 }
 
-const formatPigsGeneticSequencing = async (geneticSequencingResult) => {
+const formatPigsGeneticSequencing = (geneticSequencingResult) => {
   if (!geneticSequencingResult) {
     return ''
   }
-
-  const PIG_GENETIC_SEQUENCING_VALUES = await getPigGeneticSequencingValues()
 
   const geneticSequencingLabel = PIG_GENETIC_SEQUENCING_VALUES.find(
     (keyValuePair) => keyValuePair.value === geneticSequencingResult).label
@@ -139,7 +137,7 @@ const formatPigsGeneticSequencing = async (geneticSequencingResult) => {
 }
 
 // Function to transform event data to CSV row format
-async function transformEventToCsvV3 (event, context) {
+function transformEventToCsvV3 (event, context) {
   if (!event) {
     context.log.error('No event provided')
     return
@@ -262,7 +260,7 @@ async function transformEventToCsvV3 (event, context) {
     herdReasonKeptSeparate,
     herdReasonOnlyHerd,
     herdReasonOther)
-  const pigUpdatesData = getPigUpdatesData(pigsElisaTestResult, pigsPcrTestResult, await formatPigsGeneticSequencing(pigsGeneticSequencing))
+  const pigUpdatesData = getPigUpdatesData(pigsElisaTestResult, pigsPcrTestResult, formatPigsGeneticSequencing(pigsGeneticSequencing))
 
   return [
     sbiFromPartitionKey,
