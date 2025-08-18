@@ -145,6 +145,18 @@ const getTestResultFromPossibleSources = (testResults, updatedProperty, updatedV
   return ''
 }
 
+const getUrnResultFromPossibleSources = (urnResult, updatedProperty, updatedValue) => {
+  if (urnResult) {
+    return urnResult
+  }
+
+  if (updatedProperty === 'urnResult') {
+    return updatedValue
+  }
+
+  return ''
+}
+
 module.exports = {
   arrayToString,
   formatDate,
@@ -158,5 +170,6 @@ module.exports = {
   parsePayload,
   parseSheepTestResults,
   replaceCommasWithSpace,
-  getTestResultFromPossibleSources
+  getTestResultFromPossibleSources,
+  getUrnResultFromPossibleSources
 }
