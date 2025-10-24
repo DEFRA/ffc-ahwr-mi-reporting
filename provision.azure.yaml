@@ -1,4 +1,3 @@
 resources:
-  identity: ahwr-mi-reporting
   storage:
     - name: ffcahwrmireporting
