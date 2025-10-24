@@ -2,7 +2,7 @@ const moment = require('moment')
 const {
   formatDate, parseData, parsePayload, arrayToString, getReferenceFromNestedData, getSbiFromPartitionKey,
   replaceCommasWithSpace, getVisitDateFromPossibleSources, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources,
-  getTestResultFromPossibleSources, parseSheepTestResults
+  getTestResultFromPossibleSources, parseSheepTestResults, getDateOfTestingFromPossibleSources
 } = require('../../../ffc-ahwr-mi-reporting/utils/parse-data')
 
 describe('formatDate(date)', () => {
@@ -205,6 +205,24 @@ describe('getTestResultFromPossibleSources', () => {
   })
   test('returns empty string when other updated property', () => {
     const result = getTestResultFromPossibleSources(undefined, 'vetRcvs', '1111111')
+
+    expect(result).toEqual('')
+  })
+})
+
+describe('getDateOfTestingFromPossibleSources', () => {
+  test('returns visitDateValue when present', () => {
+    const result = getDateOfTestingFromPossibleSources('2025-08-22T00:00:00.000Z', undefined, undefined)
+
+    expect(result).toEqual('2025-08-22T00:00:00.000Z')
+  })
+  test('returns updatedValue when updatedProperty is dateOfTesting', () => {
+    const result = getDateOfTestingFromPossibleSources(undefined, 'dateOfTesting', '2025-08-20T00:00:00.000Z')
+
+    expect(result).toEqual('2025-08-20T00:00:00.000Z')
+  })
+  test('returns empty string when other updated property', () => {
+    const result = getDateOfTestingFromPossibleSources(undefined, 'vetName', 'Ken')
 
     expect(result).toEqual('')
   })
