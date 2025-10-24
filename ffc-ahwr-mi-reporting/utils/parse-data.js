@@ -63,7 +63,9 @@ const parseSheepTestResults = (sheepTestResults, updatedProperty, newValue) => {
 
   const flatten = (item) => {
     if (Array.isArray(item)) {
-      item.forEach(subItem => flatten(subItem))
+      for (const subItem of item) {
+        flatten(subItem)
+      }
     } else if (typeof item === 'object' && item !== null) {
       if (item.diseaseType) {
         result.push(item.diseaseType)
@@ -94,7 +96,7 @@ const replaceCommasWithSpace = (valueToEdit) => {
     return valueToEdit
   }
 
-  return valueToEdit.replace(/,/g, ' ')
+  return valueToEdit.replaceAll(',', ' ')
 }
 
 const getVisitDateFromPossibleSources = (visitDateValue, updatedProperty, updatedValue) => {
@@ -157,6 +159,17 @@ const getUrnResultFromPossibleSources = (urnResult, updatedProperty, updatedValu
   return ''
 }
 
+const getDateOfTestingFromPossibleSources = (dateOfTestingValue, updatedProperty, updatedValue) => {
+  if (dateOfTestingValue) {
+    return dateOfTestingValue
+  }
+  if (updatedProperty === 'dateOfTesting') {
+    return updatedValue
+  }
+
+  return ''
+}
+
 module.exports = {
   arrayToString,
   formatDate,
@@ -171,5 +184,6 @@ module.exports = {
   parseSheepTestResults,
   replaceCommasWithSpace,
   getTestResultFromPossibleSources,
-  getUrnResultFromPossibleSources
+  getUrnResultFromPossibleSources,
+  getDateOfTestingFromPossibleSources
 }

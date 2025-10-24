@@ -5,7 +5,7 @@ const {
   getSbiFromPartitionKey,
   invalidClaimDataToString,
   parseSheepTestResults,
-  replaceCommasWithSpace, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources, getVisitDateFromPossibleSources, getTestResultFromPossibleSources, getUrnResultFromPossibleSources
+  replaceCommasWithSpace, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources, getVisitDateFromPossibleSources, getTestResultFromPossibleSources, getUrnResultFromPossibleSources, getDateOfTestingFromPossibleSources
 } = require('../utils/parse-data')
 const config = require('../feature-toggle/config')
 const { PIG_GENETIC_SEQUENCING_VALUES } = require('./pig-genetic-sequencing-values')
@@ -295,7 +295,7 @@ function transformEventToCsvV3 (event, context) {
     detailsCorrect,
     typeOfLivestock,
     getVisitDateFromPossibleSources(visitDate, updatedProperty, newValue),
-    dateOfTesting,
+    getDateOfTestingFromPossibleSources(dateOfTesting, updatedProperty, newValue),
     getVetNameFromPossibleSources(vetName, updatedProperty, newValue),
     getVetRcvsFromPossibleSources(vetRcvs, vetRCVSNumber, updatedProperty, newValue),
     getUrnResultFromPossibleSources(urnResult, updatedProperty, newValue),
