@@ -114,20 +114,12 @@ const buildColumns = () => {
     ...defaultColumns,
     ...flagColumns,
     ...multiHerdsColumns,
-    ...(config.pigUpdates.enabled ? pigUpdatesColumns : []),
+    ...pigUpdatesColumns,
     ...(isPigsAndPaymentsEnabled() ? pigsAndPaymentsColumns : [])
   ]
 }
 
 const getData = (...args) => {
-  return args
-}
-
-const getPigUpdatesData = (...args) => {
-  if (!config.pigUpdates.enabled) {
-    return []
-  }
-
   return args
 }
 
@@ -272,7 +264,7 @@ function transformEventToCsvV3 (event, context) {
     herdReasonKeptSeparate,
     herdReasonOnlyHerd,
     herdReasonOther)
-  const pigUpdatesData = getPigUpdatesData(pigsElisaTestResult, pigsPcrTestResult, formatPigsGeneticSequencing(pigsGeneticSequencing))
+  const pigUpdatesData = [pigsElisaTestResult, pigsPcrTestResult, formatPigsGeneticSequencing(pigsGeneticSequencing)]
   const pigsAndPaymentsData = isPigsAndPaymentsEnabled() ? [typeOfSamplesTaken, numberOfBloodSamples] : []
 
   return [
