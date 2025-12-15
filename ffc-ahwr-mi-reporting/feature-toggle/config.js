@@ -6,9 +6,7 @@ function buildFeatureToggleConfig () {
     sharePoint: {
       enabled: Joi.boolean().optional().default(false)
     },
-    pigUpdates: {
-      enabled: Joi.boolean().optional().default(false)
-    }
+    pigsAndPaymentsReleaseDate: Joi.string().optional().default('2026-01-22')
   })
 
   // Build config
@@ -16,9 +14,7 @@ function buildFeatureToggleConfig () {
     sharePoint: {
       enabled: process.env.SHAREPOINT_ENABLED
     },
-    pigUpdates: {
-      enabled: process.env.PIG_UPDATES_ENABLED === 'true'
-    }
+    pigsAndPaymentsReleaseDate: process.env.PIGS_AND_PAYMENTS_RELEASE_DATE
   }
 
   // Validate config
