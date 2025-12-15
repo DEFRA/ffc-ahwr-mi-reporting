@@ -259,7 +259,7 @@ describe('transformEventToCsvV3', () => {
     expect(result).toBe(`123456,${uuid},claim-pigsGeneticSequencing,Session set for claim and pigsGeneticSequencing.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Modified Live virus (MLV) only`)
   })
 
-  test('returns csv row with pigs and payments data when pigsAndPaymentsReleaseDate is in the past', async () => {
+  test('returns csv row with type of samples taken data when claim-typeOfSamplesTaken and pigsAndPaymentsReleaseDate is in the past', async () => {
     config.pigsAndPaymentsReleaseDate = '2025-12-01' // fake release date, real date is 2026-01-22
 
     const uuid = randomUUID()
@@ -284,6 +284,33 @@ describe('transformEventToCsvV3', () => {
     const result = transformEventToCsvV3(event, mockContext)
 
     expect(result).toBe(`123456,${uuid},claim-typeOfSamplesTaken,Session set for claim and typeOfSamplesTaken.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,blood,`)
+  })
+
+  test('returns csv row with number of blood samples data when claim-numberOfBloodSamples and pigsAndPaymentsReleaseDate is in the past', async () => {
+    config.pigsAndPaymentsReleaseDate = '2025-12-01' // fake release date, real date is 2026-01-22
+
+    const uuid = randomUUID()
+    const event = {
+      partitionKey: '123456',
+      SessionId: uuid,
+      EventType: 'claim-numberOfBloodSamples',
+      EventRaised: new Date().toISOString(),
+      Payload: JSON.stringify({
+        type: 'claim-numberOfBloodSamples',
+        message: 'Session set for claim and numberOfBloodSamples.',
+        data: {
+          reference: 'TEMP-CLAIM-HTPH-6CKK',
+          applicationReference: 'IAHW-8UZM-S5CE',
+          numberOfBloodSamples: 30
+        },
+        raisedBy: 'peterevansu@snavereteps.com.test',
+        raisedOn: '2025-07-16T14:39:06.571Z'
+      })
+    }
+
+    const result = transformEventToCsvV3(event, mockContext)
+
+    expect(result).toBe(`123456,${uuid},claim-numberOfBloodSamples,Session set for claim and numberOfBloodSamples.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30`)
   })
 })
 
