@@ -60,6 +60,11 @@ const processEntitiesByTimestampPaged = async (fileName, context) => {
     let rowContent = ''
 
     for await (const event of eventsPage) {
+      // exclude unnecessary rows from the reporting extract
+      if (['tokens-nonce', 'tokens-state', 'pkcecodes-verifier'].includes(event.EventType)) {
+        continue
+      }
+
       try {
         const csvRow = await transformEventToCsvV3(event, context)
         rowContent += csvRow + '\n'

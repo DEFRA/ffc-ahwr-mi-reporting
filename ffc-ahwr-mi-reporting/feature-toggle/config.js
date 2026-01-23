@@ -5,16 +5,14 @@ function buildFeatureToggleConfig () {
   const schema = Joi.object({
     sharePoint: {
       enabled: Joi.boolean().optional().default(false)
-    },
-    pigsAndPaymentsReleaseDate: Joi.string().optional().default('2026-01-22')
+    }
   })
 
   // Build config
   const config = {
     sharePoint: {
       enabled: process.env.SHAREPOINT_ENABLED
-    },
-    pigsAndPaymentsReleaseDate: process.env.PIGS_AND_PAYMENTS_RELEASE_DATE
+    }
   }
 
   // Validate config
