@@ -7,7 +7,6 @@ const {
   parseSheepTestResults,
   replaceCommasWithSpace, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources, getVisitDateFromPossibleSources, getTestResultFromPossibleSources, getUrnResultFromPossibleSources, getDateOfTestingFromPossibleSources
 } = require('../utils/parse-data')
-const config = require('../feature-toggle/config')
 const { PIG_GENETIC_SEQUENCING_VALUES } = require('./pig-genetic-sequencing-values')
 
 // Define the CSV column names
@@ -115,7 +114,7 @@ const buildColumns = () => {
     ...flagColumns,
     ...multiHerdsColumns,
     ...pigUpdatesColumns,
-    ...(isPigsAndPaymentsEnabled() ? pigsAndPaymentsColumns : [])
+    ...pigsAndPaymentsColumns
   ]
 }
 
@@ -132,10 +131,6 @@ const formatPigsGeneticSequencing = (geneticSequencingResult) => {
     (keyValuePair) => keyValuePair.value === geneticSequencingResult).label
 
   return geneticSequencingLabel
-}
-
-const isPigsAndPaymentsEnabled = () => {
-  return new Date() >= new Date(config.pigsAndPaymentsReleaseDate)
 }
 
 // Function to transform event data to CSV row format
@@ -265,7 +260,7 @@ function transformEventToCsvV3 (event, context) {
     herdReasonOnlyHerd,
     herdReasonOther)
   const pigUpdatesData = [pigsElisaTestResult, pigsPcrTestResult, formatPigsGeneticSequencing(pigsGeneticSequencing)]
-  const pigsAndPaymentsData = isPigsAndPaymentsEnabled() ? [typeOfSamplesTaken, numberOfBloodSamples] : []
+  const pigsAndPaymentsData = [typeOfSamplesTaken, numberOfBloodSamples]
 
   return [
     sbiFromPartitionKey,

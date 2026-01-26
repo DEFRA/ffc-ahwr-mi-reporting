@@ -11,6 +11,7 @@ const mockContext = require('../../mock/mock-context')
 const {
   transformEventToCsvV3: actualTransformEventToCsvV3
 } = jest.requireActual('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
+const config = require('../../../ffc-ahwr-mi-reporting/feature-toggle/config')
 
 const mockAppendBlock = jest.fn().mockResolvedValue(true)
 
@@ -122,6 +123,19 @@ jest.mock('@azure/data-tables', () => ({
                 raisedOn: '2024-01-04T21:27:12.490Z'
               }),
               EventType: 'farmerApplyData-declaration'
+            },
+            {
+              Payload: JSON.stringify({
+                type: 'tokens-nonce',
+                message: 'Session set for tokens and nonce',
+                data: {
+                  reference: 'Temp',
+                  declaration: true
+                },
+                raisedBy: 'johndoe@google.com.test',
+                raisedOn: '2024-01-04T21:27:12.490Z'
+              }),
+              EventType: 'tokens-nonce'
             }
           ]
         })
@@ -141,6 +155,7 @@ const errorSpy = jest
 
 describe('Storage', () => {
   beforeEach(async () => {
+    config.filterUnnecessaryEventTypes = true
     await connect(mockContext)
   })
 
@@ -202,6 +217,26 @@ describe('Storage', () => {
         expect(rows).toContain(eventType)
       }
       expect(rows).not.toContain('application:status-updated:1')
+    })
+
+    test('should not add unnecessary events to the csv file', async () => {
+      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3)
+
+      await processEntitiesByTimestampPaged('fileName', mockContext)
+
+      const expectedEventTypes = [
+        'application-vetRcvs',
+        'application:flagged',
+        'application:unflagged',
+        'farmerApplyData-declaration',
+        'application:status-updated:1'
+      ]
+      const rows = mockAppendBlock.mock.calls.map(([rowContent]) => rowContent).join('\n')
+      for (const eventType of expectedEventTypes) {
+        expect(rows).toContain(eventType)
+      }
+
+      expect(rows).not.toContain('tokens-nonce')
     })
   })
 
