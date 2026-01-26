@@ -156,7 +156,7 @@ const createUploadSession = async (siteId, driveId, pathToFile, fileName, token,
     })
 
     context.log.info(`Upload session created: ${JSON.stringify(response.payload)}`)
-    return response.payload
+    return JSON.parse(response.payload.toString('utf8'))
   } catch (error) {
     context.log.error(`Error creating upload session: ${error.message}`)
     if (error.data) {
