@@ -64,7 +64,8 @@ const uploadBlobToSharePoint = async (
     driveId,
     pathToFile,
     fileName,
-    aadToken.accessToken
+    aadToken.accessToken,
+    context
   )
 
   await uploadStreamToSharePoint(
@@ -131,10 +132,12 @@ const uploadStreamToSharePoint = async (
   }
 }
 
-const createUploadSession = async (siteId, driveId, pathToFile, fileName, token) => {
+const createUploadSession = async (siteId, driveId, pathToFile, fileName, token, context) => {
   const safeFileName = fileName.replace(/["*:<>?/|\\]/g, '').trim()
 
   const url = `${graphUrl.sites}/${siteId}/drives/${driveId}/root:/${encodeURIComponent(pathToFile)}/${encodeURIComponent(safeFileName)}:/createUploadSession`
+
+  context.log.info(`Creating upload session at ${url}`)
 
   const response = await Wreck.post(url, {
     payload: JSON.stringify({
@@ -149,6 +152,7 @@ const createUploadSession = async (siteId, driveId, pathToFile, fileName, token)
     }
   })
 
+  context.log.info(`Upload session created: ${JSON.stringify(response)}`)
   return response.payload
 }
 
