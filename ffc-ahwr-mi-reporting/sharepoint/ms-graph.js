@@ -133,27 +133,32 @@ const uploadStreamToSharePoint = async (
 }
 
 const createUploadSession = async (siteId, driveId, pathToFile, fileName, token, context) => {
-  const safeFileName = fileName.replace(/["*:<>?/|\\]/g, '').trim()
+  const safeFileName = encodeURIComponent(fileName.replace(/["*:<>?/|\\]/g, '').trim())
 
-  const url = `${graphUrl.sites}/${siteId}/drives/${driveId}/root:/${encodeURIComponent(pathToFile)}/${encodeURIComponent(safeFileName)}:/createUploadSession`
+  const url = `${graphUrl.sites}/${siteId}/drives/${driveId}/root:/${encodeURIComponent(pathToFile)}/${safeFileName}:/createUploadSession`
 
   context.log.info(`Creating upload session at ${url}`)
 
-  const response = await Wreck.post(url, {
-    payload: JSON.stringify({
-      item: {
-        '@microsoft.graph.conflictBehavior': 'replace',
-        name: safeFileName
+  try {
+    const response = await Wreck.post(url, {
+      payload: JSON.stringify({
+        item: {
+          '@microsoft.graph.conflictBehavior': 'replace',
+          name: safeFileName
+        }
+      }),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
-    }),
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }
-  })
+    })
 
-  context.log.info(`Upload session created: ${JSON.stringify(response)}`)
-  return response.payload
+    context.log.info(`Upload session created: ${JSON.stringify(response)}`)
+    return response.payload
+  } catch (error) {
+    context.log.error(`Error creating upload session: ${error.message}`)
+    throw error
+  }
 }
 
 module.exports = {
