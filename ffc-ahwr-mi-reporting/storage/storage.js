@@ -10,6 +10,7 @@ let containersInitialised
 let appendBlobClient
 
 const EVENT_YEAR_START = 2022
+const EVENT_TYPES_NOT_NEEDED_BY_REPORTING_TEAM = ['tokens-nonce', 'tokens-state', 'pkcecodes-verifier']
 
 const initialiseContainers = async (context) => {
   if (!containersInitialised) {
@@ -60,9 +61,8 @@ const processEntitiesByTimestampPaged = async (fileName, context) => {
     let rowContent = ''
 
     for await (const event of eventsPage) {
-      // exclude unnecessary rows from the reporting extract
-      if (['tokens-nonce', 'tokens-state', 'pkcecodes-verifier'].includes(event.EventType)) {
-        continue
+      if (EVENT_TYPES_NOT_NEEDED_BY_REPORTING_TEAM.includes(event.EventType)) {
+        continue // skip to next event
       }
 
       try {
