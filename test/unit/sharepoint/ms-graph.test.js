@@ -168,13 +168,13 @@ describe('msGraph', () => {
       'Uploading file: fileName: file_name, pathToFile: folder/sub_folder'
     )
     expect(logSpy).toHaveBeenCalledWith(
-      'Uploading bytes 0-4/12'
+      `Uploading bytes 0-4/12 to ${uploadUrl}`
     )
     expect(logSpy).toHaveBeenCalledWith(
-      'Uploading bytes 5-9/12'
+      `Uploading bytes 5-9/12 to ${uploadUrl}`
     )
     expect(logSpy).toHaveBeenCalledWith(
-      'Uploading final bytes 10-11/12'
+      `Uploading final bytes 10-11/12 to ${uploadUrl}`
     )
   })
 
