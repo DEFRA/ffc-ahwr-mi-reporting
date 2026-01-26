@@ -133,9 +133,11 @@ const uploadStreamToSharePoint = async (
 }
 
 const createUploadSession = async (siteId, driveId, pathToFile, fileName, token, context) => {
-  const safeFileName = encodeURIComponent(fileName.replace(/["*:<>?/|\\]/g, '').trim())
+  const safeFileName = fileName.replace(/["*:<>?/|\\]/g, '').trim()
+  const encodePath = (path) =>
+    path.split('/').map(encodeURIComponent).join('/')
 
-  const url = `${graphUrl.sites}/${siteId}/drives/${driveId}/root:/${encodeURIComponent(pathToFile)}/${safeFileName}:/createUploadSession`
+  const url = `${graphUrl.sites}/${siteId}/drives/${driveId}/root:/${encodePath(pathToFile)}/${encodeURIComponent(safeFileName)}:/createUploadSession`
 
   context.log.info(`Creating upload session at ${url}`)
 
@@ -157,6 +159,11 @@ const createUploadSession = async (siteId, driveId, pathToFile, fileName, token,
     return response.payload
   } catch (error) {
     context.log.error(`Error creating upload session: ${error.message}`)
+    if (error.data) {
+      context.log.error(
+        `Graph error: ${JSON.stringify(error.data, null, 2)}`
+      )
+    }
     throw error
   }
 }
