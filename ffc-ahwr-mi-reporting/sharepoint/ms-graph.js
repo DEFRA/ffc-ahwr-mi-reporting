@@ -87,42 +87,47 @@ const uploadStreamToSharePoint = async (
   let start = 0
   let buffer = Buffer.alloc(0)
 
-  for await (const chunk of readableStream) {
-    buffer = Buffer.concat([buffer, chunk])
+  try {
+    for await (const chunk of readableStream) {
+      buffer = Buffer.concat([buffer, chunk])
 
-    while (buffer.length >= chunkSize) {
-      const slice = buffer.subarray(0, chunkSize)
-      buffer = buffer.subarray(chunkSize)
+      while (buffer.length >= chunkSize) {
+        const slice = buffer.subarray(0, chunkSize)
+        buffer = buffer.subarray(chunkSize)
 
-      const end = start + slice.length - 1
+        const end = start + slice.length - 1
 
-      context.log.info(`Uploading bytes ${start}-${end}/${totalSize}`)
+        context.log.info(`Uploading bytes ${start}-${end}/${totalSize} to ${uploadUrl}`)
+
+        await Wreck.put(uploadUrl, {
+          payload: slice,
+          headers: {
+            'Content-Length': slice.length,
+            'Content-Range': `bytes ${start}-${end}/${totalSize}`
+          }
+        })
+
+        start = end + 1
+      }
+    }
+
+    // Upload remaining bytes
+    if (buffer.length > 0) {
+      const end = start + buffer.length - 1
+
+      context.log.info(`Uploading final bytes ${start}-${end}/${totalSize} to ${uploadUrl}`)
 
       await Wreck.put(uploadUrl, {
-        payload: slice,
+        payload: buffer,
         headers: {
-          'Content-Length': slice.length,
+          'Content-Length': buffer.length,
           'Content-Range': `bytes ${start}-${end}/${totalSize}`
         }
       })
-
-      start = end + 1
     }
-  }
-
-  // Upload remaining bytes
-  if (buffer.length > 0) {
-    const end = start + buffer.length - 1
-
-    context.log.info(`Uploading final bytes ${start}-${end}/${totalSize}`)
-
-    await Wreck.put(uploadUrl, {
-      payload: buffer,
-      headers: {
-        'Content-Length': buffer.length,
-        'Content-Range': `bytes ${start}-${end}/${totalSize}`
-      }
-    })
+  } catch (error) {
+    context.log.error(`Error uploading to SharePoint: ${error.message}`)
+    throw error
   }
 }
 
