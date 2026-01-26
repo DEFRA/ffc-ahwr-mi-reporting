@@ -36,7 +36,8 @@ jest.mock('@azure/storage-blob', () => ({
         }),
         getBlobClient: jest.fn().mockImplementation(() => {
           return {
-            download: jest.fn().mockResolvedValue({ readableStreamBody: '' })
+            download: jest.fn().mockResolvedValue({ readableStreamBody: '' }),
+            getProperties: jest.fn().mockResolvedValue({ contentLength: 45 })
           }
         })
       })
@@ -242,8 +243,9 @@ describe('Storage', () => {
 
   describe('streamBlobToFile', () => {
     test('should process successfully', async () => {
-      const readableStreamBody = await streamBlobToFile('fileName')
-      expect(readableStreamBody).not.toBeNull()
+      const { fileContentStream, contentLength } = await streamBlobToFile('fileName')
+      expect(fileContentStream).not.toBeNull()
+      expect(contentLength).toEqual(45)
     })
   })
 })

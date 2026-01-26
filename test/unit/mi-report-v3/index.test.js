@@ -1,7 +1,7 @@
 const { featureToggle } = require('../../../ffc-ahwr-mi-reporting/config/config')
 const createFileName = require('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename')
 const { connect, processEntitiesByTimestampPaged } = require('../../../ffc-ahwr-mi-reporting/storage/storage')
-const { uploadFile } = require('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
+const { uploadBlobToSharePoint } = require('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
 const buildAhwrMiReport = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/index')
 const mockContext = require('../../mock/mock-context')
 
@@ -58,7 +58,7 @@ describe('buildAhwrMiReport', () => {
     expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Creating, storing and uploading AHWR MI Report V3:'))
     expect(connect).toHaveBeenCalled()
     expect(processEntitiesByTimestampPaged).toHaveBeenCalled()
-    expect(uploadFile).toHaveBeenCalled()
+    expect(uploadBlobToSharePoint).toHaveBeenCalled()
     expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('AHWR MI Report V3 has been stored and uploaded'))
   })
 })
