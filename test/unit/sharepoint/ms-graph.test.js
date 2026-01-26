@@ -123,7 +123,7 @@ describe('msGraph', () => {
         expect.stringMatching(':/createUploadSession'),
         expect.anything()
       )
-      .mockResolvedValue({ res: { statusCode: 200 }, payload: { uploadUrl } })
+      .mockResolvedValue({ res: { statusCode: 200 }, payload: Buffer.from(JSON.stringify({ uploadUrl })) })
 
     await msGraph.uploadBlobToSharePoint(
       standardInputs.pathToFile,
