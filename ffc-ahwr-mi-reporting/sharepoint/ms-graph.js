@@ -2,6 +2,8 @@ const Wreck = require('@hapi/wreck')
 const config = require('../config/config')
 const azureAD = require('./azure-ad')
 
+const CHUNK_SIZE = 8 * 1024 * 1024 // 8 MB
+
 const graphUrl = {
   sites: 'https://graph.microsoft.com/v1.0/sites'
 }
@@ -44,30 +46,107 @@ const getDriveId = async (siteId, accessToken, context) => {
   return drive.id
 }
 
-const uploadFile = async (pathToFile, fileName, fileContent, context) => {
+const uploadBlobToSharePoint = async (
+  pathToFile,
+  fileName,
+  fileContentAndLength,
+  context,
+  chunkSize = CHUNK_SIZE
+) => {
   context.log.info(`Uploading file: fileName: ${fileName}, pathToFile: ${pathToFile}`)
-  try {
-    const aadToken = await azureAD.acquireToken()
-    const siteId = await getSiteId(aadToken.accessToken, context)
-    const driveId = await getDriveId(siteId, aadToken.accessToken, context)
-    const response = await Wreck.put(
-      `${graphUrl.sites}/${siteId}/drives/${driveId}/root:/${encodeURIComponent(pathToFile)}/${encodeURIComponent(fileName.replace(/["*:<>?/|\\]/g, '').trim())}:/content`,
-      {
-        payload: fileContent,
+  const aadToken = await azureAD.acquireToken()
+  const siteId = await getSiteId(aadToken.accessToken, context)
+  const driveId = await getDriveId(siteId, aadToken.accessToken, context)
+  const { fileContentStream, contentLength } = fileContentAndLength
+
+  const { uploadUrl } = await createUploadSession(
+    siteId,
+    driveId,
+    pathToFile,
+    fileName,
+    aadToken.accessToken
+  )
+
+  await uploadStreamToSharePoint(
+    fileContentStream,
+    uploadUrl,
+    contentLength,
+    context,
+    chunkSize
+  )
+
+  context.log.info('Blob upload to SharePoint completed')
+}
+
+const uploadStreamToSharePoint = async (
+  readableStream,
+  uploadUrl,
+  totalSize,
+  context, chunkSize
+) => {
+  let start = 0
+  let buffer = Buffer.alloc(0)
+
+  for await (const chunk of readableStream) {
+    buffer = Buffer.concat([buffer, chunk])
+
+    while (buffer.length >= chunkSize) {
+      const slice = buffer.subarray(0, chunkSize)
+      buffer = buffer.subarray(chunkSize)
+
+      const end = start + slice.length - 1
+
+      context.log.info(`Uploading bytes ${start}-${end}/${totalSize}`)
+
+      await Wreck.put(uploadUrl, {
+        payload: slice,
         headers: {
-          Authorization: `Bearer ${aadToken.accessToken}`
+          'Content-Length': slice.length,
+          'Content-Range': `bytes ${start}-${end}/${totalSize}`
         }
-      }
-    )
-    if (response.res.statusCode !== 200 && response.res.statusCode !== 201) {
-      throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
+      })
+
+      start = end + 1
     }
-  } catch (error) {
-    context.log.error(`Error while uploading file: ${error.message}`)
-    throw error
+  }
+
+  // Upload remaining bytes
+  if (buffer.length > 0) {
+    const end = start + buffer.length - 1
+
+    context.log.info(`Uploading final bytes ${start}-${end}/${totalSize}`)
+
+    await Wreck.put(uploadUrl, {
+      payload: buffer,
+      headers: {
+        'Content-Length': buffer.length,
+        'Content-Range': `bytes ${start}-${end}/${totalSize}`
+      }
+    })
   }
 }
 
+const createUploadSession = async (siteId, driveId, pathToFile, fileName, token) => {
+  const safeFileName = fileName.replace(/["*:<>?/|\\]/g, '').trim()
+
+  const url = `${graphUrl.sites}/${siteId}/drives/${driveId}/root:/${encodeURIComponent(pathToFile)}/${encodeURIComponent(safeFileName)}:/createUploadSession`
+
+  const response = await Wreck.post(url, {
+    payload: JSON.stringify({
+      item: {
+        '@microsoft.graph.conflictBehavior': 'replace',
+        name: safeFileName
+      }
+    }),
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  })
+
+  return response.payload
+}
+
 module.exports = {
-  uploadFile
+  uploadBlobToSharePoint
 }

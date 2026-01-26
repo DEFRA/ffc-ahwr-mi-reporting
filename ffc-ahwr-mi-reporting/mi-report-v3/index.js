@@ -17,10 +17,10 @@ const buildAhwrMiReport = async (context) => {
 
   if (config.featureToggle.sharePoint.enabled) {
     // Read the file from the local file system
-    const fileContent = await streamBlobToFile(fileName) // Read the file from the local path
+    const fileContentAndLength = await streamBlobToFile(fileName) // Read the file from the local path
 
     // Upload the file to SharePoint using MS Graph API
-    await msGraph.uploadFile(dstFolder, fileName, fileContent, context)
+    await msGraph.uploadBlobToSharePoint(dstFolder, fileName, fileContentAndLength, context)
   }
 
   context.log.info(`AHWR MI Report V3 has been stored ${logUploadIndicator} uploaded`)

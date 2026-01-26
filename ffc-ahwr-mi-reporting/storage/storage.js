@@ -86,9 +86,12 @@ const processEntitiesByTimestampPaged = async (fileName, context) => {
 const streamBlobToFile = async (fileName) => {
   const blobClient = container.getBlobClient(fileName)
 
+  const properties = await blobClient.getProperties()
+  const contentLength = properties.contentLength
+
   // Stream the blob from Azure Blob Storage
   const downloadBlockBlobResponse = await blobClient.download(0)
-  return downloadBlockBlobResponse.readableStreamBody
+  return { fileContentStream: downloadBlockBlobResponse.readableStreamBody, contentLength }
 }
 
 module.exports = {

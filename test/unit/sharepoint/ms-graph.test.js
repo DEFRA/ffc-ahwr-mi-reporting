@@ -8,7 +8,6 @@ const MOCK_DRIVE_ID = 'mock_drive_id'
 
 describe('msGraph', () => {
   let logSpy
-  let logErrorSpy
   let Wreck
   let msGraph
 
@@ -45,8 +44,6 @@ describe('msGraph', () => {
 
     logSpy = jest
       .spyOn(mockContext.log, 'info')
-    logErrorSpy = jest
-      .spyOn(mockContext.log, 'error')
 
     msGraph = require('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
   })
@@ -60,403 +57,283 @@ describe('msGraph', () => {
     resetAllWhenMocks()
   })
 
-  test.each([
-    {
-      toString: () => 'uploadFile',
-      given: {
-        pathToFile: 'folder/sub_folder',
-        fileName: 'file_name',
-        fileContent: 'file_content'
-      },
-      when: {
-        aadToken: {
-          accessToken: 'access_token'
-        },
-        getSiteId: {
-          Wreck: {
-            get: {
-              response: {
-                res: {
-                  statusCode: 200
-                },
-                payload: {
-                  id: MOCK_SITE_ID
-                }
-              }
-            }
-          }
-        },
-        getDriveId: {
-          Wreck: {
-            get: {
-              response: {
-                res: {
-                  statusCode: 200
-                },
-                payload: {
-                  value: [
-                    {
-                      id: MOCK_DRIVE_ID,
-                      name: 'document_lib'
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        uploadFile: {
-          Wreck: {
-            put: {
-              response: {
-                res: {
-                  statusCode: 201
-                }
-              }
-            }
-          }
-        }
-      },
-      expect: {
-        infoLogs: [
-          'Uploading file: fileName: file_name, pathToFile: folder/sub_folder',
-          'Getting the site ID',
-          'Getting the drive ID: mock_...te_id'
-        ],
-        errorLogs: []
+  function stringToReadableStream (str) {
+    const encoder = new TextEncoder()
+
+    return new ReadableStream({
+      start (controller) {
+        controller.enqueue(encoder.encode(str)) // Uint8Array
+        controller.close()
       }
+    })
+  }
+
+  const successfulSiteResponse = {
+    res: {
+      statusCode: 200
     },
-    {
-      toString: () => 'uploadFile - getSiteId - Bad Request',
-      given: {
-        pathToFile: 'folder/sub_folder',
-        fileName: 'file_name',
-        fileContent: 'file_content'
-      },
-      when: {
-        aadToken: {
-          accessToken: 'access_token'
-        },
-        getSiteId: {
-          Wreck: {
-            get: {
-              response: {
-                res: {
-                  statusCode: 400,
-                  statusMessage: 'Bad Request'
-                }
-              }
-            }
-          }
-        },
-        getDriveId: {
-          Wreck: {
-            get: {
-              response: {
-                res: {
-                  statusCode: 200
-                },
-                payload: {
-                  value: [
-                    {
-                      id: MOCK_DRIVE_ID,
-                      name: 'document_lib'
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        uploadFile: {
-          Wreck: {
-            put: {
-              response: {
-                res: {
-                  statusCode: 201
-                }
-              }
-            }
-          }
-        }
-      },
-      expect: {
-        error: new Error('HTTP 400 (Bad Request)'),
-        infoLogs: [
-          'Uploading file: fileName: file_name, pathToFile: folder/sub_folder',
-          'Getting the site ID'
-        ],
-        errorLogs: [
-          'Error while uploading file: HTTP 400 (Bad Request)'
-        ]
-      }
-    },
-    {
-      toString: () => 'uploadFile - getDriveId - Bad Request',
-      given: {
-        pathToFile: 'folder/sub_folder',
-        fileName: 'file_name',
-        fileContent: 'file_content'
-      },
-      when: {
-        aadToken: {
-          accessToken: 'access_token'
-        },
-        getSiteId: {
-          Wreck: {
-            get: {
-              response: {
-                res: {
-                  statusCode: 200
-                },
-                payload: {
-                  id: MOCK_SITE_ID
-                }
-              }
-            }
-          }
-        },
-        getDriveId: {
-          Wreck: {
-            get: {
-              response: {
-                res: {
-                  statusCode: 400,
-                  statusMessage: 'Bad Request'
-                }
-              }
-            }
-          }
-        },
-        uploadFile: {
-          Wreck: {
-            put: {
-              response: {
-                res: {
-                  statusCode: 201
-                }
-              }
-            }
-          }
-        }
-      },
-      expect: {
-        error: new Error('HTTP 400 (Bad Request)'),
-        infoLogs: [
-          'Uploading file: fileName: file_name, pathToFile: folder/sub_folder',
-          'Getting the site ID',
-          'Getting the drive ID: mock_...te_id'
-        ],
-        errorLogs: [
-          'Error while uploading file: HTTP 400 (Bad Request)'
-        ]
-      }
-    },
-    {
-      toString: () => 'uploadFile - getDriveId - no drive found',
-      given: {
-        pathToFile: 'folder/sub_folder',
-        fileName: 'file_name',
-        fileContent: 'file_content'
-      },
-      when: {
-        aadToken: {
-          accessToken: 'access_token'
-        },
-        getSiteId: {
-          Wreck: {
-            get: {
-              response: {
-                res: {
-                  statusCode: 200
-                },
-                payload: {
-                  id: MOCK_SITE_ID
-                }
-              }
-            }
-          }
-        },
-        getDriveId: {
-          Wreck: {
-            get: {
-              response: {
-                res: {
-                  statusCode: 200
-                },
-                payload: {
-                  value: [
-                    {
-                      id: MOCK_DRIVE_ID,
-                      name: 'NOT_A_document_lib'
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        uploadFile: {
-          Wreck: {
-            put: {
-              response: {
-                res: {
-                  statusCode: 201
-                }
-              }
-            }
-          }
-        }
-      },
-      expect: {
-        error: new Error(`No drive found: ${JSON.stringify({
-          name: 'document_lib'
-        })}`),
-        infoLogs: [
-          'Uploading file: fileName: file_name, pathToFile: folder/sub_folder',
-          'Getting the site ID',
-          'Getting the drive ID: mock_...te_id'
-        ],
-        errorLogs: [
-          `Error while uploading file: No drive found: ${JSON.stringify({
-            name: 'document_lib'
-          })}`
-        ]
-      }
-    },
-    {
-      toString: () => 'uploadFile - HTTP 500',
-      given: {
-        pathToFile: 'folder/sub_folder',
-        fileName: 'file_name',
-        fileContent: 'file_content'
-      },
-      when: {
-        aadToken: {
-          accessToken: 'access_token'
-        },
-        getSiteId: {
-          Wreck: {
-            get: {
-              response: {
-                res: {
-                  statusCode: 200
-                },
-                payload: {
-                  id: MOCK_SITE_ID
-                }
-              }
-            }
-          }
-        },
-        getDriveId: {
-          Wreck: {
-            get: {
-              response: {
-                res: {
-                  statusCode: 200
-                },
-                payload: {
-                  value: [
-                    {
-                      id: MOCK_DRIVE_ID,
-                      name: 'document_lib'
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        uploadFile: {
-          Wreck: {
-            put: {
-              response: {
-                res: {
-                  statusCode: 500,
-                  statusMessage: 'Internal Error'
-                }
-              }
-            }
-          }
-        }
-      },
-      expect: {
-        error: new Error('HTTP 500 (Internal Error)'),
-        infoLogs: [
-          'Uploading file: fileName: file_name, pathToFile: folder/sub_folder',
-          'Getting the site ID',
-          'Getting the drive ID: mock_...te_id'
-        ],
-        errorLogs: [
-          'Error while uploading file: HTTP 500 (Internal Error)'
-        ]
-      }
+    payload: {
+      id: MOCK_SITE_ID
     }
-  ])('%s', async (testCase) => {
+  }
+
+  const successfulDriveResponse = {
+    res: {
+      statusCode: 200
+    },
+    payload: {
+      value: [
+        {
+          id: MOCK_DRIVE_ID,
+          name: 'document_lib'
+        }
+      ]
+    }
+  }
+
+  const standardInputs = {
+    pathToFile: 'folder/sub_folder',
+    fileName: 'file_name',
+    fileContent: stringToReadableStream('file_content'),
+    contentLength: 'file_content'.length
+  }
+
+  test('uploadBlobToSharePoint - upload successful', async () => {
+    const uploadUrl = 'https://graphapiupload:/example'
+
     when(MOCK_ACQUIRE_TOKEN)
       .calledWith()
-      .mockResolvedValue(testCase.when.aadToken)
+      .mockResolvedValue({
+        accessToken: 'access_token'
+      })
     when(Wreck.get)
       .calledWith(
         'https://graph.microsoft.com/v1.0/sites/hostname:/site_path',
-        {
-          headers: {
-            Authorization: `Bearer ${testCase.when.aadToken.accessToken}`
-          },
-          json: true
-        }
+        expect.anything()
       )
-      .mockResolvedValue(testCase.when.getSiteId.Wreck.get.response)
+      .mockResolvedValue(successfulSiteResponse)
     when(Wreck.get)
       .calledWith(
         `https://graph.microsoft.com/v1.0/sites/${MOCK_SITE_ID}/drives`,
-        {
-          headers: {
-            Authorization: `Bearer ${testCase.when.aadToken.accessToken}`
-          },
-          json: true
-        }
+        expect.anything()
       )
-      .mockResolvedValue(testCase.when.getDriveId.Wreck.get.response)
-    when(Wreck.put)
+      .mockResolvedValue(successfulDriveResponse)
+    when(Wreck.post)
       .calledWith(
-        `https://graph.microsoft.com/v1.0/sites/${MOCK_SITE_ID}/drives/${MOCK_DRIVE_ID}/root:/${encodeURIComponent(testCase.given.pathToFile)}/${testCase.given.fileName}:/content`,
-        {
-          payload: testCase.given.fileContent,
-          headers: {
-            Authorization: `Bearer ${testCase.when.aadToken.accessToken}`
-          }
-        }
+        expect.stringMatching(':/createUploadSession'),
+        expect.anything()
       )
-      .mockResolvedValue(testCase.when.uploadFile.Wreck.put.response)
+      .mockResolvedValue({ res: { statusCode: 200 }, payload: { uploadUrl } })
 
-    if (testCase.expect.error) {
-      await expect(
-        msGraph.uploadFile(
-          testCase.given.pathToFile,
-          testCase.given.fileName,
-          testCase.given.fileContent,
-          mockContext
-        )
-      ).rejects.toEqual(testCase.expect.error)
-    } else {
-      await msGraph.uploadFile(
-        testCase.given.pathToFile,
-        testCase.given.fileName,
-        testCase.given.fileContent,
+    await msGraph.uploadBlobToSharePoint(
+      standardInputs.pathToFile,
+      standardInputs.fileName,
+      { fileContentStream: standardInputs.fileContent, contentLength: standardInputs.contentLength },
+      mockContext, 5)
+
+    expect(Wreck.put).toHaveBeenNthCalledWith(
+      1,
+      uploadUrl,
+      expect.objectContaining({
+        payload: Buffer.from('file_'),
+        headers: {
+          'Content-Length': 5,
+          'Content-Range': 'bytes 0-4/12'
+        }
+      })
+    )
+    expect(Wreck.put).toHaveBeenNthCalledWith(
+      2,
+      uploadUrl,
+      expect.objectContaining({
+        payload: Buffer.from('conte'),
+        headers: {
+          'Content-Length': 5,
+          'Content-Range': 'bytes 5-9/12'
+        }
+      })
+    )
+    expect(Wreck.put).toHaveBeenNthCalledWith(
+      3,
+      uploadUrl,
+      expect.objectContaining({
+        payload: Buffer.from('nt'),
+        headers: {
+          'Content-Length': 2,
+          'Content-Range': 'bytes 10-11/12'
+        }
+      })
+    )
+    expect(logSpy).toHaveBeenCalledWith(
+      'Uploading file: fileName: file_name, pathToFile: folder/sub_folder'
+    )
+    expect(logSpy).toHaveBeenCalledWith(
+      'Uploading bytes 0-4/12'
+    )
+    expect(logSpy).toHaveBeenCalledWith(
+      'Uploading bytes 5-9/12'
+    )
+    expect(logSpy).toHaveBeenCalledWith(
+      'Uploading final bytes 10-11/12'
+    )
+  })
+
+  test('uploadBlobToSharePoint - getSiteId - Bad Request', async () => {
+    when(MOCK_ACQUIRE_TOKEN)
+      .calledWith()
+      .mockResolvedValue({
+        accessToken: 'access_token'
+      })
+    when(Wreck.get)
+      .calledWith(
+        'https://graph.microsoft.com/v1.0/sites/hostname:/site_path',
+        expect.anything()
+      )
+      .mockResolvedValue({
+        res: {
+          statusCode: 400,
+          statusMessage: 'Bad Request'
+        }
+      })
+
+    await expect(
+      msGraph.uploadBlobToSharePoint(
+        standardInputs.pathToFile,
+        standardInputs.fileName,
+        { fileContentStream: standardInputs.fileContent, contentLength: standardInputs.contentLength },
         mockContext
       )
-    }
+    ).rejects.toEqual(new Error('HTTP 400 (Bad Request)'))
 
-    testCase.expect.infoLogs.forEach(
-      (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, consoleLog)
-    )
-    expect(logSpy).toHaveBeenCalledTimes(testCase.expect.infoLogs.length)
+    expect(Wreck.put).not.toHaveBeenCalled()
+    expect(Wreck.post).not.toHaveBeenCalled()
+  })
 
-    testCase.expect.errorLogs.forEach(
-      (errorLog, idx) => expect(logErrorSpy).toHaveBeenNthCalledWith(idx + 1, errorLog)
-    )
-    expect(logErrorSpy).toHaveBeenCalledTimes(testCase.expect.errorLogs.length)
+  test('uploadBlobToSharePoint - getDriveId - Bad Request', async () => {
+    when(MOCK_ACQUIRE_TOKEN)
+      .calledWith()
+      .mockResolvedValue({
+        accessToken: 'access_token'
+      })
+    when(Wreck.get)
+      .calledWith(
+        'https://graph.microsoft.com/v1.0/sites/hostname:/site_path',
+        expect.anything()
+      )
+      .mockResolvedValue(successfulSiteResponse)
+    when(Wreck.get)
+      .calledWith(
+        `https://graph.microsoft.com/v1.0/sites/${MOCK_SITE_ID}/drives`,
+        expect.anything()
+      )
+      .mockResolvedValue({
+        res: {
+          statusCode: 400,
+          statusMessage: 'Bad Request'
+        }
+      })
+
+    await expect(
+      msGraph.uploadBlobToSharePoint(
+        standardInputs.pathToFile,
+        standardInputs.fileName,
+        { fileContentStream: standardInputs.fileContent, contentLength: standardInputs.contentLength },
+        mockContext
+      )
+    ).rejects.toEqual(new Error('HTTP 400 (Bad Request)'))
+
+    expect(Wreck.put).not.toHaveBeenCalled()
+    expect(Wreck.post).not.toHaveBeenCalled()
+  })
+
+  test('uploadBlobToSharePoint - getDriveId - no drive found', async () => {
+    when(MOCK_ACQUIRE_TOKEN)
+      .calledWith()
+      .mockResolvedValue({
+        accessToken: 'access_token'
+      })
+    when(Wreck.get)
+      .calledWith(
+        'https://graph.microsoft.com/v1.0/sites/hostname:/site_path',
+        expect.anything()
+      )
+      .mockResolvedValue(successfulSiteResponse)
+    when(Wreck.get)
+      .calledWith(
+        `https://graph.microsoft.com/v1.0/sites/${MOCK_SITE_ID}/drives`,
+        expect.anything()
+      )
+      .mockResolvedValue({
+        res: {
+          statusCode: 200
+        },
+        payload: {
+          value: [
+            {
+              id: MOCK_DRIVE_ID,
+              name: 'NOT_A_document_lib'
+            }
+          ]
+        }
+      })
+
+    await expect(
+      msGraph.uploadBlobToSharePoint(
+        standardInputs.pathToFile,
+        standardInputs.fileName,
+        { fileContentStream: standardInputs.fileContent, contentLength: standardInputs.contentLength },
+        mockContext
+      )
+    ).rejects.toEqual(new Error(`No drive found: ${JSON.stringify({
+      name: 'document_lib'
+    })}`))
+
+    expect(Wreck.put).not.toHaveBeenCalled()
+    expect(Wreck.post).not.toHaveBeenCalled()
+  })
+
+  test('uploadBlobToSharePoint - error during upload', async () => {
+    when(MOCK_ACQUIRE_TOKEN)
+      .calledWith()
+      .mockResolvedValue({
+        accessToken: 'access_token'
+      })
+    when(Wreck.get)
+      .calledWith(
+        'https://graph.microsoft.com/v1.0/sites/hostname:/site_path',
+        expect.anything()
+      )
+      .mockResolvedValue(successfulSiteResponse)
+    when(Wreck.get)
+      .calledWith(
+        `https://graph.microsoft.com/v1.0/sites/${MOCK_SITE_ID}/drives`,
+        expect.anything()
+      )
+      .mockResolvedValue(successfulDriveResponse)
+    when(Wreck.post)
+      .calledWith(
+        expect.stringMatching(':/createUploadSession'),
+        expect.anything()
+      )
+      .mockRejectedValue(new Error('HTTP 500 (Internal Error)'))
+
+    await expect(
+      msGraph.uploadBlobToSharePoint(
+        standardInputs.pathToFile,
+        standardInputs.fileName,
+        { fileContentStream: standardInputs.fileContent, contentLength: standardInputs.contentLength },
+        mockContext
+      )
+    ).rejects.toEqual(new Error('HTTP 500 (Internal Error)'))
+
+    expect(Wreck.post).toHaveBeenCalledWith(expect.stringMatching(':/createUploadSession'),
+      {
+        headers: {
+          Authorization: 'Bearer access_token',
+          'Content-Type': 'application/json'
+        },
+        payload: '{"item":{"@microsoft.graph.conflictBehavior":"replace","name":"file_name"}}'
+      })
+    expect(Wreck.put).not.toHaveBeenCalled()
   })
 })
