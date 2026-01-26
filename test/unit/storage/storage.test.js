@@ -11,6 +11,7 @@ const mockContext = require('../../mock/mock-context')
 const {
   transformEventToCsvV3: actualTransformEventToCsvV3
 } = jest.requireActual('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
+const config = require('../../../ffc-ahwr-mi-reporting/feature-toggle/config')
 
 const mockAppendBlock = jest.fn().mockResolvedValue(true)
 
@@ -154,6 +155,7 @@ const errorSpy = jest
 
 describe('Storage', () => {
   beforeEach(async () => {
+    config.filterUnnecessaryEventTypes = true
     await connect(mockContext)
   })
 

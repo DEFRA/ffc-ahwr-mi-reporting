@@ -5,14 +5,16 @@ function buildFeatureToggleConfig () {
   const schema = Joi.object({
     sharePoint: {
       enabled: Joi.boolean().optional().default(false)
-    }
+    },
+    filterUnnecessaryEventTypes: Joi.boolean().required()
   })
 
   // Build config
   const config = {
     sharePoint: {
       enabled: process.env.SHAREPOINT_ENABLED
-    }
+    },
+    filterUnnecessaryEventTypes: process.env.FILTER_UNNECESSARY_EVENT_TYPES === 'true'
   }
 
   // Validate config

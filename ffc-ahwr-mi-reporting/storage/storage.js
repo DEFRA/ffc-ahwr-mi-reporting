@@ -2,6 +2,7 @@ const { TableClient, odata } = require('@azure/data-tables')
 const { BlobServiceClient } = require('@azure/storage-blob')
 const { connectionString, containerName, tableName, pageSize } = require('../config/config')
 const { transformEventToCsvV3, buildColumns } = require('../mi-report-v3/transformJsonToCsvV3')
+const config = require('../feature-toggle/config')
 
 let tableClient
 let blobServiceClient
@@ -61,7 +62,7 @@ const processEntitiesByTimestampPaged = async (fileName, context) => {
     let rowContent = ''
 
     for await (const event of eventsPage) {
-      if (EVENT_TYPES_NOT_NEEDED_BY_REPORTING_TEAM.includes(event.EventType)) {
+      if (config.filterUnnecessaryEventTypes && EVENT_TYPES_NOT_NEEDED_BY_REPORTING_TEAM.includes(event.EventType)) {
         continue // skip to next event
       }
 
