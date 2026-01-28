@@ -77,8 +77,12 @@ const processEntitiesByTimestampPaged = async (fileName, context) => {
       }
     }
 
-    await appendBlobClient.appendBlock(rowContent, Buffer.byteLength(rowContent))
-    context.log.info(`Page ${pageCount} and ${eventItemCount} event items written to append blob`)
+    if (rowContent) {
+      await appendBlobClient.appendBlock(rowContent, Buffer.byteLength(rowContent))
+      context.log.info(`Page ${pageCount} and ${eventItemCount} event items written to append blob`)
+    } else {
+      context.log.info(`Page ${pageCount} was not written to csv, no rowContent produced for eventsPage`)
+    }
   }
 }
 
