@@ -14,6 +14,98 @@ const {
 
 const mockAppendBlock = jest.fn().mockResolvedValue(true)
 
+const getDefaultYields = () => [
+  [
+    {
+      Payload: JSON.stringify({
+        type: 'application:status-updated:1',
+        message: 'New application has been created',
+        data: {
+          reference: 'AHWR-1234-1234',
+          statusId: 1
+        },
+        raisedBy: 'admin',
+        raisedOn: '2025-01-27T16:22:17.015Z',
+        timestamp: '2025-01-27T16:22:17.021Z'
+      }),
+      EventType: 'application:status-updated:1'
+    },
+    {
+      Payload: JSON.stringify({
+        type: 'application-vetRcvs',
+        message: 'claim data updated',
+        data: {
+          applicationReference: 'AHWR-209E-ED2E',
+          reference: 'AHWR-209E-ED2E',
+          updatedProperty: 'vetRcvs',
+          newValue: '1234567',
+          oldValue: '1234123',
+          note: 'upto 7'
+        },
+        raisedBy: 'Jane Doe',
+        raisedOn: '2025-03-28T12:06:37.489Z'
+      }),
+      EventType: 'application-vetRcvs'
+    },
+    {
+      Payload: JSON.stringify({
+        type: 'application:flagged',
+        message: 'Application flagged',
+        data: {
+          flagId: 'b6b76548-bd6e-45b3-b137-05d930004c9b',
+          flagDetail: 'Declined multi herds agreement',
+          flagAppliesToMh: true
+        },
+        raisedBy: 'Jane Doe',
+        raisedOn: '2025-03-28T12:06:37.489Z'
+      }),
+      EventType: 'application:flagged'
+    },
+    {
+      Payload: JSON.stringify({
+        type: 'application:unflagged',
+        message: 'Application flag removed',
+        data: {
+          flagId: 'b6b76548-bd6e-45b3-b137-05d930004c9b'
+        },
+        raisedBy: 'Jane Doe',
+        raisedOn: '2025-03-28T12:06:37.489Z'
+      }),
+      EventType: 'application:unflagged'
+    }
+  ],
+  [
+    {
+      Payload: JSON.stringify({
+        type: 'farmerApplyData-declaration',
+        message: 'Session set for farmerApplyData and declaration.',
+        data: {
+          reference: 'Temp',
+          declaration: true
+        },
+        raisedBy: 'johndoe@google.com.test',
+        raisedOn: '2024-01-04T21:27:12.490Z'
+      }),
+      EventType: 'farmerApplyData-declaration'
+    },
+    {
+      Payload: JSON.stringify({
+        type: 'tokens-nonce',
+        message: 'Session set for tokens and nonce',
+        data: {
+          reference: 'Temp',
+          declaration: true
+        },
+        raisedBy: 'johndoe@google.com.test',
+        raisedOn: '2024-01-04T21:27:12.490Z'
+      }),
+      EventType: 'tokens-nonce'
+    }
+  ]
+]
+
+let mockYields = getDefaultYields()
+
 jest.mock('@azure/storage-blob', () => ({
   BlobServiceClient: {
     fromConnectionString: jest.fn().mockReturnValue({
@@ -50,94 +142,9 @@ jest.mock('@azure/data-tables', () => ({
       listEntities: jest.fn().mockReturnValue({
         byPage: jest.fn().mockImplementation(async function * () {
           // First page
-          yield [
-            {
-              Payload: JSON.stringify({
-                type: 'application:status-updated:1',
-                message: 'New application has been created',
-                data: {
-                  reference: 'AHWR-1234-1234',
-                  statusId: 1
-                },
-                raisedBy: 'admin',
-                raisedOn: '2025-01-27T16:22:17.015Z',
-                timestamp: '2025-01-27T16:22:17.021Z'
-              }),
-              EventType: 'application:status-updated:1'
-            },
-            {
-              Payload: JSON.stringify({
-                type: 'application-vetRcvs',
-                message: 'claim data updated',
-                data: {
-                  applicationReference: 'AHWR-209E-ED2E',
-                  reference: 'AHWR-209E-ED2E',
-                  updatedProperty: 'vetRcvs',
-                  newValue: '1234567',
-                  oldValue: '1234123',
-                  note: 'upto 7'
-                },
-                raisedBy: 'Jane Doe',
-                raisedOn: '2025-03-28T12:06:37.489Z'
-              }),
-              EventType: 'application-vetRcvs'
-            },
-            {
-              Payload: JSON.stringify({
-                type: 'application:flagged',
-                message: 'Application flagged',
-                data: {
-                  flagId: 'b6b76548-bd6e-45b3-b137-05d930004c9b',
-                  flagDetail: 'Declined multi herds agreement',
-                  flagAppliesToMh: true
-                },
-                raisedBy: 'Jane Doe',
-                raisedOn: '2025-03-28T12:06:37.489Z'
-              }),
-              EventType: 'application:flagged'
-            },
-            {
-              Payload: JSON.stringify({
-                type: 'application:unflagged',
-                message: 'Application flag removed',
-                data: {
-                  flagId: 'b6b76548-bd6e-45b3-b137-05d930004c9b'
-                },
-                raisedBy: 'Jane Doe',
-                raisedOn: '2025-03-28T12:06:37.489Z'
-              }),
-              EventType: 'application:unflagged'
-            }
-          ]
+          yield mockYields[0]
           // Second page
-          yield [
-            {
-              Payload: JSON.stringify({
-                type: 'farmerApplyData-declaration',
-                message: 'Session set for farmerApplyData and declaration.',
-                data: {
-                  reference: 'Temp',
-                  declaration: true
-                },
-                raisedBy: 'johndoe@google.com.test',
-                raisedOn: '2024-01-04T21:27:12.490Z'
-              }),
-              EventType: 'farmerApplyData-declaration'
-            },
-            {
-              Payload: JSON.stringify({
-                type: 'tokens-nonce',
-                message: 'Session set for tokens and nonce',
-                data: {
-                  reference: 'Temp',
-                  declaration: true
-                },
-                raisedBy: 'johndoe@google.com.test',
-                raisedOn: '2024-01-04T21:27:12.490Z'
-              }),
-              EventType: 'tokens-nonce'
-            }
-          ]
+          yield mockYields[1]
         })
       })
     })
@@ -155,6 +162,7 @@ const errorSpy = jest
 
 describe('Storage', () => {
   beforeEach(async () => {
+    mockYields = getDefaultYields()
     await connect(mockContext)
   })
 
@@ -236,6 +244,43 @@ describe('Storage', () => {
       }
 
       expect(rows).not.toContain('tokens-nonce')
+    })
+
+    test('should not append block to the csv file when all events are filtered (deemed unnecessary)', async () => {
+      // override yields to return page 1 with unnecessary event only
+      mockYields = [
+        [{
+          Payload: JSON.stringify({
+            type: 'tokens-nonce',
+            message: 'Session set for tokens and nonce',
+            data: {
+              reference: 'Temp',
+              declaration: true
+            },
+            raisedBy: 'johndoe@google.com.test',
+            raisedOn: '2024-01-04T21:27:12.490Z'
+          }),
+          EventType: 'tokens-nonce'
+        }],
+        [{
+          Payload: JSON.stringify({
+            type: 'application:status-updated:1',
+            message: 'New application has been created',
+            data: {
+              reference: 'AHWR-1234-1234',
+              statusId: 1
+            },
+            raisedBy: 'admin',
+            raisedOn: '2025-01-27T16:22:17.015Z',
+            timestamp: '2025-01-27T16:22:17.021Z'
+          }),
+          EventType: 'application:status-updated:1'
+        }]
+      ]
+      await processEntitiesByTimestampPaged('fileName', mockContext)
+
+      expect(mockAppendBlock).toHaveBeenCalledTimes(1) // called once for page 2
+      expect(mockContext.log.info).toHaveBeenCalledWith('Page 1 was not written to csv, no rowContent produced for eventsPage')
     })
   })
 
