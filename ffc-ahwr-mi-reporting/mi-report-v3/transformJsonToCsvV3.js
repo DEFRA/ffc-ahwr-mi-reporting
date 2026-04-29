@@ -145,6 +145,9 @@ const formatPigsGeneticSequencing = (geneticSequencingResult) => {
 }
 
 const isPoultryEnabled = () => {
+  if (!config.poultryReleaseDate) {
+    return false
+  }
   return new Date() >= new Date(config.poultryReleaseDate)
 }
 
