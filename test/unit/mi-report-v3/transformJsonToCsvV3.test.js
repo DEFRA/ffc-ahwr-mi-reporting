@@ -1,4 +1,5 @@
-const { transformEventToCsvV3, buildColumns, defaultColumns, flagColumns, multiHerdsColumns, pigUpdatesColumns, pigsAndPaymentsColumns } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
+const config = require('../../../ffc-ahwr-mi-reporting/feature-toggle/config')
+const { transformEventToCsvV3, buildColumns, defaultColumns, flagColumns, multiHerdsColumns, pigUpdatesColumns, pigsAndPaymentsColumns, poultryColumns } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
 const mockContext = require('../../mock/mock-context')
 const { randomUUID } = require('node:crypto')
 
@@ -11,6 +12,7 @@ const consoleSpy = jest
 describe('transformEventToCsvV3', () => {
   afterEach(() => {
     consoleSpy.mockReset()
+    config.poultryReleaseDate = undefined
   })
 
   test('returns undefined when no event provided', async () => {
@@ -278,10 +280,45 @@ describe('transformEventToCsvV3', () => {
 
     expect(result).toBe(`123456,${uuid},claim-numberOfBloodSamples,Session set for claim and numberOfBloodSamples.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30`)
   })
+
+  test('returns csv row with poultry data', async () => {
+    config.poultryReleaseDate = new Date('2025-04-25').toISOString()
+    const uuid = randomUUID()
+    const event = {
+      partitionKey: '107663771',
+      SessionId: uuid,
+      EventType: 'fundingSelection-selectedFunding',
+      EventRaised: new Date().toISOString(),
+      Payload: JSON.stringify({
+        type: 'fundingSelection-selectedFunding',
+        message: 'Session set for fundingSelection and selectedFunding.',
+        data: {
+          selectedFunding: 'IAHW'
+        },
+        raisedBy: 'peterdancem@ecnadretepw.com.test',
+        raisedOn: '2026-04-28T14:50:31.444Z'
+      })
+    }
+
+    const result = transformEventToCsvV3(event, mockContext)
+
+    expect(result).toBe(`107663771,${uuid},fundingSelection-selectedFunding,Session set for fundingSelection and selectedFunding.,,,,,,,,,,,,,,peterdancem@ecnadretepw.com.test,2026-04-28T14:50:31.444Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,IAHW,,,,,`)
+  })
 })
 
 describe('buildColumns', () => {
   test('it returns the correct columns', () => {
+    config.poultryReleaseDate = undefined
+    expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns, ...multiHerdsColumns, ...pigUpdatesColumns, ...pigsAndPaymentsColumns])
+  })
+
+  test('it returns the correct columns when poultry is enabled and date is in the past', () => {
+    config.poultryReleaseDate = new Date('2025-04-25').toISOString()
+    expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns, ...multiHerdsColumns, ...pigUpdatesColumns, ...pigsAndPaymentsColumns, ...poultryColumns])
+  })
+
+  test('it does not show poultry columns when poultry is enabled and date is in the future', () => {
+    config.poultryReleaseDate = new Date('9999-04-25').toISOString()
     expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns, ...multiHerdsColumns, ...pigUpdatesColumns, ...pigsAndPaymentsColumns])
   })
 })
