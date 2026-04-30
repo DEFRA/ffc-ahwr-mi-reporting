@@ -1,3 +1,11 @@
+jest.mock('@azure/data-tables', () => ({
+  TableClient: jest.fn(),
+  odata: {}
+}))
+
+jest.mock('@azure/storage-blob', () => ({
+  BlobServiceClient: jest.fn()
+}))
 jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage', () => ({
   connect: jest.fn(),
   processEntitiesByTimestampPaged: jest.fn(),
