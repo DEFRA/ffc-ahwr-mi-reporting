@@ -32,5 +32,11 @@ module.exports = {
   testEnvironment: 'node',
   testPathIgnorePatterns: [],
   setupFilesAfterEnv: ['./jest.setup.js'],
-  verbose: true
+  verbose: true,
+  transform: {
+    '^.+\\.[j]sx?$': 'babel-jest'
+  },
+  transformIgnorePatterns: [
+    '/node_modules/(?!(ffc-ahwr-common-library|uuid)/)'
+  ]
 }
