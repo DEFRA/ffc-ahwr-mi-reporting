@@ -57,6 +57,23 @@
     "type": "git",
     "url": "https://github.com/DEFRA/ffc-ahwr-mi-reporting.git"
   },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "modules": "auto"
+        }
+      ]
+    ],
+    "env": {
+      "test": {
+        "plugins": [
+          "@babel/plugin-transform-modules-commonjs"
+        ]
+      }
+    }
+  },
   "standard": {
     "globals": [
       "describe",
