@@ -1,4 +1,8 @@
-jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage')
+jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage', () => ({
+  connect: jest.fn(),
+  processEntitiesByTimestampPaged: jest.fn(),
+  streamBlobToFile: jest.fn()
+}))
 
 const { featureToggle } = require('../../../ffc-ahwr-mi-reporting/config/config')
 const createFileName = require('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename')

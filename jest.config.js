@@ -37,6 +37,6 @@ module.exports = {
     '^.+\\.[j]sx?$': 'babel-jest'
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(ffc-ahwr-common-library|uuid|@azure/data-tables|@azure/storage-blob)/)'
+    '/node_modules/(?!(ffc-ahwr-common-library|uuid|@azure|@azure/data-tables|@azure/storage-blob)/)'
   ]
 }
