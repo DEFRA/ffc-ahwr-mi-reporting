@@ -97,6 +97,7 @@ stages:
                     appSettings: >
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
+                      -WEBSITE_RUN_FROM_PACKAGE 1
                       -ENVIRONMENT snd2
                       -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
                       -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
@@ -139,6 +140,7 @@ stages:
                     appSettings: >
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
+                      -WEBSITE_RUN_FROM_PACKAGE 1
                       -ENVIRONMENT dev
                       -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
                       -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
@@ -181,6 +183,7 @@ stages:
                     appSettings: >
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
+                      -WEBSITE_RUN_FROM_PACKAGE 1
                       -ENVIRONMENT test
                       -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
                       -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
@@ -223,6 +226,7 @@ stages:
                     appSettings: >
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
+                      -WEBSITE_RUN_FROM_PACKAGE 1
                       -ENVIRONMENT pre
                       -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
                       -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
@@ -265,6 +269,7 @@ stages:
                     appSettings: >
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
+                      -WEBSITE_RUN_FROM_PACKAGE 1
                       -ENVIRONMENT prd
                       -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
                       -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
