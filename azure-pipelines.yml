@@ -98,6 +98,7 @@ stages:
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
                       -ENVIRONMENT snd2
+                      -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
                       -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
                       -PAGE_SIZE "$(PAGE_SIZE)"
                       -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
@@ -139,6 +140,7 @@ stages:
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
                       -ENVIRONMENT dev
+                      -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
                       -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
                       -PAGE_SIZE "$(PAGE_SIZE)"
                       -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
@@ -180,6 +182,7 @@ stages:
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
                       -ENVIRONMENT test
+                      -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
                       -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
                       -PAGE_SIZE "$(PAGE_SIZE)"
                       -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
@@ -221,6 +224,7 @@ stages:
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
                       -ENVIRONMENT pre
+                      -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
                       -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
                       -PAGE_SIZE "$(PAGE_SIZE)"
                       -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
@@ -262,6 +266,7 @@ stages:
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
                       -ENVIRONMENT prd
+                      -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
                       -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
                       -PAGE_SIZE "$(PAGE_SIZE)"
                       -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
