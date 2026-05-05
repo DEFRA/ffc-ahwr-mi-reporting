@@ -25,10 +25,10 @@ stages:
       - job: BuildAndTest
         displayName: 'Install, Lint, Test & Package'
         steps:
-          - task: NodeTool@0
+          - task: UseNode@1
             displayName: 'Use Node.js $(NODE_VERSION)'
             inputs:
-              versionSpec: $(NODE_VERSION)
+              version: $(NODE_VERSION)
 
           - script: npm ci
             displayName: 'Install all dependencies'
