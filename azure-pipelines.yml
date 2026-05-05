@@ -89,7 +89,7 @@ stages:
                 - task: AzureFunctionApp@2
                   displayName: 'Deploy to ffc-ahwr-mi-reporting-snd2'
                   inputs:
-                    connectedServiceNameARM: $(AZURE_SERVICE_CONNECTION)
+                    connectedServiceNameARM: AZD-FFC-SND2
                     appType: functionApp
                     appName: ffc-ahwr-mi-reporting-snd2
                     package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
@@ -131,7 +131,7 @@ stages:
                 - task: AzureFunctionApp@2
                   displayName: 'Deploy to ffc-ahwr-mi-reporting-dev'
                   inputs:
-                    connectedServiceNameARM: $(AZURE_SERVICE_CONNECTION)
+                    connectedServiceNameARM: AZD-FFC-DEV1
                     appType: functionApp
                     appName: ffc-ahwr-mi-reporting-dev
                     package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
@@ -173,7 +173,7 @@ stages:
                 - task: AzureFunctionApp@2
                   displayName: 'Deploy to ffc-ahwr-mi-reporting-test'
                   inputs:
-                    connectedServiceNameARM: $(AZURE_SERVICE_CONNECTION)
+                    connectedServiceNameARM: AZD-FFC-DEV1
                     appType: functionApp
                     appName: ffc-ahwr-mi-reporting-test
                     package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
@@ -215,7 +215,7 @@ stages:
                 - task: AzureFunctionApp@2
                   displayName: 'Deploy to ffc-ahwr-mi-reporting-pre'
                   inputs:
-                    connectedServiceNameARM: $(AZURE_SERVICE_CONNECTION)
+                    connectedServiceNameARM: AZD-FFC-PRE1
                     appType: functionApp
                     appName: ffc-ahwr-mi-reporting-pre
                     package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
@@ -257,7 +257,7 @@ stages:
                 - task: AzureFunctionApp@2
                   displayName: 'Deploy to ffc-ahwr-mi-reporting-prd'
                   inputs:
-                    connectedServiceNameARM: $(AZURE_SERVICE_CONNECTION)
+                    connectedServiceNameARM: AZR-FFC-PRD1
                     appType: functionApp
                     appName: ffc-ahwr-mi-reporting-prd
                     package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
