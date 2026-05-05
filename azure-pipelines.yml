@@ -1,0 +1,275 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - '*.md'
+      - 'docs/**'
+
+pr: none
+
+variables:
+  - name: NODE_VERSION
+    value: '18.x'
+  - name: BUILD_ARTIFACT_NAME
+    value: 'drop'
+
+stages:
+  # ─── CI: Build, Lint, Test & Package ────────────────────────────────────────
+  - stage: CI
+    displayName: 'Build & Test'
+    pool:
+      name: DEFRA-FFC-SND2-ubuntu2204
+    jobs:
+      - job: BuildAndTest
+        displayName: 'Install, Lint, Test & Package'
+        steps:
+          - task: NodeTool@0
+            displayName: 'Use Node.js $(NODE_VERSION)'
+            inputs:
+              versionSpec: $(NODE_VERSION)
+
+          - script: npm ci
+            displayName: 'Install all dependencies'
+
+          - script: npm test
+            displayName: 'Lint & unit tests'
+
+          - task: PublishTestResults@2
+            displayName: 'Publish test results'
+            condition: always()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: 'test-output/junit.xml'
+              failTaskOnFailedTests: true
+
+          # Reinstall production-only deps before packaging
+          - script: npm ci --omit=dev
+            displayName: 'Install production dependencies only'
+
+          - script: |
+              zip -r $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip . \
+                -x '*.git*' \
+                -x 'test/*' \
+                -x 'test-output/*' \
+                -x '*.test.js' \
+                -x '.github/*' \
+                -x '.gitignore' \
+                -x '.pre-commit-config.yaml' \
+                -x 'docker-compose.yaml' \
+                -x 'jest.config.js' \
+                -x 'sonar-project.properties'
+            displayName: 'Package function app'
+            workingDirectory: $(Build.SourcesDirectory)
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish deployment artifact'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: $(BUILD_ARTIFACT_NAME)
+
+  # ─── SND2 ───────────────────────────────────────────────────────────────────
+  - stage: Deploy_SND2
+    displayName: 'Deploy to SND2'
+    dependsOn: CI
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    variables:
+      - group: ffc-ahwr-mi-reporting-snd2
+    pool:
+      name: DEFRA-FFC-SND2-ubuntu2204
+    jobs:
+      - deployment: Deploy
+        displayName: 'Deploy ffc-ahwr-mi-reporting-snd2'
+        environment: SND1
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureFunctionApp@2
+                  displayName: 'Deploy to ffc-ahwr-mi-reporting-snd2'
+                  inputs:
+                    connectedServiceNameARM: $(AZURE_SERVICE_CONNECTION)
+                    appType: functionApp
+                    appName: ffc-ahwr-mi-reporting-snd2
+                    package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
+                    deploymentMethod: zipDeploy
+                    appSettings: >
+                      -FUNCTIONS_WORKER_RUNTIME node
+                      -WEBSITE_NODE_DEFAULT_VERSION ~18
+                      -ENVIRONMENT snd2
+                      -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
+                      -PAGE_SIZE "$(PAGE_SIZE)"
+                      -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
+                      -SHAREPOINT_TENANT_ID "$(SHAREPOINT_TENANT_ID)"
+                      -SHAREPOINT_CLIENT_ID "$(SHAREPOINT_CLIENT_ID)"
+                      -SHAREPOINT_CLIENT_SECRET "$(SHAREPOINT_CLIENT_SECRET)"
+                      -SHAREPOINT_HOSTNAME "$(SHAREPOINT_HOSTNAME)"
+                      -SHAREPOINT_SITE_PATH "$(SHAREPOINT_SITE_PATH)"
+                      -SHAREPOINT_DOCUMENT_LIBRARY "$(SHAREPOINT_DOCUMENT_LIBRARY)"
+                      -SHAREPOINT_DST_FOLDER "$(SHAREPOINT_DST_FOLDER)"
+                      -APPLICATIONINSIGHTS_CONNECTION_STRING "$(APPLICATIONINSIGHTS_CONNECTION_STRING)"
+
+  # ─── DEV ────────────────────────────────────────────────────────────────────
+  - stage: Deploy_DEV
+    displayName: 'Deploy to DEV'
+    dependsOn: Deploy_SND2
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    variables:
+      - group: ffc-ahwr-mi-reporting-dev
+    pool:
+      name: DEFRA-FFC-DEV1-ubuntu2204
+    jobs:
+      - deployment: Deploy
+        displayName: 'Deploy ffc-ahwr-mi-reporting-dev'
+        environment: DEV
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureFunctionApp@2
+                  displayName: 'Deploy to ffc-ahwr-mi-reporting-dev'
+                  inputs:
+                    connectedServiceNameARM: $(AZURE_SERVICE_CONNECTION)
+                    appType: functionApp
+                    appName: ffc-ahwr-mi-reporting-dev
+                    package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
+                    deploymentMethod: zipDeploy
+                    appSettings: >
+                      -FUNCTIONS_WORKER_RUNTIME node
+                      -WEBSITE_NODE_DEFAULT_VERSION ~18
+                      -ENVIRONMENT dev
+                      -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
+                      -PAGE_SIZE "$(PAGE_SIZE)"
+                      -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
+                      -SHAREPOINT_TENANT_ID "$(SHAREPOINT_TENANT_ID)"
+                      -SHAREPOINT_CLIENT_ID "$(SHAREPOINT_CLIENT_ID)"
+                      -SHAREPOINT_CLIENT_SECRET "$(SHAREPOINT_CLIENT_SECRET)"
+                      -SHAREPOINT_HOSTNAME "$(SHAREPOINT_HOSTNAME)"
+                      -SHAREPOINT_SITE_PATH "$(SHAREPOINT_SITE_PATH)"
+                      -SHAREPOINT_DOCUMENT_LIBRARY "$(SHAREPOINT_DOCUMENT_LIBRARY)"
+                      -SHAREPOINT_DST_FOLDER "$(SHAREPOINT_DST_FOLDER)"
+                      -APPLICATIONINSIGHTS_CONNECTION_STRING "$(APPLICATIONINSIGHTS_CONNECTION_STRING)"
+
+  # ─── TEST ───────────────────────────────────────────────────────────────────
+  - stage: Deploy_TEST
+    displayName: 'Deploy to TEST'
+    dependsOn: Deploy_DEV
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    variables:
+      - group: ffc-ahwr-mi-reporting-test
+    pool:
+      name: DEFRA-FFC-DEV1-ubuntu2204
+    jobs:
+      - deployment: Deploy
+        displayName: 'Deploy ffc-ahwr-mi-reporting-test'
+        environment: TEST
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureFunctionApp@2
+                  displayName: 'Deploy to ffc-ahwr-mi-reporting-test'
+                  inputs:
+                    connectedServiceNameARM: $(AZURE_SERVICE_CONNECTION)
+                    appType: functionApp
+                    appName: ffc-ahwr-mi-reporting-test
+                    package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
+                    deploymentMethod: zipDeploy
+                    appSettings: >
+                      -FUNCTIONS_WORKER_RUNTIME node
+                      -WEBSITE_NODE_DEFAULT_VERSION ~18
+                      -ENVIRONMENT test
+                      -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
+                      -PAGE_SIZE "$(PAGE_SIZE)"
+                      -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
+                      -SHAREPOINT_TENANT_ID "$(SHAREPOINT_TENANT_ID)"
+                      -SHAREPOINT_CLIENT_ID "$(SHAREPOINT_CLIENT_ID)"
+                      -SHAREPOINT_CLIENT_SECRET "$(SHAREPOINT_CLIENT_SECRET)"
+                      -SHAREPOINT_HOSTNAME "$(SHAREPOINT_HOSTNAME)"
+                      -SHAREPOINT_SITE_PATH "$(SHAREPOINT_SITE_PATH)"
+                      -SHAREPOINT_DOCUMENT_LIBRARY "$(SHAREPOINT_DOCUMENT_LIBRARY)"
+                      -SHAREPOINT_DST_FOLDER "$(SHAREPOINT_DST_FOLDER)"
+                      -APPLICATIONINSIGHTS_CONNECTION_STRING "$(APPLICATIONINSIGHTS_CONNECTION_STRING)"
+
+  # ─── PRE ────────────────────────────────────────────────────────────────────
+  - stage: Deploy_PRE
+    displayName: 'Deploy to PRE'
+    dependsOn: Deploy_TEST
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    variables:
+      - group: ffc-ahwr-mi-reporting-pre
+    pool:
+      name: DEFRA-FFC-PRE1-ubuntu2204
+    jobs:
+      - deployment: Deploy
+        displayName: 'Deploy ffc-ahwr-mi-reporting-pre'
+        environment: PRE
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureFunctionApp@2
+                  displayName: 'Deploy to ffc-ahwr-mi-reporting-pre'
+                  inputs:
+                    connectedServiceNameARM: $(AZURE_SERVICE_CONNECTION)
+                    appType: functionApp
+                    appName: ffc-ahwr-mi-reporting-pre
+                    package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
+                    deploymentMethod: zipDeploy
+                    appSettings: >
+                      -FUNCTIONS_WORKER_RUNTIME node
+                      -WEBSITE_NODE_DEFAULT_VERSION ~18
+                      -ENVIRONMENT pre
+                      -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
+                      -PAGE_SIZE "$(PAGE_SIZE)"
+                      -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
+                      -SHAREPOINT_TENANT_ID "$(SHAREPOINT_TENANT_ID)"
+                      -SHAREPOINT_CLIENT_ID "$(SHAREPOINT_CLIENT_ID)"
+                      -SHAREPOINT_CLIENT_SECRET "$(SHAREPOINT_CLIENT_SECRET)"
+                      -SHAREPOINT_HOSTNAME "$(SHAREPOINT_HOSTNAME)"
+                      -SHAREPOINT_SITE_PATH "$(SHAREPOINT_SITE_PATH)"
+                      -SHAREPOINT_DOCUMENT_LIBRARY "$(SHAREPOINT_DOCUMENT_LIBRARY)"
+                      -SHAREPOINT_DST_FOLDER "$(SHAREPOINT_DST_FOLDER)"
+                      -APPLICATIONINSIGHTS_CONNECTION_STRING "$(APPLICATIONINSIGHTS_CONNECTION_STRING)"
+
+  # ─── PRD ────────────────────────────────────────────────────────────────────
+  - stage: Deploy_PRD
+    displayName: 'Deploy to PRD'
+    dependsOn: Deploy_PRE
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    variables:
+      - group: ffc-ahwr-mi-reporting-prd
+    pool:
+      name: DEFRA-FFC-PRD1-ubuntu2204
+    jobs:
+      - deployment: Deploy
+        displayName: 'Deploy ffc-ahwr-mi-reporting-prd'
+        environment: PRD
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureFunctionApp@2
+                  displayName: 'Deploy to ffc-ahwr-mi-reporting-prd'
+                  inputs:
+                    connectedServiceNameARM: $(AZURE_SERVICE_CONNECTION)
+                    appType: functionApp
+                    appName: ffc-ahwr-mi-reporting-prd
+                    package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
+                    deploymentMethod: zipDeploy
+                    appSettings: >
+                      -FUNCTIONS_WORKER_RUNTIME node
+                      -WEBSITE_NODE_DEFAULT_VERSION ~18
+                      -ENVIRONMENT prd
+                      -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
+                      -PAGE_SIZE "$(PAGE_SIZE)"
+                      -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
+                      -SHAREPOINT_TENANT_ID "$(SHAREPOINT_TENANT_ID)"
+                      -SHAREPOINT_CLIENT_ID "$(SHAREPOINT_CLIENT_ID)"
+                      -SHAREPOINT_CLIENT_SECRET "$(SHAREPOINT_CLIENT_SECRET)"
+                      -SHAREPOINT_HOSTNAME "$(SHAREPOINT_HOSTNAME)"
+                      -SHAREPOINT_SITE_PATH "$(SHAREPOINT_SITE_PATH)"
+                      -SHAREPOINT_DOCUMENT_LIBRARY "$(SHAREPOINT_DOCUMENT_LIBRARY)"
+                      -SHAREPOINT_DST_FOLDER "$(SHAREPOINT_DST_FOLDER)"
+                      -APPLICATIONINSIGHTS_CONNECTION_STRING "$(APPLICATIONINSIGHTS_CONNECTION_STRING)"
