@@ -81,6 +81,7 @@ stages:
     jobs:
       - deployment: Deploy
         displayName: 'Deploy ffc-ahwr-mi-reporting-snd2'
+        timeoutInMinutes: 10
         environment: SND1
         strategy:
           runOnce:
@@ -93,7 +94,7 @@ stages:
                     appType: functionApp
                     appName: ffc-ahwr-mi-reporting-snd2
                     package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
-                    deploymentMethod: zipDeploy
+                    deploymentMethod: auto
                     appSettings: >
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
@@ -124,6 +125,7 @@ stages:
     jobs:
       - deployment: Deploy
         displayName: 'Deploy ffc-ahwr-mi-reporting-dev'
+        timeoutInMinutes: 10
         environment: DEV
         strategy:
           runOnce:
@@ -136,7 +138,7 @@ stages:
                     appType: functionApp
                     appName: ffc-ahwr-mi-reporting-dev
                     package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
-                    deploymentMethod: zipDeploy
+                    deploymentMethod: auto
                     appSettings: >
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
@@ -167,6 +169,7 @@ stages:
     jobs:
       - deployment: Deploy
         displayName: 'Deploy ffc-ahwr-mi-reporting-test'
+        timeoutInMinutes: 10
         environment: TEST
         strategy:
           runOnce:
@@ -179,7 +182,7 @@ stages:
                     appType: functionApp
                     appName: ffc-ahwr-mi-reporting-test
                     package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
-                    deploymentMethod: zipDeploy
+                    deploymentMethod: auto
                     appSettings: >
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
@@ -210,6 +213,7 @@ stages:
     jobs:
       - deployment: Deploy
         displayName: 'Deploy ffc-ahwr-mi-reporting-pre'
+        timeoutInMinutes: 10
         environment: PRE
         strategy:
           runOnce:
@@ -222,7 +226,7 @@ stages:
                     appType: functionApp
                     appName: ffc-ahwr-mi-reporting-pre
                     package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
-                    deploymentMethod: zipDeploy
+                    deploymentMethod: auto
                     appSettings: >
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
@@ -253,6 +257,7 @@ stages:
     jobs:
       - deployment: Deploy
         displayName: 'Deploy ffc-ahwr-mi-reporting-prd'
+        timeoutInMinutes: 10
         environment: PRD
         strategy:
           runOnce:
@@ -265,7 +270,7 @@ stages:
                     appType: functionApp
                     appName: ffc-ahwr-mi-reporting-prd
                     package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
-                    deploymentMethod: zipDeploy
+                    deploymentMethod: auto
                     appSettings: >
                       -FUNCTIONS_WORKER_RUNTIME node
                       -WEBSITE_NODE_DEFAULT_VERSION ~18
