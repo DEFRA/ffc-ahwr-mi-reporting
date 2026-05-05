@@ -215,7 +215,7 @@ stages:
                 - task: AzureFunctionApp@2
                   displayName: 'Deploy to ffc-ahwr-mi-reporting-pre'
                   inputs:
-                    connectedServiceNameARM: AZD-FFC-PRE1
+                    connectedServiceNameARM: AZP-FFC-PRE1
                     appType: functionApp
                     appName: ffc-ahwr-mi-reporting-pre
                     package: '$(Pipeline.Workspace)/$(BUILD_ARTIFACT_NAME)/*.zip'
