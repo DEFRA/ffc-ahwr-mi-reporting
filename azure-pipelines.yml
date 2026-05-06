@@ -45,7 +45,7 @@ stages:
               failTaskOnFailedTests: true
 
           # Reinstall production-only deps before packaging
-          - script: npm ci --omit=dev
+          - script: npm ci --omit=dev --ignore-scripts
             displayName: 'Install production dependencies only'
 
           - script: |
