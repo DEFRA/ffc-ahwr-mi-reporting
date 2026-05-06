@@ -1,6 +1,6 @@
 {
   "name": "ffc-ahwr-mi-reporting",
-  "version": "0.17.8",
+  "version": "0.18.0",
   "description": "Azure Function to create MI reports",
   "author": "Defra",
   "scripts": {
@@ -21,9 +21,10 @@
     "@hapi/wreck": "^18.0.1",
     "@pnp/nodejs-commonjs": "^2.15.0",
     "applicationinsights": "^2.9.1",
-    "ffc-ahwr-common-library": "^2.2.3",
+    "ffc-ahwr-common-library": "^3.7.2",
     "joi": "17.13.3",
-    "moment": "2.29.4"
+    "moment": "2.29.4",
+    "uuid": "14.0.0"
   },
   "overrides": {
     "@pnp/nodejs-commonjs": {
@@ -35,20 +36,43 @@
     "jsonwebtoken": "^9.0.0",
     "node-fetch": "^2.6.7",
     "axios": "^1.8.2",
-    "semver": "^7.5.2"
+    "semver": "^7.5.2",
+    "uuid": "14.0.0"
   },
   "devDependencies": {
     "husky": "^9.1.7",
     "jest": "29.7.0",
-    "jest-junit": "16.0.0",
+    "jest-junit": "17.0.0",
     "jest-when": "^3.6.0",
     "lint-staged": "^16.4.0",
-    "standard": "17.0.0"
+    "standard": "17.0.0",
+    "@babel/core": "7.27.4",
+    "@babel/plugin-transform-modules-commonjs": "7.27.1",
+    "@babel/preset-env": "7.27.2",
+    "autoprefixer": "10.4.21",
+    "babel-jest": "29.7.0"
   },
   "homepage": "https://github.com/DEFRA/ffc-ahwr-mi-reporting",
   "repository": {
     "type": "git",
     "url": "https://github.com/DEFRA/ffc-ahwr-mi-reporting.git"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "modules": "auto"
+        }
+      ]
+    ],
+    "env": {
+      "test": {
+        "plugins": [
+          "@babel/plugin-transform-modules-commonjs"
+        ]
+      }
+    }
   },
   "standard": {
     "globals": [

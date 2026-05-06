@@ -32,5 +32,16 @@ module.exports = {
   testEnvironment: 'node',
   testPathIgnorePatterns: [],
   setupFilesAfterEnv: ['./jest.setup.js'],
-  verbose: true
+  verbose: true,
+  transform: {
+    '^.+\\.[j]sx?$': ['babel-jest', {
+      presets: [
+        ['@babel/preset-env', { targets: { node: 'current' } }]
+      ],
+      plugins: ['@babel/plugin-transform-modules-commonjs']
+    }]
+  },
+  transformIgnorePatterns: [
+    '/node_modules/(?!(ffc-ahwr-common-library|uuid|@azure|@azure/data-tables|@azure/storage-blob)/)'
+  ]
 }

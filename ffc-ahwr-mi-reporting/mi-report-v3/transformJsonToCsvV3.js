@@ -8,6 +8,7 @@ const {
   replaceCommasWithSpace, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources, getVisitDateFromPossibleSources, getTestResultFromPossibleSources, getUrnResultFromPossibleSources, getDateOfTestingFromPossibleSources
 } = require('../utils/parse-data')
 const { PIG_GENETIC_SEQUENCING_VALUES } = require('./pig-genetic-sequencing-values')
+const config = require('../feature-toggle/config')
 
 // Define the CSV column names
 const defaultColumns = [
@@ -108,13 +109,23 @@ const pigsAndPaymentsColumns = [
   'numberOfBloodSamples'
 ]
 
+const poultryColumns = [
+  'schemeType',
+  'typesOfPoultry',
+  'biosecurityChanges',
+  'biosecurityChangesCost',
+  'biosecurityUsefulness',
+  'schemeExperienceInterview'
+]
+
 const buildColumns = () => {
   return [
     ...defaultColumns,
     ...flagColumns,
     ...multiHerdsColumns,
     ...pigUpdatesColumns,
-    ...pigsAndPaymentsColumns
+    ...pigsAndPaymentsColumns,
+    ...(isPoultryEnabled() ? poultryColumns : [])
   ]
 }
 
@@ -131,6 +142,13 @@ const formatPigsGeneticSequencing = (geneticSequencingResult) => {
     (keyValuePair) => keyValuePair.value === geneticSequencingResult).label
 
   return geneticSequencingLabel
+}
+
+const isPoultryEnabled = () => {
+  if (!config.poultryReleaseDate) {
+    return false
+  }
+  return new Date() >= new Date(config.poultryReleaseDate)
 }
 
 // Function to transform event data to CSV row format
@@ -222,7 +240,13 @@ function transformEventToCsvV3 (event, context) {
     pigsPcrTestResult,
     pigsGeneticSequencing,
     typeOfSamplesTaken,
-    numberOfBloodSamples
+    numberOfBloodSamples,
+    schemeType,
+    typesOfPoultry,
+    biosecurityChanges,
+    biosecurityChangesCost,
+    biosecurityUsefulness,
+    schemeExperienceInterview
   } = data ?? {}
   const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? {}
   const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? {}
@@ -261,6 +285,8 @@ function transformEventToCsvV3 (event, context) {
     herdReasonOther)
   const pigUpdatesData = [pigsElisaTestResult, pigsPcrTestResult, formatPigsGeneticSequencing(pigsGeneticSequencing)]
   const pigsAndPaymentsData = [typeOfSamplesTaken, numberOfBloodSamples]
+
+  const poultryData = isPoultryEnabled() ? [schemeType, typesOfPoultry, biosecurityChanges, biosecurityChangesCost, biosecurityUsefulness, schemeExperienceInterview] : []
 
   return [
     sbiFromPartitionKey,
@@ -327,8 +353,9 @@ function transformEventToCsvV3 (event, context) {
     ...flagData,
     ...herdData,
     ...pigUpdatesData,
-    ...pigsAndPaymentsData
+    ...pigsAndPaymentsData,
+    ...poultryData
   ].map(item => replaceCommasWithSpace(item)).join(',')
 }
 
-module.exports = { transformEventToCsvV3, buildColumns, defaultColumns, flagColumns, multiHerdsColumns, pigUpdatesColumns, pigsAndPaymentsColumns }
+module.exports = { transformEventToCsvV3, buildColumns, defaultColumns, flagColumns, multiHerdsColumns, pigUpdatesColumns, pigsAndPaymentsColumns, poultryColumns }

@@ -1,9 +1,3 @@
-const { featureToggle } = require('../../../ffc-ahwr-mi-reporting/config/config')
-const createFileName = require('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename')
-const { connect, processEntitiesByTimestampPaged } = require('../../../ffc-ahwr-mi-reporting/storage/storage')
-const { uploadBlobToSharePoint } = require('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
-const buildAhwrMiReport = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/index')
-const mockContext = require('../../mock/mock-context')
 
 jest.mock('../../../ffc-ahwr-mi-reporting/config/config.js', () => ({
   containerName: 'reports',
@@ -19,8 +13,28 @@ jest.mock('../../../ffc-ahwr-mi-reporting/config/config.js', () => ({
   }
 }))
 jest.mock('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename')
-jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage')
 jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
+jest.mock('@azure/data-tables', () => ({
+  TableClient: jest.fn(),
+  odata: {}
+}))
+
+jest.mock('@azure/storage-blob', () => ({
+  BlobServiceClient: jest.fn()
+}))
+
+jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage', () => ({
+  connect: jest.fn(),
+  processEntitiesByTimestampPaged: jest.fn(),
+  streamBlobToFile: jest.fn()
+}))
+const buildAhwrMiReport = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/index')
+
+const { featureToggle } = require('../../../ffc-ahwr-mi-reporting/config/config')
+const createFileName = require('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename')
+const { connect, processEntitiesByTimestampPaged } = require('../../../ffc-ahwr-mi-reporting/storage/storage')
+const { uploadBlobToSharePoint } = require('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
+const mockContext = require('../../mock/mock-context')
 
 const consoleSpy = jest
   .spyOn(mockContext.log, 'info')

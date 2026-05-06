@@ -140,11 +140,19 @@ jest.mock('@azure/data-tables', () => ({
   TableClient: {
     fromConnectionString: jest.fn().mockReturnValue({
       listEntities: jest.fn().mockReturnValue({
-        byPage: jest.fn().mockImplementation(async function * () {
-          // First page
-          yield mockYields[0]
-          // Second page
-          yield mockYields[1]
+        byPage: jest.fn().mockImplementation(() => {
+          let i = 0
+          return {
+            next: async () => {
+              if (i < mockYields.length) {
+                return { value: mockYields[i++], done: false }
+              }
+              return { value: undefined, done: true }
+            },
+            [Symbol.asyncIterator] () {
+              return this
+            }
+          }
         })
       })
     })
