@@ -241,12 +241,12 @@ function transformEventToCsvV3 (event, context) {
     pigsGeneticSequencing,
     typeOfSamplesTaken,
     numberOfBloodSamples,
-    selectedFunding,
+    schemeType,
     typesOfPoultry,
-    changesInBiosecurity,
-    costOfChanges,
+    biosecurityChanges,
+    biosecurityChangesCost,
     biosecurityUsefulness,
-    interview
+    schemeExperienceInterview
   } = data ?? {}
   const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? {}
   const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? {}
@@ -286,7 +286,7 @@ function transformEventToCsvV3 (event, context) {
   const pigUpdatesData = [pigsElisaTestResult, pigsPcrTestResult, formatPigsGeneticSequencing(pigsGeneticSequencing)]
   const pigsAndPaymentsData = [typeOfSamplesTaken, numberOfBloodSamples]
 
-  const poultryData = isPoultryEnabled() ? [selectedFunding, typesOfPoultry, changesInBiosecurity, costOfChanges, biosecurityUsefulness, interview] : []
+  const poultryData = isPoultryEnabled() ? [schemeType, typesOfPoultry, biosecurityChanges, biosecurityChangesCost, biosecurityUsefulness, schemeExperienceInterview] : []
 
   return [
     sbiFromPartitionKey,

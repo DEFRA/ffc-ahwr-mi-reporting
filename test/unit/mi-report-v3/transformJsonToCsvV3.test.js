@@ -287,13 +287,13 @@ describe('transformEventToCsvV3', () => {
     const event = {
       partitionKey: '107663771',
       SessionId: uuid,
-      EventType: 'fundingSelection-selectedFunding',
+      EventType: 'scheme-schemeType',
       EventRaised: new Date().toISOString(),
       Payload: JSON.stringify({
-        type: 'fundingSelection-selectedFunding',
+        type: 'scheme-schemeType',
         message: 'Session set for fundingSelection and selectedFunding.',
         data: {
-          selectedFunding: 'IAHW'
+          schemeType: 'IAHW'
         },
         raisedBy: 'peterdancem@ecnadretepw.com.test',
         raisedOn: '2026-04-28T14:50:31.444Z'
@@ -302,7 +302,7 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe(`107663771,${uuid},fundingSelection-selectedFunding,Session set for fundingSelection and selectedFunding.,,,,,,,,,,,,,,peterdancem@ecnadretepw.com.test,2026-04-28T14:50:31.444Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,IAHW,,,,,`)
+    expect(result).toBe(`107663771,${uuid},scheme-schemeType,Session set for fundingSelection and selectedFunding.,,,,,,,,,,,,,,peterdancem@ecnadretepw.com.test,2026-04-28T14:50:31.444Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,IAHW,,,,,`)
   })
 })
 
