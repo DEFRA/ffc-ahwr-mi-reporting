@@ -3,7 +3,7 @@ const featureToggle = require('../feature-toggle/config')
 
 const schema = Joi.object({
   environment: Joi.string().default('unknown'),
-  connectionString: Joi.string().required(),
+  storageAccountName: Joi.string().required(),
   containerName: Joi.string().default('reports'),
   tableName: Joi.string().default('ahwreventstore'),
   sharePoint: Joi.object().default({}),
@@ -13,7 +13,7 @@ const schema = Joi.object({
 
 const config = {
   environment: process.env.ENVIRONMENT,
-  connectionString: process.env.STORAGE_CONNECTION_STRING,
+  storageAccountName: process.env.STORAGE_ACCOUNT_NAME,
   sharePoint: featureToggle.sharePoint.enabled ? require('../sharepoint/config') : undefined,
   featureToggle,
   pageSize: process.env.PAGE_SIZE

@@ -13,7 +13,7 @@ describe('config', () => {
   beforeEach(() => {
     jest.resetModules()
     process.env = { ...ORIGINAL_ENV }
-    process.env.STORAGE_CONNECTION_STRING = 'UseDevelopmentStorage=true'
+    process.env.STORAGE_ACCOUNT_NAME = 'account-name'
     delete process.env.ENVIRONMENT
     delete process.env.PAGE_SIZE
   })
@@ -23,7 +23,7 @@ describe('config', () => {
   })
 
   test('returns a fully populated config when all env vars are valid', () => {
-    process.env.STORAGE_CONNECTION_STRING = 'connection-string'
+    process.env.STORAGE_ACCOUNT_NAME = 'account-name'
     process.env.ENVIRONMENT = 'test'
     process.env.PAGE_SIZE = '500'
     mockFeatureToggle(false)
@@ -32,7 +32,7 @@ describe('config', () => {
 
     expect(config).toEqual({
       environment: 'test',
-      connectionString: 'connection-string',
+      storageAccountName: 'account-name',
       containerName: 'reports',
       tableName: 'ahwreventstore',
       sharePoint: {},
@@ -41,11 +41,11 @@ describe('config', () => {
     })
   })
 
-  test('throws when STORAGE_CONNECTION_STRING is missing', () => {
-    delete process.env.STORAGE_CONNECTION_STRING
+  test('throws when STORAGE_ACCOUNT_NAME is missing', () => {
+    delete process.env.STORAGE_ACCOUNT_NAME
     mockFeatureToggle(false)
 
-    expect(() => require(CONFIG_PATH)).toThrow(/"connectionString" is required/)
+    expect(() => require(CONFIG_PATH)).toThrow(/The config is invalid: "storageAccountName" is required/)
   })
 
   test('defaults environment to "unknown" when ENVIRONMENT is unset', () => {

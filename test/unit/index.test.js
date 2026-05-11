@@ -45,7 +45,8 @@ jest.mock('../../ffc-ahwr-mi-reporting/feature-toggle/config', () => ({
 jest.mock('../../ffc-ahwr-mi-reporting/config/config', () => {
   return {
     ...jest.requireActual('../../ffc-ahwr-mi-reporting/config/config'),
-    environment: 'test'
+    environment: 'test',
+    storageAccountName: 'account-name'
   }
 })
 jest.mock('@azure/storage-blob', () => {
