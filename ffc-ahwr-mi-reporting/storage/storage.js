@@ -1,6 +1,7 @@
 const { TableClient, odata } = require('@azure/data-tables')
 const { BlobServiceClient } = require('@azure/storage-blob')
-const { connectionString, containerName, tableName, pageSize } = require('../config/config')
+const { DefaultAzureCredential } = require('@azure/identity')
+const { containerName, tableName, pageSize, storageAccountName } = require('../config/config')
 const { transformEventToCsvV3, buildColumns } = require('../mi-report-v3/transformJsonToCsvV3')
 
 let tableClient
@@ -22,10 +23,18 @@ const initialiseContainers = async (context) => {
 
 const connect = async (context) => {
   context.log.info(`Connecting to storage with connectionString containerName ${containerName} tableName ${tableName}`)
-  blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
+  blobServiceClient = new BlobServiceClient(
+    `https://${storageAccountName}.blob.core.windows.net`,
+    new DefaultAzureCredential()
+  )
   container = blobServiceClient.getContainerClient(containerName)
   await initialiseContainers(context)
-  tableClient = TableClient.fromConnectionString(connectionString, tableName, { allowInsecureConnection: true })
+  tableClient = new TableClient(
+    `https://${storageAccountName}.table.core.windows.net`,
+    tableName,
+    new DefaultAzureCredential(),
+    { allowInsecureConnection: true }
+  )
 }
 
 const processEntitiesByTimestampPaged = async (fileName, context) => {

@@ -107,56 +107,52 @@ const getDefaultYields = () => [
 let mockYields = getDefaultYields()
 
 jest.mock('@azure/storage-blob', () => ({
-  BlobServiceClient: {
-    fromConnectionString: jest.fn().mockReturnValue({
-      getContainerClient: jest.fn().mockReturnValue({
-        createIfNotExists: jest.fn(),
-        getAppendBlobClient: jest.fn().mockImplementation((filename) => {
-          if (filename === 'fileNameThatDoesNotExist') {
-            return {
-              exists: jest.fn().mockResolvedValue(false),
-              create: jest.fn().mockResolvedValue(true),
-              appendBlock: mockAppendBlock
-            }
-          } else {
-            return {
-              exists: jest.fn().mockResolvedValue(true),
-              appendBlock: mockAppendBlock
-            }
-          }
-        }),
-        getBlobClient: jest.fn().mockImplementation(() => {
+  BlobServiceClient: jest.fn().mockImplementation(() => ({
+    getContainerClient: jest.fn().mockReturnValue({
+      createIfNotExists: jest.fn(),
+      getAppendBlobClient: jest.fn().mockImplementation((filename) => {
+        if (filename === 'fileNameThatDoesNotExist') {
           return {
-            download: jest.fn().mockResolvedValue({ readableStreamBody: '' }),
-            getProperties: jest.fn().mockResolvedValue({ contentLength: 45 })
+            exists: jest.fn().mockResolvedValue(false),
+            create: jest.fn().mockResolvedValue(true),
+            appendBlock: mockAppendBlock
           }
-        })
+        } else {
+          return {
+            exists: jest.fn().mockResolvedValue(true),
+            appendBlock: mockAppendBlock
+          }
+        }
+      }),
+      getBlobClient: jest.fn().mockImplementation(() => {
+        return {
+          download: jest.fn().mockResolvedValue({ readableStreamBody: '' }),
+          getProperties: jest.fn().mockResolvedValue({ contentLength: 45 })
+        }
       })
     })
-  }
+  }))
 }))
 
 jest.mock('@azure/data-tables', () => ({
-  TableClient: {
-    fromConnectionString: jest.fn().mockReturnValue({
-      listEntities: jest.fn().mockReturnValue({
-        byPage: jest.fn().mockImplementation(() => {
-          let i = 0
-          return {
-            next: async () => {
-              if (i < mockYields.length) {
-                return { value: mockYields[i++], done: false }
-              }
-              return { value: undefined, done: true }
-            },
-            [Symbol.asyncIterator] () {
-              return this
+  TableClient: jest.fn().mockImplementation(() => ({
+    listEntities: jest.fn().mockReturnValue({
+      byPage: jest.fn().mockImplementation(() => {
+        let i = 0
+        return {
+          next: async () => {
+            if (i < mockYields.length) {
+              return { value: mockYields[i++], done: false }
             }
+            return { value: undefined, done: true }
+          },
+          [Symbol.asyncIterator] () {
+            return this
           }
-        })
+        }
       })
     })
-  },
+  })),
   odata: jest.fn()
 }))
 

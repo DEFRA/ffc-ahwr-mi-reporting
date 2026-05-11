@@ -2,7 +2,7 @@
 jest.mock('../../../ffc-ahwr-mi-reporting/config/config.js', () => ({
   containerName: 'reports',
   environment: 'testEnv',
-  connectionString: 'connectionString',
+  storageAccountName: 'storageAccountName',
   sharePoint: {
     dstFolder: 'dstFolder'
   },
