@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@azure/ai-form-recognizer": "^4.0.0",
-    "@azure/data-tables": "13.1.2",
+    "@azure/data-tables": "13.3.2",
     "@azure/identity": "^4.13.1",
     "@azure/storage-blob": "^12.13.0",
     "@hapi/wreck": "^18.0.1",
@@ -38,7 +38,8 @@
     "node-fetch": "^2.6.7",
     "axios": "^1.8.2",
     "semver": "^7.5.2",
-    "uuid": "14.0.0"
+    "uuid": "14.0.0",
+    "fast-xml-builder": "^1.2.0"
   },
   "devDependencies": {
     "@babel/core": "7.27.4",
