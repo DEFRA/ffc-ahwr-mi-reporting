@@ -75,7 +75,7 @@ const processEntitiesByTimestampPaged = async (fileName, context) => {
       }
 
       try {
-        const csvRow = await transformEventToCsvV3(event, context)
+        const csvRow = transformEventToCsvV3(event, context)
         rowContent += csvRow + '\n'
         eventItemCount++
       } catch (err) {
