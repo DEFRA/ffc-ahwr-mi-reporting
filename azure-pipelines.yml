@@ -101,7 +101,6 @@ stages:
                       -WEBSITE_RUN_FROM_PACKAGE 1
                       -ENVIRONMENT snd2
                       -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
-                      -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
                       -PAGE_SIZE "$(PAGE_SIZE)"
                       -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
                       -SHAREPOINT_TENANT_ID "$(SHAREPOINT_TENANT_ID)"
@@ -112,6 +111,7 @@ stages:
                       -SHAREPOINT_DOCUMENT_LIBRARY "$(SHAREPOINT_DOCUMENT_LIBRARY)"
                       -SHAREPOINT_DST_FOLDER "$(SHAREPOINT_DST_FOLDER)"
                       -APPLICATIONINSIGHTS_CONNECTION_STRING "$(APPLICATIONINSIGHTS_CONNECTION_STRING)"
+                      -STORAGE_ACCOUNT_NAME "$(STORAGE_ACCOUNT_NAME)"
 
   # ─── DEV ────────────────────────────────────────────────────────────────────
   - stage: Deploy_DEV
@@ -145,7 +145,6 @@ stages:
                       -WEBSITE_RUN_FROM_PACKAGE 1
                       -ENVIRONMENT dev
                       -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
-                      -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
                       -PAGE_SIZE "$(PAGE_SIZE)"
                       -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
                       -SHAREPOINT_TENANT_ID "$(SHAREPOINT_TENANT_ID)"
@@ -156,6 +155,7 @@ stages:
                       -SHAREPOINT_DOCUMENT_LIBRARY "$(SHAREPOINT_DOCUMENT_LIBRARY)"
                       -SHAREPOINT_DST_FOLDER "$(SHAREPOINT_DST_FOLDER)"
                       -APPLICATIONINSIGHTS_CONNECTION_STRING "$(APPLICATIONINSIGHTS_CONNECTION_STRING)"
+                      -STORAGE_ACCOUNT_NAME "$(STORAGE_ACCOUNT_NAME)"
 
   # ─── TEST ───────────────────────────────────────────────────────────────────
   - stage: Deploy_TEST
@@ -189,7 +189,6 @@ stages:
                       -WEBSITE_RUN_FROM_PACKAGE 1
                       -ENVIRONMENT test
                       -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
-                      -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
                       -PAGE_SIZE "$(PAGE_SIZE)"
                       -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
                       -SHAREPOINT_TENANT_ID "$(SHAREPOINT_TENANT_ID)"
@@ -200,7 +199,7 @@ stages:
                       -SHAREPOINT_DOCUMENT_LIBRARY "$(SHAREPOINT_DOCUMENT_LIBRARY)"
                       -SHAREPOINT_DST_FOLDER "$(SHAREPOINT_DST_FOLDER)"
                       -APPLICATIONINSIGHTS_CONNECTION_STRING "$(APPLICATIONINSIGHTS_CONNECTION_STRING)"
-
+                      -STORAGE_ACCOUNT_NAME "$(STORAGE_ACCOUNT_NAME)"
   # ─── PRE ────────────────────────────────────────────────────────────────────
   - stage: Deploy_PRE
     displayName: 'Deploy to PRE'
@@ -233,7 +232,6 @@ stages:
                       -WEBSITE_RUN_FROM_PACKAGE 1
                       -ENVIRONMENT pre
                       -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
-                      -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
                       -PAGE_SIZE "$(PAGE_SIZE)"
                       -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
                       -SHAREPOINT_TENANT_ID "$(SHAREPOINT_TENANT_ID)"
@@ -244,7 +242,7 @@ stages:
                       -SHAREPOINT_DOCUMENT_LIBRARY "$(SHAREPOINT_DOCUMENT_LIBRARY)"
                       -SHAREPOINT_DST_FOLDER "$(SHAREPOINT_DST_FOLDER)"
                       -APPLICATIONINSIGHTS_CONNECTION_STRING "$(APPLICATIONINSIGHTS_CONNECTION_STRING)"
-
+                      -STORAGE_ACCOUNT_NAME "$(STORAGE_ACCOUNT_NAME)"
   # ─── PRD ────────────────────────────────────────────────────────────────────
   - stage: Deploy_PRD
     displayName: 'Deploy to PRD'
@@ -277,7 +275,6 @@ stages:
                       -WEBSITE_RUN_FROM_PACKAGE 1
                       -ENVIRONMENT prd
                       -AzureWebJobsStorage "$(AZURE_WEB_JOBS_STORAGE)"
-                      -STORAGE_CONNECTION_STRING "$(STORAGE_CONNECTION_STRING)"
                       -PAGE_SIZE "$(PAGE_SIZE)"
                       -SHAREPOINT_ENABLED "$(SHAREPOINT_ENABLED)"
                       -SHAREPOINT_TENANT_ID "$(SHAREPOINT_TENANT_ID)"
@@ -288,3 +285,5 @@ stages:
                       -SHAREPOINT_DOCUMENT_LIBRARY "$(SHAREPOINT_DOCUMENT_LIBRARY)"
                       -SHAREPOINT_DST_FOLDER "$(SHAREPOINT_DST_FOLDER)"
                       -APPLICATIONINSIGHTS_CONNECTION_STRING "$(APPLICATIONINSIGHTS_CONNECTION_STRING)"
+                      -STORAGE_ACCOUNT_NAME "$(STORAGE_ACCOUNT_NAME)"
+

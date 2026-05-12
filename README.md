@@ -47,7 +47,7 @@ Each group must contain the following variables. Mark secrets with the lock icon
 | Variable | Secret | Description |
 |---|---|---|
 | `AZURE_WEB_JOBS_STORAGE` | Yes | Storage account connection string used by the Azure Functions runtime (`AzureWebJobsStorage`) |
-| `STORAGE_CONNECTION_STRING` | Yes | Connection string for the app's blob and table storage account |
+| `STORAGE_ACCOUNT_NAME` | No | Storage account name which contains blobs and tables |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | Yes | Application Insights connection string |
 | `SHAREPOINT_CLIENT_SECRET` | Yes | SharePoint app registration client secret |
 | `SHAREPOINT_ENABLED` | No | Feature toggle — `true` or `false` |
