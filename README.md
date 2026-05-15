@@ -75,6 +75,59 @@ Service connections are hardcoded per stage in `azure-pipelines.yml`:
 
 Ensure each service connection has been granted access to the pipeline under **Project Settings → Service connections → [connection name] → Security**.
 
+## Testing
+
+### Unit tests
+
+Unit tests do not require any external services and can be run directly:
+
+```bash
+npm test
+```
+
+### Integration tests
+
+Integration tests run the full pipeline end-to-end against a real [Azurite](https://github.com/Azure/Azurite) instance (Azure Storage emulator). Docker must be running before executing them.
+
+Before running, set up your local environment:
+
+```bash
+cp .env.example .env
+```
+
+Then populate `AZURITE_KEY` in `.env` by retrieving it from the running Azurite container:
+
+```bash
+docker compose up -d
+docker ps                     # find the Azurite container name
+docker exec <azurite-container-name> node -e "const c = require('/usr/local/lib/node_modules/azurite/dist/src/common/utils/constants.js'); process.stdout.write(Buffer.from(c.EMULATOR_ACCOUNT_KEY).toString('base64'))"
+```
+
+Copy the output into your `.env` file as the value for `AZURITE_KEY`, then run:
+
+```bash
+npm run test:integration
+docker compose down
+```
+
+Azurite runs on the following ports (mapped in `docker-compose.yaml`):
+
+| Service | Host port |
+|---------|-----------|
+| Blob | 10005 |
+| Queue | 10006 |
+| Table | 10007 |
+
+The following environment variables can be used to override the defaults:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `AZURITE_KEY` | none — required | Azurite account key retrieved from the container |
+| `AZURITE_ACCOUNT` | `devstoreaccount1` | Azurite account name |
+| `AZURITE_HOST` | `127.0.0.1` | Azurite host |
+| `AZURITE_BLOB_PORT` | `10005` | Azurite blob service port |
+| `AZURITE_TABLE_PORT` | `10007` | Azurite table service port |
+
 ## Local development
 In order to assist with local development you can trigger the reports to run every minute.
 

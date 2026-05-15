@@ -11,7 +11,20 @@ let containersInitialised
 let appendBlobClient
 
 const EVENT_YEAR_START = 2022
-const EVENT_TYPES_NOT_NEEDED_BY_REPORTING_TEAM = ['tokens-nonce', 'tokens-state', 'pkcecodes-verifier']
+const EVENT_TYPES_NOT_NEEDED_BY_REPORTING_TEAM = new Set(['tokens-nonce', 'tokens-state', 'pkcecodes-verifier'])
+
+/** @param {any} event @param {any} context */
+const transformEvent = (event, context) => {
+  try {
+    return transformEventToCsvV3(event, context)
+  } catch (err) {
+    context.log.error('Failed to transform event to csv.', {
+      error: /** @type {Error} */ (err).message,
+      event
+    })
+    return undefined
+  }
+}
 
 const initialiseContainers = async (context) => {
   if (!containersInitialised) {
@@ -70,19 +83,14 @@ const processEntitiesByTimestampPaged = async (fileName, context) => {
     let rowContent = ''
 
     for await (const event of eventsPage) {
-      if (EVENT_TYPES_NOT_NEEDED_BY_REPORTING_TEAM.includes(event.EventType)) {
+      if (EVENT_TYPES_NOT_NEEDED_BY_REPORTING_TEAM.has(event.EventType)) {
         continue // skip to next event
       }
 
-      try {
-        const csvRow = transformEventToCsvV3(event, context)
+      const csvRow = transformEvent(event, context)
+      if (csvRow !== undefined) {
         rowContent += csvRow + '\n'
         eventItemCount++
-      } catch (err) {
-        context.log.error('Failed to transform event to csv.', {
-          error: err.message,
-          event
-        })
       }
     }
 

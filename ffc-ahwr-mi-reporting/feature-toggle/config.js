@@ -29,7 +29,7 @@ function buildFeatureToggleConfig () {
     )
   }
 
-  return config
+  return result.value
 }
 
 module.exports = buildFeatureToggleConfig()

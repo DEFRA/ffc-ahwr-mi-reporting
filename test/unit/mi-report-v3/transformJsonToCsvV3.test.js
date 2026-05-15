@@ -96,7 +96,7 @@ describe('transformEventToCsvV3', () => {
           data: JSON.parse('{ "applicationReference": "IAHW-414E-A563", "reference": "FUSH-847A-8D52", "updatedProperty": "sheepTestResults", "newValue": [{"result": "clinicalSymptomsPresent", "diseaseType": "liverFluke"}], "oldValue": [{"result": "clinicalSymptomsNotPresent", "diseaseType": "liverFluke"}], "note": "Test result manually amended from Liverfluke (symptoms not present) to Liverfluke (symptoms present)"}')
         })
       }
-      const resultAsColVals = (transformEventToCsvV3(event, mockContext)).split(',')
+      const resultAsColVals = (transformEventToCsvV3(event, mockContext) ?? '').split(',')
 
       const sheepResultValue = resultAsColVals[44]
       expect(sheepResultValue).toBe('liverFluke  result clinicalSymptomsPresent')
@@ -113,7 +113,7 @@ describe('transformEventToCsvV3', () => {
         Payload: '{"type":"tempReference-[object Object]","message":"Session set for tempReference and [object Object].","data":{"reference":"IAHW-K9XY-SGYI","[object Object]":"TEMP-K9XY-SGYI","ip":"40.81.156.55"},"raisedBy":"nobody@noone.com.test","raisedOn":"2025-02-11T11:44:41.319Z"}'
       }
 
-      const resultAsColVals = (transformEventToCsvV3(event, mockContext)).split(',')
+      const resultAsColVals = (transformEventToCsvV3(event, mockContext) ?? '').split(',')
 
       const eventTypeValue = resultAsColVals[2]
       const messageValue = resultAsColVals[3]
@@ -135,7 +135,7 @@ describe('transformEventToCsvV3', () => {
         Payload: '{"type":"tempReference-tempReference","message":"Session set for tempReference and tempReference.","data":{"reference":"IAHW-K9XY-SGYI","tempReference":"TEMP-K9XY-SGYI","ip":"40.81.156.55"},"raisedBy":"nobody@noone.com.test","raisedOn":"2025-02-11T11:44:41.319Z"}'
       }
 
-      const resultAsColVals = (transformEventToCsvV3(event, mockContext)).split(',')
+      const resultAsColVals = (transformEventToCsvV3(event, mockContext) ?? '').split(',')
 
       const eventTypeValue = resultAsColVals[2]
       const messageValue = resultAsColVals[3]
@@ -320,5 +320,74 @@ describe('buildColumns', () => {
   test('it does not show poultry columns when poultry is enabled and date is in the future', () => {
     config.poultryReleaseDate = new Date('9999-04-25').toISOString()
     expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns, ...multiHerdsColumns, ...pigUpdatesColumns, ...pigsAndPaymentsColumns])
+  })
+
+  test('it returns the correct columns when poultryReleaseDate is today', () => {
+    config.poultryReleaseDate = new Date().toISOString()
+    expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns, ...multiHerdsColumns, ...pigUpdatesColumns, ...pigsAndPaymentsColumns, ...poultryColumns])
+  })
+
+  test('it returns the exact poultry column name strings when poultryReleaseDate is set', () => {
+    config.poultryReleaseDate = new Date('2025-04-25').toISOString()
+    const columns = buildColumns()
+    expect(columns).toContain('schemeType')
+    expect(columns).toContain('typesOfPoultry')
+    expect(columns).toContain('biosecurityChanges')
+    expect(columns).toContain('biosecurityChangesCost')
+    expect(columns).toContain('biosecurityUsefulness')
+    expect(columns).toContain('schemeExperienceInterview')
+  })
+})
+
+describe('poultry field column mapping', () => {
+  /** @param {string} csvRow @param {string} columnName */
+  const getColumnValue = (csvRow, columnName) => {
+    const columns = buildColumns()
+    const index = columns.indexOf(columnName)
+    return csvRow.split(',')[index]
+  }
+
+  /** @param {string} uuid @param {string} fieldName @param {string} fieldValue */
+  const makePoultryEvent = (uuid, fieldName, fieldValue) => ({
+    partitionKey: '123456789',
+    SessionId: uuid,
+    EventType: `claim-${fieldName}`,
+    EventRaised: new Date().toISOString(),
+    Payload: JSON.stringify({
+      type: `claim-${fieldName}`,
+      message: `Session set for claim and ${fieldName}.`,
+      data: { [fieldName]: fieldValue },
+      raisedBy: 'test@test.com',
+      raisedOn: '2026-04-28T14:50:31.444Z'
+    })
+  })
+
+  beforeEach(() => {
+    config.poultryReleaseDate = new Date('2025-04-25').toISOString()
+  })
+
+  test('typesOfPoultry value maps to the correct column', () => {
+    const result = transformEventToCsvV3(makePoultryEvent(randomUUID(), 'typesOfPoultry', 'broilers'), mockContext)
+    expect(getColumnValue(result ?? '', 'typesOfPoultry')).toBe('broilers')
+  })
+
+  test('biosecurityChanges value maps to the correct column', () => {
+    const result = transformEventToCsvV3(makePoultryEvent(randomUUID(), 'biosecurityChanges', 'yes'), mockContext)
+    expect(getColumnValue(result ?? '', 'biosecurityChanges')).toBe('yes')
+  })
+
+  test('biosecurityChangesCost value maps to the correct column', () => {
+    const result = transformEventToCsvV3(makePoultryEvent(randomUUID(), 'biosecurityChangesCost', '500'), mockContext)
+    expect(getColumnValue(result ?? '', 'biosecurityChangesCost')).toBe('500')
+  })
+
+  test('biosecurityUsefulness value maps to the correct column', () => {
+    const result = transformEventToCsvV3(makePoultryEvent(randomUUID(), 'biosecurityUsefulness', 'veryUseful'), mockContext)
+    expect(getColumnValue(result ?? '', 'biosecurityUsefulness')).toBe('veryUseful')
+  })
+
+  test('schemeExperienceInterview value maps to the correct column', () => {
+    const result = transformEventToCsvV3(makePoultryEvent(randomUUID(), 'schemeExperienceInterview', 'positive'), mockContext)
+    expect(getColumnValue(result ?? '', 'schemeExperienceInterview')).toBe('positive')
   })
 })
