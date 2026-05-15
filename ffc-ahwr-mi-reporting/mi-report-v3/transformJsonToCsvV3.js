@@ -1,4 +1,4 @@
-const { statusToString, statusToId } = require('../utils/statusHelpers')
+const { statusToString, statusToId, IN_CHECK_STATUS_ID } = require('../utils/statusHelpers')
 const {
   arrayToString,
   getReferenceFromNestedData,
@@ -152,7 +152,7 @@ const isPoultryEnabled = () => {
 }
 
 const resolveRowStatus = (statusId, subStatus, type) => {
-  if (subStatus && statusId === 5) {
+  if (subStatus && statusId === IN_CHECK_STATUS_ID) {
     const subStatusId = statusToId(subStatus)
     return { rowStatusId: subStatusId, rowType: type.replace(/.$/, subStatusId) }
   }

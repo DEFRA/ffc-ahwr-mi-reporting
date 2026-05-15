@@ -1,3 +1,5 @@
+const IN_CHECK_STATUS_ID = 5
+
 const statusToString = (statusId) => {
   const statusMapping = {
     1: 'AGREED',
@@ -29,5 +31,6 @@ const statusToId = (statusName) => {
 
 module.exports = {
   statusToString,
-  statusToId
+  statusToId,
+  IN_CHECK_STATUS_ID
 }
