@@ -1,11 +1,4 @@
-trigger:
-  branches:
-    include:
-      - main
-  paths:
-    exclude:
-      - '*.md'
-      - 'docs/**'
+trigger: none # NOTE Disabled as we are using the existing ADO deployment pipeline as per AHWR-1842
 
 pr: none
 
