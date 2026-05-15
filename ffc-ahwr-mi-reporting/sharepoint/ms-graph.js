@@ -40,7 +40,7 @@ const getDriveId = async (siteId, accessToken, context) => {
     throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
   }
   const drive = response.payload.value.find(drive => drive.name === config.sharePoint.documentLibrary)
-  if (typeof drive === 'undefined') {
+  if (drive === undefined) {
     throw new Error(`No drive found: ${JSON.stringify({ name: config.sharePoint.documentLibrary })}`)
   }
   return drive.id
