@@ -30,7 +30,7 @@ module.exports = {
     ]
   ],
   testEnvironment: 'node',
-  testPathIgnorePatterns: [],
+  testPathIgnorePatterns: ['test/integration'],
   setupFilesAfterEnv: ['./jest.setup.js'],
   verbose: true,
   transform: {

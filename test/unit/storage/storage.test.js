@@ -6,7 +6,7 @@ const {
 const {
   transformEventToCsvV3,
   buildColumns
-} = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
+} = /** @type {any} */ (require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3'))
 const mockContext = require('../../mock/mock-context')
 const {
   transformEventToCsvV3: actualTransformEventToCsvV3
@@ -177,6 +177,7 @@ describe('Storage', () => {
 
   describe('processEntitiesByTimestampPaged', () => {
     test('should process successfully when file already exists', async () => {
+      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3)
       await processEntitiesByTimestampPaged('fileName', mockContext)
 
       expect(consoleSpy).toHaveBeenCalledWith('Page 1 and 4 event items written to append blob')
@@ -184,6 +185,7 @@ describe('Storage', () => {
     })
 
     test('should process successfully when file does not exists', async () => {
+      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3)
       buildColumns.mockImplementation(() => ['someColumn', 'anotherColumn'])
       await processEntitiesByTimestampPaged('fileNameThatDoesNotExist', mockContext)
 
@@ -248,6 +250,31 @@ describe('Storage', () => {
       }
 
       expect(rows).not.toContain('tokens-nonce')
+    })
+
+    test('should not write "undefined" to csv when transform returns undefined', async () => {
+      transformEventToCsvV3.mockImplementationOnce(() => undefined)
+      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3)
+
+      await processEntitiesByTimestampPaged('fileName', mockContext)
+
+      const rows = mockAppendBlock.mock.calls.map(([rowContent]) => rowContent).join('\n')
+      expect(rows).not.toContain('undefined')
+    })
+
+    test('should not append block when all events in a page return undefined from transform', async () => {
+      mockYields = [
+        [{
+          Payload: '',
+          EventType: 'farmerApplyData-organisation'
+        }]
+      ]
+      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3)
+
+      await processEntitiesByTimestampPaged('fileName', mockContext)
+
+      expect(mockAppendBlock).not.toHaveBeenCalled()
+      expect(mockContext.log.info).toHaveBeenCalledWith('Page 1 was not written to csv, no rowContent produced for eventsPage')
     })
 
     test('should not append block to the csv file when all events are filtered (deemed unnecessary)', async () => {
