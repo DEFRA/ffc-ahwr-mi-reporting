@@ -1,4 +1,4 @@
-const { statusToString, statusToId } = require('../utils/statusHelpers')
+const { statusToString, statusToId, IN_CHECK_STATUS_ID } = require('../utils/statusHelpers')
 const {
   arrayToString,
   getReferenceFromNestedData,
@@ -151,6 +151,14 @@ const isPoultryEnabled = () => {
   return new Date() >= new Date(config.poultryReleaseDate)
 }
 
+const resolveRowStatus = (statusId, subStatus, type) => {
+  if (subStatus && statusId === IN_CHECK_STATUS_ID) {
+    const subStatusId = statusToId(subStatus)
+    return { rowStatusId: subStatusId, rowType: type.replace(/.$/, subStatusId) }
+  }
+  return { rowStatusId: statusId, rowType: type }
+}
+
 // Function to transform event data to CSV row format
 function transformEventToCsvV3 (event, context) {
   if (!event) {
@@ -256,17 +264,7 @@ function transformEventToCsvV3 (event, context) {
   const invalidClaimData = type?.endsWith('-invalid') ? invalidClaimDataToString(data) : ''
   const sheepTestsString = sheepTests ? arrayToString(sheepTests) : ''
   const sheepTestResultsString = parseSheepTestResults(sheepTestResults, updatedProperty, newValue)
-  const isSubStatus = subStatus && statusId === 5
-
-  let rowStatusId
-  let rowType
-  if (isSubStatus) {
-    rowStatusId = statusToId(subStatus)
-    rowType = type.replace(/.$/, statusToId(subStatus))
-  } else {
-    rowStatusId = statusId
-    rowType = type
-  }
+  const { rowStatusId, rowType } = resolveRowStatus(statusId, subStatus, type)
 
   const flagData = getData(flagId, flagDetail, flagAppliesToMh, deletedNote)
   const herdData = getData(

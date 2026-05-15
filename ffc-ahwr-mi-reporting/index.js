@@ -1,6 +1,6 @@
 const buildAhwrMiReport = require('./mi-report-v3')
 
-module.exports = async (context, miReportTimer) => {
+async function runMiReport (context, miReportTimer) {
   const timeStamp = new Date().toISOString()
   context.log('MI Report timer trigger function started', timeStamp)
 
@@ -19,3 +19,5 @@ module.exports = async (context, miReportTimer) => {
 
   context.log('MI Report timer trigger function ran', timeStamp)
 }
+
+module.exports = runMiReport
