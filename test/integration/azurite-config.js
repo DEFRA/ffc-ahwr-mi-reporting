@@ -1,7 +1,7 @@
-const host = process.env.AZURITE_HOST || '127.0.0.1'
-const blobPort = process.env.AZURITE_BLOB_PORT || '10005'
-const tablePort = process.env.AZURITE_TABLE_PORT || '10007'
-const account = process.env.AZURITE_ACCOUNT || 'devstoreaccount1'
+const host = process.env.AZURITE_HOST ?? '127.0.0.1'
+const blobPort = process.env.AZURITE_BLOB_PORT ?? '10005'
+const tablePort = process.env.AZURITE_TABLE_PORT ?? '10007'
+const account = process.env.AZURITE_ACCOUNT ?? 'devstoreaccount1'
 const key = process.env.AZURITE_KEY
 
 if (!key) {
