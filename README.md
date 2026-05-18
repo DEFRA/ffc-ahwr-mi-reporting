@@ -129,8 +129,53 @@ The following environment variables can be used to override the defaults:
 | `AZURITE_TABLE_PORT` | `10007` | Azurite table service port |
 
 ## Local development
-In order to assist with local development you can trigger the reports to run every minute.
 
-In `function.json`, replace `"schedule": "0 0 6 * * *"` with `"schedule": "0 * * * * *"`.
+### Prerequisites
 
-For different time triggers find this helpful website: [https://crontab.guru/](https://crontab.guru/).
+1. **Azure Functions Core Tools v4** — the `func` CLI.
+   ```
+   brew tap azure/functions
+   brew install azure-functions-core-tools@4
+   ```
+2. **Docker** — to run Azurite (the local storage emulator). `local.settings.json` is already wired to `127.0.0.1:10005-10007`, matching `docker-compose.yaml`. Azurite only serves `AzureWebJobsStorage` (the Functions host's own bookkeeping — timer leases, etc.); it is **not** the source of the report data, which is read directly from a real Azure Storage account.
+3. **Azure CLI** — install `az` and run `az login`. The application's storage clients use `DefaultAzureCredential`, which picks up your Azure CLI credentials locally. Your signed-in user needs **Storage Blob Data Contributor** and **Storage Table Data Contributor** on the target storage account.
+
+### Steps
+
+1. **Start Azurite**
+   ```
+   docker compose up -d
+   ```
+
+2. **Install dependencies**
+   ```
+   npm install
+   ```
+
+3. **Sign in to Azure**
+   ```
+   az login
+   az account set --subscription <subscription-id>
+   ```
+   Use the subscription that holds the dev/snd2 storage account you intend to point at.
+
+4. **Populate `local.settings.json`** with the env vars listed in the [Variable Groups](#variable-groups) table above. Set `STORAGE_ACCOUNT_NAME` to a real dev storage account that already contains the `ahwreventstore` table — events are read from there, not from Azurite. For local runs that don't write to SharePoint, set `SHAREPOINT_ENABLED=false`. `APPLICATIONINSIGHTS_CONNECTION_STRING` can be a dummy value.
+
+5. **Start the function host**
+   ```
+   npm start
+   ```
+   Runs `func start -p 7081 --verbose`. Watch for the `MI Report timer trigger function started` log line.
+
+### Triggering the function
+
+The function is timer-triggered with a daily cron (`0 0 6 * * *`). For local testing you have two options:
+
+- **Manual admin invoke (recommended)** — fires the function on demand without editing any files:
+  ```
+  curl -X POST http://localhost:7081/admin/functions/ffc-ahwr-mi-reporting \
+    -H 'Content-Type: application/json' \
+    -d '{}'
+  ```
+
+- **Edit the cron** — in `ffc-ahwr-mi-reporting/function.json`, temporarily replace `"schedule": "0 0 6 * * *"` with `"schedule": "0 * * * * *"` to run every minute. Don't commit this change. For other intervals see [crontab.guru](https://crontab.guru/).
