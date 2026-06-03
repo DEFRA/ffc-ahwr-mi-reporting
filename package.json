@@ -3,6 +3,9 @@
   "version": "0.18.0",
   "description": "Azure Function to create MI reports",
   "author": "Defra",
+  "engines": {
+    "npm": ">=11.10.0"
+  },
   "scripts": {
     "lint": "standard",
     "lint:fix": "standard --fix",
