@@ -12,6 +12,6 @@ module.exports = {
     }]
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(ffc-ahwr-common-library|uuid|@azure|@azure/data-tables|@azure/storage-blob)/)'
+    '/node_modules/(?!(uuid|@azure|@azure/data-tables|@azure/storage-blob)/)'
   ]
 }
