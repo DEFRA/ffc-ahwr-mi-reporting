@@ -26,7 +26,6 @@
     "@azure/storage-blob": "^12.13.0",
     "@hapi/wreck": "^18.0.1",
     "@pnp/nodejs-commonjs": "^2.15.0",
-    "applicationinsights": "^2.9.1",
     "joi": "17.13.3",
     "moment": "2.29.4"
   },
