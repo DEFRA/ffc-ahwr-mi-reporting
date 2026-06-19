@@ -8,6 +8,7 @@
   },
   "scripts": {
     "lint": "standard",
+    "lint:deps": "knip --production --include dependencies,unlisted,unresolved",
     "lint:fix": "standard --fix",
     "start": "func start -p 7081 --verbose",
     "start:detached": "func start -p 7081 1> /dev/null 2> /dev/null &",
@@ -19,29 +20,21 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@azure/ai-form-recognizer": "^4.0.0",
     "@azure/data-tables": "13.3.2",
     "@azure/identity": "^4.13.1",
     "@azure/storage-blob": "^12.13.0",
     "@hapi/wreck": "^18.0.1",
     "@pnp/nodejs-commonjs": "^2.15.0",
-    "applicationinsights": "^2.9.1",
-    "ffc-ahwr-common-library": "^3.7.2",
-    "joi": "17.13.3",
+    "joi": "18.2.1",
     "moment": "2.29.4"
   },
   "overrides": {
-    "@pnp/nodejs-commonjs": {
-      "@azure/msal-node": "^2.9.2"
-    },
     "adal-node": {
       "axios": "^1.8.2"
     },
     "jsonwebtoken": "^9.0.0",
     "node-fetch": "^2.6.7",
-    "axios": "^1.8.2",
-    "semver": "^7.5.2",
-    "fast-xml-builder": "^1.2.0"
+    "form-data": "^4.0.6"
   },
   "devDependencies": {
     "@babel/core": "7.27.4",
@@ -54,6 +47,7 @@
     "jest": "29.7.0",
     "jest-junit": "17.0.0",
     "jest-when": "^3.6.0",
+    "knip": "6.16.1",
     "nano-staged": "1.0.2",
     "standard": "17.0.0"
   },
