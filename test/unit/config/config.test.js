@@ -1,5 +1,7 @@
 describe('config', () => {
-  const ORIGINAL_ENV = process.env
+  const baseEnv = {
+    STORAGE_ACCOUNT_NAME: 'account-name'
+  }
   const FEATURE_TOGGLE_PATH = '../../../ffc-ahwr-mi-reporting/feature-toggle/config'
   const SHAREPOINT_CONFIG_PATH = '../../../ffc-ahwr-mi-reporting/sharepoint/config'
   const CONFIG_PATH = '../../../ffc-ahwr-mi-reporting/config/config'
@@ -12,20 +14,21 @@ describe('config', () => {
 
   beforeEach(() => {
     jest.resetModules()
-    process.env = { ...ORIGINAL_ENV }
-    process.env.STORAGE_ACCOUNT_NAME = 'account-name'
-    delete process.env.ENVIRONMENT
-    delete process.env.PAGE_SIZE
+    jest.replaceProperty(process, 'env', {
+      ...baseEnv
+    })
   })
 
   afterAll(() => {
-    process.env = ORIGINAL_ENV
+    jest.restoreAllMocks()
   })
 
   test('returns a fully populated config when all env vars are valid', () => {
-    process.env.STORAGE_ACCOUNT_NAME = 'account-name'
-    process.env.ENVIRONMENT = 'test'
-    process.env.PAGE_SIZE = '500'
+    jest.replaceProperty(process, 'env', {
+      STORAGE_ACCOUNT_NAME: 'account-name',
+      ENVIRONMENT: 'test',
+      PAGE_SIZE: '500'
+    })
     mockFeatureToggle(false)
 
     const config = require(CONFIG_PATH)
@@ -42,7 +45,9 @@ describe('config', () => {
   })
 
   test('throws when STORAGE_ACCOUNT_NAME is missing', () => {
-    delete process.env.STORAGE_ACCOUNT_NAME
+    jest.replaceProperty(process, 'env', {
+      STORAGE_ACCOUNT_NAME: undefined
+    })
     mockFeatureToggle(false)
 
     expect(() => require(CONFIG_PATH)).toThrow(/The config is invalid: "storageAccountName" is required/)
@@ -65,7 +70,11 @@ describe('config', () => {
   })
 
   test('coerces a numeric string PAGE_SIZE to a number', () => {
-    process.env.PAGE_SIZE = '250'
+    jest.replaceProperty(process, 'env', {
+      STORAGE_ACCOUNT_NAME: 'account-name',
+      PAGE_SIZE: '250'
+    })
+
     mockFeatureToggle(false)
 
     const config = require(CONFIG_PATH)
@@ -74,14 +83,22 @@ describe('config', () => {
   })
 
   test('throws when PAGE_SIZE is not numeric', () => {
-    process.env.PAGE_SIZE = 'abc'
+    jest.replaceProperty(process, 'env', {
+      STORAGE_ACCOUNT_NAME: 'account-name',
+      PAGE_SIZE: 'abc'
+    })
+
     mockFeatureToggle(false)
 
     expect(() => require(CONFIG_PATH)).toThrow(/"pageSize" must be a number/)
   })
 
   test('throws when PAGE_SIZE is below the minimum', () => {
-    process.env.PAGE_SIZE = '0'
+    jest.replaceProperty(process, 'env', {
+      ...baseEnv,
+      PAGE_SIZE: '0'
+    })
+
     mockFeatureToggle(false)
 
     expect(() => require(CONFIG_PATH)).toThrow(/"pageSize" must be greater than or equal to 1/)
