@@ -1,7 +1,7 @@
 const { TableClient, odata } = require('@azure/data-tables')
 const { BlobServiceClient } = require('@azure/storage-blob')
 const { DefaultAzureCredential } = require('@azure/identity')
-const { containerName, tableName, pageSize, storageAccountName } = require('../config/config')
+const { connectionString, containerName, tableName, pageSize, storageAccountName } = require('../config/config')
 const { transformEventToCsvV3, buildColumns } = require('../mi-report-v3/transformJsonToCsvV3')
 
 let tableClient
@@ -35,19 +35,30 @@ const initialiseContainers = async (context) => {
 }
 
 const connect = async (context) => {
-  context.log.info(`Connecting to storage with connectionString containerName ${containerName} tableName ${tableName}`)
-  blobServiceClient = new BlobServiceClient(
-    `https://${storageAccountName}.blob.core.windows.net`,
-    new DefaultAzureCredential()
-  )
+  const authMethod = connectionString ? 'connectionString' : 'storageAccountName'
+  context.log.info(`Connecting to storage with ${authMethod} containerName ${containerName} tableName ${tableName}`)
+
+  if (connectionString) {
+    blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
+  } else {
+    blobServiceClient = new BlobServiceClient(
+      `https://${storageAccountName}.blob.core.windows.net`,
+      new DefaultAzureCredential()
+    )
+  }
   container = blobServiceClient.getContainerClient(containerName)
   await initialiseContainers(context)
-  tableClient = new TableClient(
-    `https://${storageAccountName}.table.core.windows.net`,
-    tableName,
-    new DefaultAzureCredential(),
-    { allowInsecureConnection: true }
-  )
+
+  if (connectionString) {
+    tableClient = TableClient.fromConnectionString(connectionString, tableName, { allowInsecureConnection: true })
+  } else {
+    tableClient = new TableClient(
+      `https://${storageAccountName}.table.core.windows.net`,
+      tableName,
+      new DefaultAzureCredential(),
+      { allowInsecureConnection: true }
+    )
+  }
 }
 
 const processEntitiesByTimestampPaged = async (fileName, context) => {
