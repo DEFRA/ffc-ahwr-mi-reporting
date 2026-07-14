@@ -33,7 +33,7 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe('123456,789123456,farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,')
+    expect(result).toBe('123456,789123456,farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,')
   })
 
   test('returns csv row with empty flag data when event provided', async () => {
@@ -48,7 +48,7 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe(`123456,${uuid},farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
+    expect(result).toBe(`123456,${uuid},farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
   })
 
   test('returns undefined when event contains invalid JSON in Payload field', async () => {
@@ -77,7 +77,7 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe('123456,789123456,application:status-updated:12,New stage execution has been created,AHWR-04DC-5073,,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,,,,,,,,,,,,,,,,,,,,,,,')
+    expect(result).toBe('123456,789123456,application:status-updated:12,New stage execution has been created,AHWR-04DC-5073,,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,,,,,,,,,,,,,,,,,,,,,,,,,,,,,')
   })
 
   describe('sheepTestResults', () => {
@@ -171,7 +171,7 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe(`123456,${uuid},application-flagged,Application flagged,,,,,,,,,,,,,,Jane Doe,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,b6b76548-bd6e-45b3-b137-05d930004c9b,Declined multi herds agreement,true,,,,,,,,,,,,,,,,,,,`)
+    expect(result).toBe(`123456,${uuid},application-flagged,Application flagged,,,,,,,,,,,,,,Jane Doe,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,b6b76548-bd6e-45b3-b137-05d930004c9b,Declined multi herds agreement,true,,,,,,,,,,,,,,,,,,,,,,,,,`)
   })
 
   test('returns csv row with multi herds data', async () => {
@@ -208,7 +208,7 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe(`123456,${uuid},herd-created,Herd created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,${tempHerdId},${herdId},1,Porkers,pigs,123456789,true,true,true,true,true,true,true,,,,,`)
+    expect(result).toBe(`123456,${uuid},herd-created,Herd created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,${tempHerdId},${herdId},1,Porkers,pigs,123456789,true,true,true,true,true,true,true,,,,,,,,,,,`)
   })
 
   test('returns some base information from the event when no data object is found in the payload', async () => {
@@ -228,7 +228,7 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe(`123456,${uuid},application-created,Application created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
+    expect(result).toBe(`123456,${uuid},application-created,Application created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
   })
 
   test('returns csv row with pig updates data', async () => {
@@ -253,7 +253,7 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe(`123456,${uuid},claim-pigsGeneticSequencing,Session set for claim and pigsGeneticSequencing.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Modified Live virus (MLV) only,,`)
+    expect(result).toBe(`123456,${uuid},claim-pigsGeneticSequencing,Session set for claim and pigsGeneticSequencing.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Modified Live virus (MLV) only,,,,,,,,`)
   })
 
   test('returns csv row with number of blood samples data', async () => {
@@ -278,7 +278,7 @@ describe('transformEventToCsvV3', () => {
 
     const result = transformEventToCsvV3(event, mockContext)
 
-    expect(result).toBe(`123456,${uuid},claim-numberOfBloodSamples,Session set for claim and numberOfBloodSamples.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30`)
+    expect(result).toBe(`123456,${uuid},claim-numberOfBloodSamples,Session set for claim and numberOfBloodSamples.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30,,,,,,`)
   })
 
   test('returns csv row with poultry data', async () => {
@@ -309,33 +309,7 @@ describe('transformEventToCsvV3', () => {
 describe('buildColumns', () => {
   test('it returns the correct columns', () => {
     config.poultryReleaseDate = undefined
-    expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns, ...multiHerdsColumns, ...pigUpdatesColumns, ...pigsAndPaymentsColumns])
-  })
-
-  test('it returns the correct columns when poultry is enabled and date is in the past', () => {
-    config.poultryReleaseDate = new Date('2025-04-25').toISOString()
     expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns, ...multiHerdsColumns, ...pigUpdatesColumns, ...pigsAndPaymentsColumns, ...poultryColumns])
-  })
-
-  test('it does not show poultry columns when poultry is enabled and date is in the future', () => {
-    config.poultryReleaseDate = new Date('9999-04-25').toISOString()
-    expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns, ...multiHerdsColumns, ...pigUpdatesColumns, ...pigsAndPaymentsColumns])
-  })
-
-  test('it returns the correct columns when poultryReleaseDate is today', () => {
-    config.poultryReleaseDate = new Date().toISOString()
-    expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns, ...multiHerdsColumns, ...pigUpdatesColumns, ...pigsAndPaymentsColumns, ...poultryColumns])
-  })
-
-  test('it returns the exact poultry column name strings when poultryReleaseDate is set', () => {
-    config.poultryReleaseDate = new Date('2025-04-25').toISOString()
-    const columns = buildColumns()
-    expect(columns).toContain('schemeType')
-    expect(columns).toContain('typesOfPoultry')
-    expect(columns).toContain('biosecurityChanges')
-    expect(columns).toContain('biosecurityChangesCost')
-    expect(columns).toContain('biosecurityUsefulness')
-    expect(columns).toContain('schemeExperienceInterview')
   })
 })
 

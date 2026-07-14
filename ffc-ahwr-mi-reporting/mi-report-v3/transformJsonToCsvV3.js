@@ -8,7 +8,6 @@ const {
   replaceCommasWithSpace, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources, getVisitDateFromPossibleSources, getTestResultFromPossibleSources, getUrnResultFromPossibleSources, getDateOfTestingFromPossibleSources
 } = require('../utils/parse-data')
 const { PIG_GENETIC_SEQUENCING_VALUES } = require('./pig-genetic-sequencing-values')
-const config = require('../feature-toggle/config')
 
 // Define the CSV column names
 const defaultColumns = [
@@ -125,7 +124,7 @@ const buildColumns = () => {
     ...multiHerdsColumns,
     ...pigUpdatesColumns,
     ...pigsAndPaymentsColumns,
-    ...(isPoultryEnabled() ? poultryColumns : [])
+    ...poultryColumns
   ]
 }
 
@@ -142,13 +141,6 @@ const formatPigsGeneticSequencing = (geneticSequencingResult) => {
     (keyValuePair) => keyValuePair.value === geneticSequencingResult).label
 
   return geneticSequencingLabel
-}
-
-const isPoultryEnabled = () => {
-  if (!config.poultryReleaseDate) {
-    return false
-  }
-  return new Date() >= new Date(config.poultryReleaseDate)
 }
 
 const resolveRowStatus = (statusId, subStatus, type) => {
@@ -283,8 +275,7 @@ function transformEventToCsvV3 (event, context) {
     herdReasonOther)
   const pigUpdatesData = [pigsElisaTestResult, pigsPcrTestResult, formatPigsGeneticSequencing(pigsGeneticSequencing)]
   const pigsAndPaymentsData = [typeOfSamplesTaken, numberOfBloodSamples]
-
-  const poultryData = isPoultryEnabled() ? [schemeType, typesOfPoultry, biosecurityChanges, biosecurityChangesCost, biosecurityUsefulness, schemeExperienceInterview] : []
+  const poultryData = [schemeType, typesOfPoultry, biosecurityChanges, biosecurityChangesCost, biosecurityUsefulness, schemeExperienceInterview]
 
   return [
     sbiFromPartitionKey,
