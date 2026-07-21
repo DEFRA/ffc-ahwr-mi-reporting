@@ -1,5 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": ["ffc-ahwr-mi-reporting/index.js!"],
-  "ignoreDependencies": []
+  "ignoreDependencies": [],
+  "project": ["ffc-ahwr-mi-reporting/**/*.js!"]
 }
