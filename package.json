@@ -8,7 +8,7 @@
   },
   "scripts": {
     "lint": "standard",
-    "lint:deps": "knip --production --include dependencies,unlisted,unresolved",
+    "lint:knip": "knip --production --exclude binaries,exports",
     "lint:fix": "standard --fix",
     "start": "func start -p 7081 --verbose",
     "start:detached": "func start -p 7081 1> /dev/null 2> /dev/null &",
