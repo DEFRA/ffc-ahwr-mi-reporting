@@ -1,172 +1,173 @@
-const { statusToString, statusToId } = require('../../../ffc-ahwr-mi-reporting/utils/statusHelpers')
+const {
+  statusToString,
+  statusToId,
+} = require("../../../ffc-ahwr-mi-reporting/utils/statusHelpers");
 
-describe('status to sting', () => {
+describe("status to sting", () => {
   test.each([
     {
-      toString: () => 'AGREED',
+      toString: () => "AGREED",
       given: {
-        statusId: 1
+        statusId: 1,
       },
       expect: {
-        status: 'AGREED'
-      }
+        status: "AGREED",
+      },
     },
     {
-      toString: () => 'WITHDRAWN',
+      toString: () => "WITHDRAWN",
       given: {
-        statusId: 2
+        statusId: 2,
       },
       expect: {
-        status: 'WITHDRAWN'
-      }
+        status: "WITHDRAWN",
+      },
     },
     {
-      toString: () => 'DATA INPUTTED',
+      toString: () => "DATA INPUTTED",
       given: {
-        statusId: 3
+        statusId: 3,
       },
       expect: {
-        status: 'DATA INPUTTED'
-      }
+        status: "DATA INPUTTED",
+      },
     },
     {
-      toString: () => 'CLAIMED',
+      toString: () => "CLAIMED",
       given: {
-        statusId: 4
+        statusId: 4,
       },
       expect: {
-        status: 'CLAIMED'
-      }
+        status: "CLAIMED",
+      },
     },
     {
-      toString: () => 'IN CHECK',
+      toString: () => "IN CHECK",
       given: {
-        statusId: 5
+        statusId: 5,
       },
       expect: {
-        status: 'IN CHECK'
-      }
+        status: "IN CHECK",
+      },
     },
     {
-      toString: () => 'ACCEPTED',
+      toString: () => "ACCEPTED",
       given: {
-        statusId: 6
+        statusId: 6,
       },
       expect: {
-        status: 'ACCEPTED'
-      }
+        status: "ACCEPTED",
+      },
     },
     {
-      toString: () => 'NOT AGREED',
+      toString: () => "NOT AGREED",
       given: {
-        statusId: 7
+        statusId: 7,
       },
       expect: {
-        status: 'NOT AGREED'
-      }
+        status: "NOT AGREED",
+      },
     },
     {
-      toString: () => 'PAID',
+      toString: () => "PAID",
       given: {
-        statusId: 8
+        statusId: 8,
       },
       expect: {
-        status: 'PAID'
-      }
+        status: "PAID",
+      },
     },
     {
-      toString: () => 'READY TO PAY',
+      toString: () => "READY TO PAY",
       given: {
-        statusId: 9
+        statusId: 9,
       },
       expect: {
-        status: 'READY TO PAY'
-      }
+        status: "READY TO PAY",
+      },
     },
     {
-      toString: () => 'REJECTED',
+      toString: () => "REJECTED",
       given: {
-        statusId: 10
+        statusId: 10,
       },
       expect: {
-        status: 'REJECTED'
-      }
+        status: "REJECTED",
+      },
     },
     {
-      toString: () => 'ON HOLD',
+      toString: () => "ON HOLD",
       given: {
-        statusId: 11
+        statusId: 11,
       },
       expect: {
-        status: 'ON HOLD'
-      }
+        status: "ON HOLD",
+      },
     },
     {
-      toString: () => 'RECOMMENDED TO PAY',
+      toString: () => "RECOMMENDED TO PAY",
       given: {
-        statusId: 12
+        statusId: 12,
       },
       expect: {
-        status: 'RECOMMENDED TO PAY'
-      }
+        status: "RECOMMENDED TO PAY",
+      },
     },
     {
-      toString: () => 'RECOMMENDED TO REJECT',
+      toString: () => "RECOMMENDED TO REJECT",
       given: {
-        statusId: 13
+        statusId: 13,
       },
       expect: {
-        status: 'RECOMMENDED TO REJECT'
-      }
+        status: "RECOMMENDED TO REJECT",
+      },
     },
     {
-      toString: () => 'OTHER',
+      toString: () => "OTHER",
       given: {
-        statusId: 14
+        statusId: 14,
       },
       expect: {
-        status: ''
-      }
-    }
-  ])('%s', async (testCase) => {
-    expect(
-      statusToString(testCase.given.statusId)
-    ).toEqual(testCase.expect.status)
-  })
-})
+        status: "",
+      },
+    },
+  ])("%s", async (testCase) => {
+    expect(statusToString(testCase.given.statusId)).toEqual(
+      testCase.expect.status,
+    );
+  });
+});
 
-describe('status to id', () => {
+describe("status to id", () => {
   test.each([
     {
-      toString: () => 'Recommend to pay',
+      toString: () => "Recommend to pay",
       expect: {
-        statusId: 12
+        statusId: 12,
       },
       given: {
-        status: 'Recommend to pay'
-      }
+        status: "Recommend to pay",
+      },
     },
     {
-      toString: () => 'Recommend to reject',
+      toString: () => "Recommend to reject",
       expect: {
-        statusId: 13
+        statusId: 13,
       },
       given: {
-        status: 'Recommend to reject'
-      }
+        status: "Recommend to reject",
+      },
     },
     {
-      toString: () => 'OTHER',
+      toString: () => "OTHER",
       expect: {
-        statusId: ''
+        statusId: "",
       },
       given: {
-        status: 'other'
-      }
-    }
-  ])('%s', async (testCase) => {
-    expect(
-      statusToId(testCase.given.status)
-    ).toEqual(testCase.expect.statusId)
-  })
-})
+        status: "other",
+      },
+    },
+  ])("%s", async (testCase) => {
+    expect(statusToId(testCase.given.status)).toEqual(testCase.expect.statusId);
+  });
+});

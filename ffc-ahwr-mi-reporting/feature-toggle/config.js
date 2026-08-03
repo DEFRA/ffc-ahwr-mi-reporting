@@ -1,35 +1,35 @@
-const Joi = require('joi')
+const Joi = require("joi");
 
-function buildFeatureToggleConfig () {
+function buildFeatureToggleConfig() {
   // Define config schema
   const schema = Joi.object({
     sharePoint: {
-      enabled: Joi.boolean().optional().default(false)
+      enabled: Joi.boolean().optional().default(false),
     },
-    poultryReleaseDate: Joi.string().optional()
-  })
+    poultryReleaseDate: Joi.string().optional(),
+  });
 
   // Build config
   const config = {
     sharePoint: {
-      enabled: process.env.SHAREPOINT_ENABLED
+      enabled: process.env.SHAREPOINT_ENABLED,
     },
-    poultryReleaseDate: process.env.POULTRY_RELEASE_DATE
-  }
+    poultryReleaseDate: process.env.POULTRY_RELEASE_DATE,
+  };
 
   // Validate config
   const result = schema.validate(config, {
-    abortEarly: false
-  })
+    abortEarly: false,
+  });
 
   // Throw if config is invalid
   if (result.error) {
     throw new Error(
-      `The feature toggle config is invalid: ${result.error.message}`
-    )
+      `The feature toggle config is invalid: ${result.error.message}`,
+    );
   }
 
-  return result.value
+  return result.value;
 }
 
-module.exports = buildFeatureToggleConfig()
+module.exports = buildFeatureToggleConfig();

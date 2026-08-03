@@ -1,329 +1,385 @@
-const config = require('../../../ffc-ahwr-mi-reporting/feature-toggle/config')
-const { transformEventToCsvV3, buildColumns, defaultColumns, flagColumns, multiHerdsColumns, pigUpdatesColumns, pigsAndPaymentsColumns, poultryColumns } = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
-const mockContext = require('../../mock/mock-context')
-const { randomUUID } = require('node:crypto')
+const config = require("../../../ffc-ahwr-mi-reporting/feature-toggle/config");
+const {
+  transformEventToCsvV3,
+  buildColumns,
+  defaultColumns,
+  flagColumns,
+  multiHerdsColumns,
+  pigUpdatesColumns,
+  pigsAndPaymentsColumns,
+  poultryColumns,
+} = require("../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3");
+const mockContext = require("../../mock/mock-context");
+const { randomUUID } = require("node:crypto");
 
-jest.mock('@azure/storage-blob')
-jest.mock('fs')
+jest.mock("@azure/storage-blob");
+jest.mock("fs");
 
-const consoleSpy = jest
-  .spyOn(mockContext.log, 'error')
+const consoleSpy = jest.spyOn(mockContext.log, "error");
 
-describe('transformEventToCsvV3', () => {
+describe("transformEventToCsvV3", () => {
   afterEach(() => {
-    consoleSpy.mockReset()
-    config.poultryReleaseDate = undefined
-  })
+    consoleSpy.mockReset();
+    config.poultryReleaseDate = undefined;
+  });
 
-  test('returns undefined when no event provided', async () => {
-    const result = transformEventToCsvV3(undefined, mockContext)
+  test("returns undefined when no event provided", async () => {
+    const result = transformEventToCsvV3(undefined, mockContext);
 
-    expect(consoleSpy).toHaveBeenCalledWith('No event provided')
-    expect(result).toBe(undefined)
-  })
+    expect(consoleSpy).toHaveBeenCalledWith("No event provided");
+    expect(result).toBe(undefined);
+  });
 
-  test('returns csv row when event provided', async () => {
+  test("returns csv row when event provided", async () => {
     const event = {
-      partitionKey: '123456',
-      SessionId: '789123456',
-      EventType: 'farmerApplyData-organisation',
+      partitionKey: "123456",
+      SessionId: "789123456",
+      EventType: "farmerApplyData-organisation",
       EventRaised: new Date().toISOString(),
-      Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-1234-ABCD","organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","orgEmail":"brownorg@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom","crn":"0123456789","frn":"9876543210"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
-    }
+      Payload:
+        '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-1234-ABCD","organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","orgEmail":"brownorg@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom","crn":"0123456789","frn":"9876543210"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}',
+    };
 
-    const result = transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext);
 
-    expect(result).toBe('123456,789123456,farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,')
-  })
+    expect(result).toBe(
+      "123456,789123456,farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+    );
+  });
 
-  test('returns csv row with empty flag data when event provided', async () => {
-    const uuid = randomUUID()
+  test("returns csv row with empty flag data when event provided", async () => {
+    const uuid = randomUUID();
     const event = {
-      partitionKey: '123456',
+      partitionKey: "123456",
       SessionId: uuid,
-      EventType: 'farmerApplyData-organisation',
+      EventType: "farmerApplyData-organisation",
       EventRaised: new Date().toISOString(),
-      Payload: '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-1234-ABCD","organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","orgEmail":"brownorg@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom","crn":"0123456789","frn":"9876543210"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}'
-    }
+      Payload:
+        '{"type":"farmerApplyData-organisation","message":"Session set for farmerApplyData and organisation.","data":{"reference":"TEMP-1234-ABCD","organisation":{"sbi":"123456","farmerName":"Farmer Brown","name":"Brown Cow Farm","email":"brown@test.com.test","orgEmail":"brownorg@test.com.test","address":"Yorkshire Moors,AB1 1AB,United Kingdom","crn":"0123456789","frn":"9876543210"}},"raisedBy":"brown@test.com.test","raisedOn":"2024-02-15T13:23:57.287Z"}',
+    };
 
-    const result = transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext);
 
-    expect(result).toBe(`123456,${uuid},farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
-  })
+    expect(result).toBe(
+      `123456,${uuid},farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`,
+    );
+  });
 
-  test('returns undefined when event contains invalid JSON in Payload field', async () => {
+  test("returns undefined when event contains invalid JSON in Payload field", async () => {
     const event = {
-      partitionKey: '123456',
-      SessionId: '789123456',
-      EventType: 'farmerApplyData-organisation',
+      partitionKey: "123456",
+      SessionId: "789123456",
+      EventType: "farmerApplyData-organisation",
       EventRaised: new Date().toISOString(),
-      Payload: ''
-    }
+      Payload: "",
+    };
 
-    const result = transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext);
 
-    expect(consoleSpy).toHaveBeenCalledWith('Parse event error', expect.anything(), expect.anything())
-    expect(result).toBe(undefined)
-  })
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Parse event error",
+      expect.anything(),
+      expect.anything(),
+    );
+    expect(result).toBe(undefined);
+  });
 
-  test('returns csv row when event isInCheckWithSubStatus', async () => {
+  test("returns csv row when event isInCheckWithSubStatus", async () => {
     const event = {
-      partitionKey: '123456',
-      SessionId: '789123456',
+      partitionKey: "123456",
+      SessionId: "789123456",
       EventRaised: new Date().toISOString(),
-      EventType: 'application:status-updated:5',
-      Payload: '{"type":"application:status-updated:5","message":"New stage execution has been created","data":{"reference":"AHWR-04DC-5073","statusId":5,"subStatus":"Recommend to pay"},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}'
-    }
+      EventType: "application:status-updated:5",
+      Payload:
+        '{"type":"application:status-updated:5","message":"New stage execution has been created","data":{"reference":"AHWR-04DC-5073","statusId":5,"subStatus":"Recommend to pay"},"raisedBy":"someuser@email.com","raisedOn":"2024-01-19T15:32:07.574Z","timestamp":"2024-01-19T15:32:07.616Z"}',
+    };
 
-    const result = transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext);
 
-    expect(result).toBe('123456,789123456,application:status-updated:12,New stage execution has been created,AHWR-04DC-5073,,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,,,,,,,,,,,,,,,,,,,,,,,,,,,,,')
-  })
+    expect(result).toBe(
+      "123456,789123456,application:status-updated:12,New stage execution has been created,AHWR-04DC-5073,,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+    );
+  });
 
-  describe('sheepTestResults', () => {
-    test('sheepTestResults populated from manual override', async () => {
-      const uuid = '3af96f82-a93c-40a5-a6b8-5c8daf8a556a'
+  describe("sheepTestResults", () => {
+    test("sheepTestResults populated from manual override", async () => {
+      const uuid = "3af96f82-a93c-40a5-a6b8-5c8daf8a556a";
       const event = {
-        partitionKey: '123456',
+        partitionKey: "123456",
         SessionId: uuid,
-        EventType: 'claim-sheepTestResults',
+        EventType: "claim-sheepTestResults",
         EventRaised: new Date().toISOString(),
         Payload: JSON.stringify({
-          type: 'claim-sheepTestResults',
-          message: 'Claim data updated',
-          raisedBy: 'Admin2',
-          raisedOn: '2025-03-28T12:06:37.489Z',
-          data: JSON.parse('{ "applicationReference": "IAHW-414E-A563", "reference": "FUSH-847A-8D52", "updatedProperty": "sheepTestResults", "newValue": [{"result": "clinicalSymptomsPresent", "diseaseType": "liverFluke"}], "oldValue": [{"result": "clinicalSymptomsNotPresent", "diseaseType": "liverFluke"}], "note": "Test result manually amended from Liverfluke (symptoms not present) to Liverfluke (symptoms present)"}')
-        })
-      }
-      const resultAsColVals = (transformEventToCsvV3(event, mockContext) ?? '').split(',')
+          type: "claim-sheepTestResults",
+          message: "Claim data updated",
+          raisedBy: "Admin2",
+          raisedOn: "2025-03-28T12:06:37.489Z",
+          data: JSON.parse(
+            '{ "applicationReference": "IAHW-414E-A563", "reference": "FUSH-847A-8D52", "updatedProperty": "sheepTestResults", "newValue": [{"result": "clinicalSymptomsPresent", "diseaseType": "liverFluke"}], "oldValue": [{"result": "clinicalSymptomsNotPresent", "diseaseType": "liverFluke"}], "note": "Test result manually amended from Liverfluke (symptoms not present) to Liverfluke (symptoms present)"}',
+          ),
+        }),
+      };
+      const resultAsColVals = (
+        transformEventToCsvV3(event, mockContext) ?? ""
+      ).split(",");
 
-      const sheepResultValue = resultAsColVals[44]
-      expect(sheepResultValue).toBe('liverFluke  result clinicalSymptomsPresent')
-    })
-  })
+      const sheepResultValue = resultAsColVals[44];
+      expect(sheepResultValue).toBe(
+        "liverFluke  result clinicalSymptomsPresent",
+      );
+    });
+  });
 
-  describe('temp reference events', () => {
-    test('Csv row does not contain temp reference when malformed key present', async () => {
+  describe("temp reference events", () => {
+    test("Csv row does not contain temp reference when malformed key present", async () => {
       const event = {
-        partitionKey: '123456',
-        SessionId: '789123456',
+        partitionKey: "123456",
+        SessionId: "789123456",
         EventRaised: new Date().toISOString(),
-        EventType: 'tempReference-[object Object]',
-        Payload: '{"type":"tempReference-[object Object]","message":"Session set for tempReference and [object Object].","data":{"reference":"IAHW-K9XY-SGYI","[object Object]":"TEMP-K9XY-SGYI","ip":"40.81.156.55"},"raisedBy":"nobody@noone.com.test","raisedOn":"2025-02-11T11:44:41.319Z"}'
-      }
+        EventType: "tempReference-[object Object]",
+        Payload:
+          '{"type":"tempReference-[object Object]","message":"Session set for tempReference and [object Object].","data":{"reference":"IAHW-K9XY-SGYI","[object Object]":"TEMP-K9XY-SGYI","ip":"40.81.156.55"},"raisedBy":"nobody@noone.com.test","raisedOn":"2025-02-11T11:44:41.319Z"}',
+      };
 
-      const resultAsColVals = (transformEventToCsvV3(event, mockContext) ?? '').split(',')
+      const resultAsColVals = (
+        transformEventToCsvV3(event, mockContext) ?? ""
+      ).split(",");
 
-      const eventTypeValue = resultAsColVals[2]
-      const messageValue = resultAsColVals[3]
-      const concreteRefValue = resultAsColVals[4]
-      const tempRefValue = resultAsColVals[6]
+      const eventTypeValue = resultAsColVals[2];
+      const messageValue = resultAsColVals[3];
+      const concreteRefValue = resultAsColVals[4];
+      const tempRefValue = resultAsColVals[6];
 
-      expect(eventTypeValue).toBe('tempReference-[object Object]')
-      expect(messageValue).toBe('Session set for tempReference and [object Object].')
-      expect(concreteRefValue).toBe('IAHW-K9XY-SGYI')
-      expect(tempRefValue).toBe('')
-    })
+      expect(eventTypeValue).toBe("tempReference-[object Object]");
+      expect(messageValue).toBe(
+        "Session set for tempReference and [object Object].",
+      );
+      expect(concreteRefValue).toBe("IAHW-K9XY-SGYI");
+      expect(tempRefValue).toBe("");
+    });
 
-    test('Csv row contains temp reference when correct key present', async () => {
+    test("Csv row contains temp reference when correct key present", async () => {
       const event = {
-        partitionKey: '123456',
-        SessionId: '789123456',
+        partitionKey: "123456",
+        SessionId: "789123456",
         EventRaised: new Date().toISOString(),
-        EventType: 'tempReference-tempReference',
-        Payload: '{"type":"tempReference-tempReference","message":"Session set for tempReference and tempReference.","data":{"reference":"IAHW-K9XY-SGYI","tempReference":"TEMP-K9XY-SGYI","ip":"40.81.156.55"},"raisedBy":"nobody@noone.com.test","raisedOn":"2025-02-11T11:44:41.319Z"}'
-      }
+        EventType: "tempReference-tempReference",
+        Payload:
+          '{"type":"tempReference-tempReference","message":"Session set for tempReference and tempReference.","data":{"reference":"IAHW-K9XY-SGYI","tempReference":"TEMP-K9XY-SGYI","ip":"40.81.156.55"},"raisedBy":"nobody@noone.com.test","raisedOn":"2025-02-11T11:44:41.319Z"}',
+      };
 
-      const resultAsColVals = (transformEventToCsvV3(event, mockContext) ?? '').split(',')
+      const resultAsColVals = (
+        transformEventToCsvV3(event, mockContext) ?? ""
+      ).split(",");
 
-      const eventTypeValue = resultAsColVals[2]
-      const messageValue = resultAsColVals[3]
-      const concreteRefValue = resultAsColVals[4]
-      const tempRefValue = resultAsColVals[6]
+      const eventTypeValue = resultAsColVals[2];
+      const messageValue = resultAsColVals[3];
+      const concreteRefValue = resultAsColVals[4];
+      const tempRefValue = resultAsColVals[6];
 
-      expect(eventTypeValue).toBe('tempReference-tempReference')
-      expect(messageValue).toBe('Session set for tempReference and tempReference.')
-      expect(concreteRefValue).toBe('IAHW-K9XY-SGYI')
-      expect(tempRefValue).toBe('TEMP-K9XY-SGYI')
-    })
-  })
+      expect(eventTypeValue).toBe("tempReference-tempReference");
+      expect(messageValue).toBe(
+        "Session set for tempReference and tempReference.",
+      );
+      expect(concreteRefValue).toBe("IAHW-K9XY-SGYI");
+      expect(tempRefValue).toBe("TEMP-K9XY-SGYI");
+    });
+  });
 
-  test('returns csv row with flag reporting data', async () => {
-    const uuid = randomUUID()
+  test("returns csv row with flag reporting data", async () => {
+    const uuid = randomUUID();
     const event = {
-      partitionKey: '123456',
+      partitionKey: "123456",
       SessionId: uuid,
-      EventType: 'application-flagged',
+      EventType: "application-flagged",
       EventRaised: new Date().toISOString(),
       Payload: JSON.stringify({
-        type: 'application-flagged',
-        message: 'Application flagged',
+        type: "application-flagged",
+        message: "Application flagged",
         data: {
-          flagId: 'b6b76548-bd6e-45b3-b137-05d930004c9b',
-          flagDetail: 'Declined multi herds agreement',
-          flagAppliesToMh: true
+          flagId: "b6b76548-bd6e-45b3-b137-05d930004c9b",
+          flagDetail: "Declined multi herds agreement",
+          flagAppliesToMh: true,
         },
-        raisedBy: 'Jane Doe',
-        raisedOn: '2025-03-28T12:06:37.489Z'
-      })
-    }
+        raisedBy: "Jane Doe",
+        raisedOn: "2025-03-28T12:06:37.489Z",
+      }),
+    };
 
-    const result = transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext);
 
-    expect(result).toBe(`123456,${uuid},application-flagged,Application flagged,,,,,,,,,,,,,,Jane Doe,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,b6b76548-bd6e-45b3-b137-05d930004c9b,Declined multi herds agreement,true,,,,,,,,,,,,,,,,,,,,,,,,,`)
-  })
+    expect(result).toBe(
+      `123456,${uuid},application-flagged,Application flagged,,,,,,,,,,,,,,Jane Doe,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,b6b76548-bd6e-45b3-b137-05d930004c9b,Declined multi herds agreement,true,,,,,,,,,,,,,,,,,,,,,,,,,`,
+    );
+  });
 
-  test('returns csv row with multi herds data', async () => {
-    const uuid = randomUUID()
-    const tempHerdId = randomUUID()
-    const herdId = randomUUID()
+  test("returns csv row with multi herds data", async () => {
+    const uuid = randomUUID();
+    const tempHerdId = randomUUID();
+    const herdId = randomUUID();
     const event = {
-      partitionKey: '123456',
+      partitionKey: "123456",
       SessionId: uuid,
-      EventType: 'herd-created',
+      EventType: "herd-created",
       EventRaised: new Date().toISOString(),
       Payload: JSON.stringify({
-        type: 'herd-created',
-        message: 'Herd created',
+        type: "herd-created",
+        message: "Herd created",
         data: {
           tempHerdId,
           herdId,
           herdVersion: 1,
-          herdName: 'Porkers',
-          herdSpecies: 'pigs',
-          herdCph: '123456789',
+          herdName: "Porkers",
+          herdSpecies: "pigs",
+          herdCph: "123456789",
           herdReasonManagementNeeds: true,
           herdReasonUniqueHealth: true,
           herdReasonDifferentBreed: true,
           herdReasonOtherPurpose: true,
           herdReasonKeptSeparate: true,
           herdReasonOnlyHerd: true,
-          herdReasonOther: true
+          herdReasonOther: true,
         },
-        raisedBy: 'Admin',
-        raisedOn: '2025-03-28T12:06:37.489Z'
-      })
-    }
+        raisedBy: "Admin",
+        raisedOn: "2025-03-28T12:06:37.489Z",
+      }),
+    };
 
-    const result = transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext);
 
-    expect(result).toBe(`123456,${uuid},herd-created,Herd created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,${tempHerdId},${herdId},1,Porkers,pigs,123456789,true,true,true,true,true,true,true,,,,,,,,,,,`)
-  })
+    expect(result).toBe(
+      `123456,${uuid},herd-created,Herd created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,${tempHerdId},${herdId},1,Porkers,pigs,123456789,true,true,true,true,true,true,true,,,,,,,,,,,`,
+    );
+  });
 
-  test('returns some base information from the event when no data object is found in the payload', async () => {
-    const uuid = randomUUID()
+  test("returns some base information from the event when no data object is found in the payload", async () => {
+    const uuid = randomUUID();
     const event = {
-      partitionKey: '123456',
+      partitionKey: "123456",
       SessionId: uuid,
-      EventType: 'application-created',
+      EventType: "application-created",
       EventRaised: new Date().toISOString(),
       Payload: JSON.stringify({
-        type: 'application-created',
-        message: 'Application created',
-        raisedBy: 'Admin',
-        raisedOn: '2025-03-28T12:06:37.489Z'
-      })
-    }
+        type: "application-created",
+        message: "Application created",
+        raisedBy: "Admin",
+        raisedOn: "2025-03-28T12:06:37.489Z",
+      }),
+    };
 
-    const result = transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext);
 
-    expect(result).toBe(`123456,${uuid},application-created,Application created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
-  })
+    expect(result).toBe(
+      `123456,${uuid},application-created,Application created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`,
+    );
+  });
 
-  test('returns csv row with pig updates data', async () => {
-    const uuid = randomUUID()
+  test("returns csv row with pig updates data", async () => {
+    const uuid = randomUUID();
     const event = {
-      partitionKey: '123456',
+      partitionKey: "123456",
       SessionId: uuid,
-      EventType: 'herd-created',
+      EventType: "herd-created",
       EventRaised: new Date().toISOString(),
       Payload: JSON.stringify({
-        type: 'claim-pigsGeneticSequencing',
-        message: 'Session set for claim and pigsGeneticSequencing.',
+        type: "claim-pigsGeneticSequencing",
+        message: "Session set for claim and pigsGeneticSequencing.",
         data: {
-          reference: 'TEMP-CLAIM-HTPH-6CKK',
-          applicationReference: 'IAHW-8UZM-S5CE',
-          pigsGeneticSequencing: 'mlv'
+          reference: "TEMP-CLAIM-HTPH-6CKK",
+          applicationReference: "IAHW-8UZM-S5CE",
+          pigsGeneticSequencing: "mlv",
         },
-        raisedBy: 'peterevansu@snavereteps.com.test',
-        raisedOn: '2025-07-16T14:39:06.571Z'
-      })
-    }
+        raisedBy: "peterevansu@snavereteps.com.test",
+        raisedOn: "2025-07-16T14:39:06.571Z",
+      }),
+    };
 
-    const result = transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext);
 
-    expect(result).toBe(`123456,${uuid},claim-pigsGeneticSequencing,Session set for claim and pigsGeneticSequencing.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Modified Live virus (MLV) only,,,,,,,,`)
-  })
+    expect(result).toBe(
+      `123456,${uuid},claim-pigsGeneticSequencing,Session set for claim and pigsGeneticSequencing.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Modified Live virus (MLV) only,,,,,,,,`,
+    );
+  });
 
-  test('returns csv row with number of blood samples data', async () => {
-    const uuid = randomUUID()
+  test("returns csv row with number of blood samples data", async () => {
+    const uuid = randomUUID();
     const event = {
-      partitionKey: '123456',
+      partitionKey: "123456",
       SessionId: uuid,
-      EventType: 'claim-numberOfBloodSamples',
+      EventType: "claim-numberOfBloodSamples",
       EventRaised: new Date().toISOString(),
       Payload: JSON.stringify({
-        type: 'claim-numberOfBloodSamples',
-        message: 'Session set for claim and numberOfBloodSamples.',
+        type: "claim-numberOfBloodSamples",
+        message: "Session set for claim and numberOfBloodSamples.",
         data: {
-          reference: 'TEMP-CLAIM-HTPH-6CKK',
-          applicationReference: 'IAHW-8UZM-S5CE',
-          numberOfBloodSamples: 30
+          reference: "TEMP-CLAIM-HTPH-6CKK",
+          applicationReference: "IAHW-8UZM-S5CE",
+          numberOfBloodSamples: 30,
         },
-        raisedBy: 'peterevansu@snavereteps.com.test',
-        raisedOn: '2025-07-16T14:39:06.571Z'
-      })
-    }
+        raisedBy: "peterevansu@snavereteps.com.test",
+        raisedOn: "2025-07-16T14:39:06.571Z",
+      }),
+    };
 
-    const result = transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext);
 
-    expect(result).toBe(`123456,${uuid},claim-numberOfBloodSamples,Session set for claim and numberOfBloodSamples.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30,,,,,,`)
-  })
+    expect(result).toBe(
+      `123456,${uuid},claim-numberOfBloodSamples,Session set for claim and numberOfBloodSamples.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30,,,,,,`,
+    );
+  });
 
-  test('returns csv row with poultry data', async () => {
-    config.poultryReleaseDate = new Date('2025-04-25').toISOString()
-    const uuid = randomUUID()
+  test("returns csv row with poultry data", async () => {
+    config.poultryReleaseDate = new Date("2025-04-25").toISOString();
+    const uuid = randomUUID();
     const event = {
-      partitionKey: '107663771',
+      partitionKey: "107663771",
       SessionId: uuid,
-      EventType: 'scheme-schemeType',
+      EventType: "scheme-schemeType",
       EventRaised: new Date().toISOString(),
       Payload: JSON.stringify({
-        type: 'scheme-schemeType',
-        message: 'Session set for fundingSelection and selectedFunding.',
+        type: "scheme-schemeType",
+        message: "Session set for fundingSelection and selectedFunding.",
         data: {
-          schemeType: 'IAHW'
+          schemeType: "IAHW",
         },
-        raisedBy: 'peterdancem@ecnadretepw.com.test',
-        raisedOn: '2026-04-28T14:50:31.444Z'
-      })
-    }
+        raisedBy: "peterdancem@ecnadretepw.com.test",
+        raisedOn: "2026-04-28T14:50:31.444Z",
+      }),
+    };
 
-    const result = transformEventToCsvV3(event, mockContext)
+    const result = transformEventToCsvV3(event, mockContext);
 
-    expect(result).toBe(`107663771,${uuid},scheme-schemeType,Session set for fundingSelection and selectedFunding.,,,,,,,,,,,,,,peterdancem@ecnadretepw.com.test,2026-04-28T14:50:31.444Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,IAHW,,,,,`)
-  })
-})
+    expect(result).toBe(
+      `107663771,${uuid},scheme-schemeType,Session set for fundingSelection and selectedFunding.,,,,,,,,,,,,,,peterdancem@ecnadretepw.com.test,2026-04-28T14:50:31.444Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,IAHW,,,,,`,
+    );
+  });
+});
 
-describe('buildColumns', () => {
-  test('it returns the correct columns', () => {
-    config.poultryReleaseDate = undefined
-    expect(buildColumns()).toEqual([...defaultColumns, ...flagColumns, ...multiHerdsColumns, ...pigUpdatesColumns, ...pigsAndPaymentsColumns, ...poultryColumns])
-  })
-})
+describe("buildColumns", () => {
+  test("it returns the correct columns", () => {
+    config.poultryReleaseDate = undefined;
+    expect(buildColumns()).toEqual([
+      ...defaultColumns,
+      ...flagColumns,
+      ...multiHerdsColumns,
+      ...pigUpdatesColumns,
+      ...pigsAndPaymentsColumns,
+      ...poultryColumns,
+    ]);
+  });
+});
 
-describe('poultry field column mapping', () => {
+describe("poultry field column mapping", () => {
   /** @param {string} csvRow @param {string} columnName */
   const getColumnValue = (csvRow, columnName) => {
-    const columns = buildColumns()
-    const index = columns.indexOf(columnName)
-    return csvRow.split(',')[index]
-  }
+    const columns = buildColumns();
+    const index = columns.indexOf(columnName);
+    return csvRow.split(",")[index];
+  };
 
   /** @param {string} uuid @param {string} fieldName @param {string} fieldValue */
   const makePoultryEvent = (uuid, fieldName, fieldValue) => ({
-    partitionKey: '123456789',
+    partitionKey: "123456789",
     SessionId: uuid,
     EventType: `claim-${fieldName}`,
     EventRaised: new Date().toISOString(),
@@ -331,37 +387,56 @@ describe('poultry field column mapping', () => {
       type: `claim-${fieldName}`,
       message: `Session set for claim and ${fieldName}.`,
       data: { [fieldName]: fieldValue },
-      raisedBy: 'test@test.com',
-      raisedOn: '2026-04-28T14:50:31.444Z'
-    })
-  })
+      raisedBy: "test@test.com",
+      raisedOn: "2026-04-28T14:50:31.444Z",
+    }),
+  });
 
   beforeEach(() => {
-    config.poultryReleaseDate = new Date('2025-04-25').toISOString()
-  })
+    config.poultryReleaseDate = new Date("2025-04-25").toISOString();
+  });
 
-  test('typesOfPoultry value maps to the correct column', () => {
-    const result = transformEventToCsvV3(makePoultryEvent(randomUUID(), 'typesOfPoultry', 'broilers'), mockContext)
-    expect(getColumnValue(result ?? '', 'typesOfPoultry')).toBe('broilers')
-  })
+  test("typesOfPoultry value maps to the correct column", () => {
+    const result = transformEventToCsvV3(
+      makePoultryEvent(randomUUID(), "typesOfPoultry", "broilers"),
+      mockContext,
+    );
+    expect(getColumnValue(result ?? "", "typesOfPoultry")).toBe("broilers");
+  });
 
-  test('biosecurityChanges value maps to the correct column', () => {
-    const result = transformEventToCsvV3(makePoultryEvent(randomUUID(), 'biosecurityChanges', 'yes'), mockContext)
-    expect(getColumnValue(result ?? '', 'biosecurityChanges')).toBe('yes')
-  })
+  test("biosecurityChanges value maps to the correct column", () => {
+    const result = transformEventToCsvV3(
+      makePoultryEvent(randomUUID(), "biosecurityChanges", "yes"),
+      mockContext,
+    );
+    expect(getColumnValue(result ?? "", "biosecurityChanges")).toBe("yes");
+  });
 
-  test('biosecurityChangesCost value maps to the correct column', () => {
-    const result = transformEventToCsvV3(makePoultryEvent(randomUUID(), 'biosecurityChangesCost', '500'), mockContext)
-    expect(getColumnValue(result ?? '', 'biosecurityChangesCost')).toBe('500')
-  })
+  test("biosecurityChangesCost value maps to the correct column", () => {
+    const result = transformEventToCsvV3(
+      makePoultryEvent(randomUUID(), "biosecurityChangesCost", "500"),
+      mockContext,
+    );
+    expect(getColumnValue(result ?? "", "biosecurityChangesCost")).toBe("500");
+  });
 
-  test('biosecurityUsefulness value maps to the correct column', () => {
-    const result = transformEventToCsvV3(makePoultryEvent(randomUUID(), 'biosecurityUsefulness', 'veryUseful'), mockContext)
-    expect(getColumnValue(result ?? '', 'biosecurityUsefulness')).toBe('veryUseful')
-  })
+  test("biosecurityUsefulness value maps to the correct column", () => {
+    const result = transformEventToCsvV3(
+      makePoultryEvent(randomUUID(), "biosecurityUsefulness", "veryUseful"),
+      mockContext,
+    );
+    expect(getColumnValue(result ?? "", "biosecurityUsefulness")).toBe(
+      "veryUseful",
+    );
+  });
 
-  test('schemeExperienceInterview value maps to the correct column', () => {
-    const result = transformEventToCsvV3(makePoultryEvent(randomUUID(), 'schemeExperienceInterview', 'positive'), mockContext)
-    expect(getColumnValue(result ?? '', 'schemeExperienceInterview')).toBe('positive')
-  })
-})
+  test("schemeExperienceInterview value maps to the correct column", () => {
+    const result = transformEventToCsvV3(
+      makePoultryEvent(randomUUID(), "schemeExperienceInterview", "positive"),
+      mockContext,
+    );
+    expect(getColumnValue(result ?? "", "schemeExperienceInterview")).toBe(
+      "positive",
+    );
+  });
+});

@@ -1,4 +1,4 @@
-const Joi = require('joi')
+const Joi = require("joi");
 
 // Define config schema
 const schema = Joi.object({
@@ -8,8 +8,8 @@ const schema = Joi.object({
   hostname: Joi.string().required(),
   sitePath: Joi.string().required(),
   documentLibrary: Joi.string().required(),
-  dstFolder: Joi.string().required()
-})
+  dstFolder: Joi.string().required(),
+});
 
 // Build config
 const config = {
@@ -19,17 +19,17 @@ const config = {
   hostname: process.env.SHAREPOINT_HOSTNAME,
   sitePath: process.env.SHAREPOINT_SITE_PATH,
   documentLibrary: process.env.SHAREPOINT_DOCUMENT_LIBRARY,
-  dstFolder: process.env.SHAREPOINT_DST_FOLDER
-}
+  dstFolder: process.env.SHAREPOINT_DST_FOLDER,
+};
 
 // Validate config
 const result = schema.validate(config, {
-  abortEarly: false
-})
+  abortEarly: false,
+});
 
 // Throw if config is invalid
 if (result.error) {
-  throw new Error(`The sharepoint config is invalid: ${result.error.message}`)
+  throw new Error(`The sharepoint config is invalid: ${result.error.message}`);
 }
 
-module.exports = result.value
+module.exports = result.value;

@@ -1,339 +1,355 @@
-const { when, resetAllWhenMocks } = require('jest-when')
-const mockContext = require('../../mock/mock-context')
+const { when, resetAllWhenMocks } = require("jest-when");
+const mockContext = require("../../mock/mock-context");
 
-const MOCK_NOW = new Date()
-const MOCK_ACQUIRE_TOKEN = jest.fn()
-const MOCK_SITE_ID = 'mock_site_id'
-const MOCK_DRIVE_ID = 'mock_drive_id'
+const MOCK_NOW = new Date();
+const MOCK_ACQUIRE_TOKEN = jest.fn();
+const MOCK_SITE_ID = "mock_site_id";
+const MOCK_DRIVE_ID = "mock_drive_id";
 
-describe('msGraph', () => {
-  let logSpy
-  let Wreck
-  let msGraph
+describe("msGraph", () => {
+  let logSpy;
+  let Wreck;
+  let msGraph;
 
   beforeAll(() => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(MOCK_NOW)
+    jest.useFakeTimers("modern");
+    jest.setSystemTime(MOCK_NOW);
 
-    jest.mock('../../../ffc-ahwr-mi-reporting/feature-toggle/config', () => ({
+    jest.mock("../../../ffc-ahwr-mi-reporting/feature-toggle/config", () => ({
       sharePoint: {
-        enabled: true
-      }
-    }))
+        enabled: true,
+      },
+    }));
 
-    jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/config', () => ({
-      tenantId: 'tenant_id',
-      clientId: 'client_id',
-      clientSecret: 'client_secret',
-      hostname: 'hostname',
-      sitePath: 'site_path',
-      documentLibrary: 'document_lib',
-      dstFolder: 'dst_folder'
-    }))
+    jest.mock("../../../ffc-ahwr-mi-reporting/sharepoint/config", () => ({
+      tenantId: "tenant_id",
+      clientId: "client_id",
+      clientSecret: "client_secret",
+      hostname: "hostname",
+      sitePath: "site_path",
+      documentLibrary: "document_lib",
+      dstFolder: "dst_folder",
+    }));
 
-    jest.mock('@hapi/wreck')
-    Wreck = require('@hapi/wreck')
+    jest.mock("@hapi/wreck");
+    Wreck = require("@hapi/wreck");
 
-    jest.mock('@pnp/nodejs-commonjs', () => ({
+    jest.mock("@pnp/nodejs-commonjs", () => ({
       AdalFetchClient: jest.fn().mockImplementation(() => {
         return {
-          acquireToken: MOCK_ACQUIRE_TOKEN
-        }
-      })
-    }))
+          acquireToken: MOCK_ACQUIRE_TOKEN,
+        };
+      }),
+    }));
 
-    logSpy = jest
-      .spyOn(mockContext.log, 'info')
+    logSpy = jest.spyOn(mockContext.log, "info");
 
-    msGraph = require('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
-  })
+    msGraph = require("../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph");
+  });
 
   afterAll(() => {
-    jest.useRealTimers()
-  })
+    jest.useRealTimers();
+  });
 
   afterEach(() => {
-    jest.clearAllMocks()
-    resetAllWhenMocks()
-  })
+    jest.clearAllMocks();
+    resetAllWhenMocks();
+  });
 
-  function stringToReadableStream (str) {
-    const encoder = new TextEncoder()
+  function stringToReadableStream(str) {
+    const encoder = new TextEncoder();
 
     return new ReadableStream({
-      start (controller) {
-        controller.enqueue(encoder.encode(str)) // Uint8Array
-        controller.close()
-      }
-    })
+      start(controller) {
+        controller.enqueue(encoder.encode(str)); // Uint8Array
+        controller.close();
+      },
+    });
   }
 
   const successfulSiteResponse = {
     res: {
-      statusCode: 200
+      statusCode: 200,
     },
     payload: {
-      id: MOCK_SITE_ID
-    }
-  }
+      id: MOCK_SITE_ID,
+    },
+  };
 
   const successfulDriveResponse = {
     res: {
-      statusCode: 200
+      statusCode: 200,
     },
     payload: {
       value: [
         {
           id: MOCK_DRIVE_ID,
-          name: 'document_lib'
-        }
-      ]
-    }
-  }
+          name: "document_lib",
+        },
+      ],
+    },
+  };
 
   const standardInputs = {
-    pathToFile: 'folder/sub_folder',
-    fileName: 'file_name',
-    fileContent: stringToReadableStream('file_content'),
-    contentLength: 'file_content'.length
-  }
+    pathToFile: "folder/sub_folder",
+    fileName: "file_name",
+    fileContent: stringToReadableStream("file_content"),
+    contentLength: "file_content".length,
+  };
 
-  test('uploadBlobToSharePoint - upload successful', async () => {
-    const uploadUrl = 'https://graphapiupload:/example'
+  test("uploadBlobToSharePoint - upload successful", async () => {
+    const uploadUrl = "https://graphapiupload:/example";
 
-    when(MOCK_ACQUIRE_TOKEN)
-      .calledWith()
-      .mockResolvedValue({
-        accessToken: 'access_token'
-      })
+    when(MOCK_ACQUIRE_TOKEN).calledWith().mockResolvedValue({
+      accessToken: "access_token",
+    });
     when(Wreck.get)
       .calledWith(
-        'https://graph.microsoft.com/v1.0/sites/hostname:/site_path',
-        expect.anything()
+        "https://graph.microsoft.com/v1.0/sites/hostname:/site_path",
+        expect.anything(),
       )
-      .mockResolvedValue(successfulSiteResponse)
+      .mockResolvedValue(successfulSiteResponse);
     when(Wreck.get)
       .calledWith(
         `https://graph.microsoft.com/v1.0/sites/${MOCK_SITE_ID}/drives`,
-        expect.anything()
+        expect.anything(),
       )
-      .mockResolvedValue(successfulDriveResponse)
+      .mockResolvedValue(successfulDriveResponse);
     when(Wreck.post)
       .calledWith(
-        expect.stringMatching(':/createUploadSession'),
-        expect.anything()
+        expect.stringMatching(":/createUploadSession"),
+        expect.anything(),
       )
-      .mockResolvedValue({ res: { statusCode: 200 }, payload: Buffer.from(JSON.stringify({ uploadUrl })) })
+      .mockResolvedValue({
+        res: { statusCode: 200 },
+        payload: Buffer.from(JSON.stringify({ uploadUrl })),
+      });
 
     await msGraph.uploadBlobToSharePoint(
       standardInputs.pathToFile,
       standardInputs.fileName,
-      { fileContentStream: standardInputs.fileContent, contentLength: standardInputs.contentLength },
-      mockContext, 5)
+      {
+        fileContentStream: standardInputs.fileContent,
+        contentLength: standardInputs.contentLength,
+      },
+      mockContext,
+      5,
+    );
 
     expect(Wreck.put).toHaveBeenNthCalledWith(
       1,
       uploadUrl,
       expect.objectContaining({
-        payload: Buffer.from('file_'),
+        payload: Buffer.from("file_"),
         headers: {
-          'Content-Length': 5,
-          'Content-Range': 'bytes 0-4/12'
-        }
-      })
-    )
+          "Content-Length": 5,
+          "Content-Range": "bytes 0-4/12",
+        },
+      }),
+    );
     expect(Wreck.put).toHaveBeenNthCalledWith(
       2,
       uploadUrl,
       expect.objectContaining({
-        payload: Buffer.from('conte'),
+        payload: Buffer.from("conte"),
         headers: {
-          'Content-Length': 5,
-          'Content-Range': 'bytes 5-9/12'
-        }
-      })
-    )
+          "Content-Length": 5,
+          "Content-Range": "bytes 5-9/12",
+        },
+      }),
+    );
     expect(Wreck.put).toHaveBeenNthCalledWith(
       3,
       uploadUrl,
       expect.objectContaining({
-        payload: Buffer.from('nt'),
+        payload: Buffer.from("nt"),
         headers: {
-          'Content-Length': 2,
-          'Content-Range': 'bytes 10-11/12'
-        }
-      })
-    )
+          "Content-Length": 2,
+          "Content-Range": "bytes 10-11/12",
+        },
+      }),
+    );
     expect(logSpy).toHaveBeenCalledWith(
-      'Uploading file: fileName: file_name, pathToFile: folder/sub_folder'
-    )
+      "Uploading file: fileName: file_name, pathToFile: folder/sub_folder",
+    );
     expect(logSpy).toHaveBeenCalledWith(
-      `Uploading bytes 0-4/12 to ${uploadUrl}`
-    )
+      `Uploading bytes 0-4/12 to ${uploadUrl}`,
+    );
     expect(logSpy).toHaveBeenCalledWith(
-      `Uploading bytes 5-9/12 to ${uploadUrl}`
-    )
+      `Uploading bytes 5-9/12 to ${uploadUrl}`,
+    );
     expect(logSpy).toHaveBeenCalledWith(
-      `Uploading final bytes 10-11/12 to ${uploadUrl}`
-    )
-  })
+      `Uploading final bytes 10-11/12 to ${uploadUrl}`,
+    );
+  });
 
-  test('uploadBlobToSharePoint - getSiteId - Bad Request', async () => {
-    when(MOCK_ACQUIRE_TOKEN)
-      .calledWith()
-      .mockResolvedValue({
-        accessToken: 'access_token'
-      })
+  test("uploadBlobToSharePoint - getSiteId - Bad Request", async () => {
+    when(MOCK_ACQUIRE_TOKEN).calledWith().mockResolvedValue({
+      accessToken: "access_token",
+    });
     when(Wreck.get)
       .calledWith(
-        'https://graph.microsoft.com/v1.0/sites/hostname:/site_path',
-        expect.anything()
+        "https://graph.microsoft.com/v1.0/sites/hostname:/site_path",
+        expect.anything(),
       )
       .mockResolvedValue({
         res: {
           statusCode: 400,
-          statusMessage: 'Bad Request'
-        }
-      })
+          statusMessage: "Bad Request",
+        },
+      });
 
     await expect(
       msGraph.uploadBlobToSharePoint(
         standardInputs.pathToFile,
         standardInputs.fileName,
-        { fileContentStream: standardInputs.fileContent, contentLength: standardInputs.contentLength },
-        mockContext
-      )
-    ).rejects.toEqual(new Error('HTTP 400 (Bad Request)'))
+        {
+          fileContentStream: standardInputs.fileContent,
+          contentLength: standardInputs.contentLength,
+        },
+        mockContext,
+      ),
+    ).rejects.toEqual(new Error("HTTP 400 (Bad Request)"));
 
-    expect(Wreck.put).not.toHaveBeenCalled()
-    expect(Wreck.post).not.toHaveBeenCalled()
-  })
+    expect(Wreck.put).not.toHaveBeenCalled();
+    expect(Wreck.post).not.toHaveBeenCalled();
+  });
 
-  test('uploadBlobToSharePoint - getDriveId - Bad Request', async () => {
-    when(MOCK_ACQUIRE_TOKEN)
-      .calledWith()
-      .mockResolvedValue({
-        accessToken: 'access_token'
-      })
+  test("uploadBlobToSharePoint - getDriveId - Bad Request", async () => {
+    when(MOCK_ACQUIRE_TOKEN).calledWith().mockResolvedValue({
+      accessToken: "access_token",
+    });
     when(Wreck.get)
       .calledWith(
-        'https://graph.microsoft.com/v1.0/sites/hostname:/site_path',
-        expect.anything()
+        "https://graph.microsoft.com/v1.0/sites/hostname:/site_path",
+        expect.anything(),
       )
-      .mockResolvedValue(successfulSiteResponse)
+      .mockResolvedValue(successfulSiteResponse);
     when(Wreck.get)
       .calledWith(
         `https://graph.microsoft.com/v1.0/sites/${MOCK_SITE_ID}/drives`,
-        expect.anything()
+        expect.anything(),
       )
       .mockResolvedValue({
         res: {
           statusCode: 400,
-          statusMessage: 'Bad Request'
-        }
-      })
+          statusMessage: "Bad Request",
+        },
+      });
 
     await expect(
       msGraph.uploadBlobToSharePoint(
         standardInputs.pathToFile,
         standardInputs.fileName,
-        { fileContentStream: standardInputs.fileContent, contentLength: standardInputs.contentLength },
-        mockContext
-      )
-    ).rejects.toEqual(new Error('HTTP 400 (Bad Request)'))
+        {
+          fileContentStream: standardInputs.fileContent,
+          contentLength: standardInputs.contentLength,
+        },
+        mockContext,
+      ),
+    ).rejects.toEqual(new Error("HTTP 400 (Bad Request)"));
 
-    expect(Wreck.put).not.toHaveBeenCalled()
-    expect(Wreck.post).not.toHaveBeenCalled()
-  })
+    expect(Wreck.put).not.toHaveBeenCalled();
+    expect(Wreck.post).not.toHaveBeenCalled();
+  });
 
-  test('uploadBlobToSharePoint - getDriveId - no drive found', async () => {
-    when(MOCK_ACQUIRE_TOKEN)
-      .calledWith()
-      .mockResolvedValue({
-        accessToken: 'access_token'
-      })
+  test("uploadBlobToSharePoint - getDriveId - no drive found", async () => {
+    when(MOCK_ACQUIRE_TOKEN).calledWith().mockResolvedValue({
+      accessToken: "access_token",
+    });
     when(Wreck.get)
       .calledWith(
-        'https://graph.microsoft.com/v1.0/sites/hostname:/site_path',
-        expect.anything()
+        "https://graph.microsoft.com/v1.0/sites/hostname:/site_path",
+        expect.anything(),
       )
-      .mockResolvedValue(successfulSiteResponse)
+      .mockResolvedValue(successfulSiteResponse);
     when(Wreck.get)
       .calledWith(
         `https://graph.microsoft.com/v1.0/sites/${MOCK_SITE_ID}/drives`,
-        expect.anything()
+        expect.anything(),
       )
       .mockResolvedValue({
         res: {
-          statusCode: 200
+          statusCode: 200,
         },
         payload: {
           value: [
             {
               id: MOCK_DRIVE_ID,
-              name: 'NOT_A_document_lib'
-            }
-          ]
-        }
-      })
+              name: "NOT_A_document_lib",
+            },
+          ],
+        },
+      });
 
     await expect(
       msGraph.uploadBlobToSharePoint(
         standardInputs.pathToFile,
         standardInputs.fileName,
-        { fileContentStream: standardInputs.fileContent, contentLength: standardInputs.contentLength },
-        mockContext
-      )
-    ).rejects.toEqual(new Error(`No drive found: ${JSON.stringify({
-      name: 'document_lib'
-    })}`))
+        {
+          fileContentStream: standardInputs.fileContent,
+          contentLength: standardInputs.contentLength,
+        },
+        mockContext,
+      ),
+    ).rejects.toEqual(
+      new Error(
+        `No drive found: ${JSON.stringify({
+          name: "document_lib",
+        })}`,
+      ),
+    );
 
-    expect(Wreck.put).not.toHaveBeenCalled()
-    expect(Wreck.post).not.toHaveBeenCalled()
-  })
+    expect(Wreck.put).not.toHaveBeenCalled();
+    expect(Wreck.post).not.toHaveBeenCalled();
+  });
 
-  test('uploadBlobToSharePoint - error during upload', async () => {
-    when(MOCK_ACQUIRE_TOKEN)
-      .calledWith()
-      .mockResolvedValue({
-        accessToken: 'access_token'
-      })
+  test("uploadBlobToSharePoint - error during upload", async () => {
+    when(MOCK_ACQUIRE_TOKEN).calledWith().mockResolvedValue({
+      accessToken: "access_token",
+    });
     when(Wreck.get)
       .calledWith(
-        'https://graph.microsoft.com/v1.0/sites/hostname:/site_path',
-        expect.anything()
+        "https://graph.microsoft.com/v1.0/sites/hostname:/site_path",
+        expect.anything(),
       )
-      .mockResolvedValue(successfulSiteResponse)
+      .mockResolvedValue(successfulSiteResponse);
     when(Wreck.get)
       .calledWith(
         `https://graph.microsoft.com/v1.0/sites/${MOCK_SITE_ID}/drives`,
-        expect.anything()
+        expect.anything(),
       )
-      .mockResolvedValue(successfulDriveResponse)
+      .mockResolvedValue(successfulDriveResponse);
     when(Wreck.post)
       .calledWith(
-        expect.stringMatching(':/createUploadSession'),
-        expect.anything()
+        expect.stringMatching(":/createUploadSession"),
+        expect.anything(),
       )
-      .mockRejectedValue(new Error('HTTP 500 (Internal Error)'))
+      .mockRejectedValue(new Error("HTTP 500 (Internal Error)"));
 
     await expect(
       msGraph.uploadBlobToSharePoint(
         standardInputs.pathToFile,
         standardInputs.fileName,
-        { fileContentStream: standardInputs.fileContent, contentLength: standardInputs.contentLength },
-        mockContext
-      )
-    ).rejects.toEqual(new Error('HTTP 500 (Internal Error)'))
+        {
+          fileContentStream: standardInputs.fileContent,
+          contentLength: standardInputs.contentLength,
+        },
+        mockContext,
+      ),
+    ).rejects.toEqual(new Error("HTTP 500 (Internal Error)"));
 
-    expect(Wreck.post).toHaveBeenCalledWith(expect.stringMatching(':/createUploadSession'),
+    expect(Wreck.post).toHaveBeenCalledWith(
+      expect.stringMatching(":/createUploadSession"),
       {
         headers: {
-          Authorization: 'Bearer access_token',
-          'Content-Type': 'application/json'
+          Authorization: "Bearer access_token",
+          "Content-Type": "application/json",
         },
-        payload: '{"item":{"@microsoft.graph.conflictBehavior":"replace","name":"file_name"}}'
-      })
-    expect(Wreck.put).not.toHaveBeenCalled()
-  })
-})
+        payload:
+          '{"item":{"@microsoft.graph.conflictBehavior":"replace","name":"file_name"}}',
+      },
+    );
+    expect(Wreck.put).not.toHaveBeenCalled();
+  });
+});
