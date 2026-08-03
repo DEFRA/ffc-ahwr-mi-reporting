@@ -28,13 +28,11 @@ jest.mock("@azure/data-tables", () => {
   const { connectionString } = require("./azurite-config");
   return {
     ...actual,
-    TableClient: jest
-      .fn()
-      .mockImplementation((url, tableName) =>
-        actual.TableClient.fromConnectionString(connectionString, tableName, {
-          allowInsecureConnection: true,
-        }),
-      ),
+    TableClient: jest.fn().mockImplementation((url, tableName) =>
+      actual.TableClient.fromConnectionString(connectionString, tableName, {
+        allowInsecureConnection: true,
+      }),
+    ),
   };
 });
 
