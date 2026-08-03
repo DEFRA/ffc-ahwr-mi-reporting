@@ -27,7 +27,7 @@ describe("transformEventToCsvV3", () => {
     const result = transformEventToCsvV3(undefined, mockContext);
 
     expect(consoleSpy).toHaveBeenCalledWith("No event provided");
-    expect(result).toBe(undefined);
+    expect(result).toBeUndefined();
   });
 
   test("returns csv row when event provided", async () => {
@@ -81,7 +81,7 @@ describe("transformEventToCsvV3", () => {
       expect.anything(),
       expect.anything(),
     );
-    expect(result).toBe(undefined);
+    expect(result).toBeUndefined();
   });
 
   test("returns csv row when event isInCheckWithSubStatus", async () => {
