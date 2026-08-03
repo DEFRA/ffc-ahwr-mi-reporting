@@ -80,25 +80,33 @@ const parseSheepTestResults = (sheepTestResults, updatedProperty, newValue) => {
 
   const result = [];
 
+  const flattenArray = (item) => {
+    for (const subItem of item) {
+      flatten(subItem);
+    }
+  };
+
+  const flattenObject = (item) => {
+    if (item.diseaseType) {
+      result.push(item.diseaseType);
+    }
+    if (item.result) {
+      if (Array.isArray(item.result)) {
+        flatten(item.result);
+      } else {
+        result.push(`result ${item.result}`);
+      }
+    }
+    if (item.testResult) {
+      result.push(`result ${item.testResult}`);
+    }
+  };
+
   const flatten = (item) => {
     if (Array.isArray(item)) {
-      for (const subItem of item) {
-        flatten(subItem);
-      }
+      flattenArray(item);
     } else if (typeof item === "object" && item !== null) {
-      if (item.diseaseType) {
-        result.push(item.diseaseType);
-      }
-      if (item.result) {
-        if (Array.isArray(item.result)) {
-          flatten(item.result);
-        } else {
-          result.push(`result ${item.result}`);
-        }
-      }
-      if (item.testResult) {
-        result.push(`result ${item.testResult}`);
-      }
+      flattenObject(item);
     } else {
       // Primitive values (or null) hold no test-result data, so nothing is collected.
     }
