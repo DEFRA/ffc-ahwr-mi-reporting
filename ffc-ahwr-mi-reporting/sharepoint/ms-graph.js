@@ -3,6 +3,7 @@ const config = require("../config/config");
 const azureAD = require("./azure-ad");
 
 const CHUNK_SIZE = 8 * 1024 * 1024; // 8 MB
+const SITE_ID_LOG_EDGE_LENGTH = 5; // chars kept at each end of the site ID when logging
 
 const graphUrl = {
   sites: "https://graph.microsoft.com/v1.0/sites",
@@ -29,7 +30,7 @@ const getSiteId = async (accessToken, context) => {
 
 const getDriveId = async (siteId, accessToken, context) => {
   context.log.info(
-    `Getting the drive ID: ${siteId.slice(0, 5)}...${siteId.slice(-5)}`,
+    `Getting the drive ID: ${siteId.slice(0, SITE_ID_LOG_EDGE_LENGTH)}...${siteId.slice(-SITE_ID_LOG_EDGE_LENGTH)}`,
   );
   const response = await Wreck.get(`${graphUrl.sites}/${siteId}/drives`, {
     headers: {
@@ -43,7 +44,7 @@ const getDriveId = async (siteId, accessToken, context) => {
     );
   }
   const drive = response.payload.value.find(
-    (drive) => drive.name === config.sharePoint.documentLibrary,
+    (candidate) => candidate.name === config.sharePoint.documentLibrary,
   );
   if (drive === undefined) {
     throw new Error(

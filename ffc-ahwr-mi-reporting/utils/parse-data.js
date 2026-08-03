@@ -1,5 +1,7 @@
 const moment = require("moment");
 
+const SBI_LENGTH = 9; // a Single Business Identifier is 9 digits
+
 const arrayToString = (array, separator = " ") => {
   if (Array.isArray(array)) {
     return array.join(separator);
@@ -24,7 +26,9 @@ const getReferenceFromNestedData = (data) => {
 };
 
 const getSbiFromPartitionKey = (partitionKey) =>
-  partitionKey?.length > 9 ? partitionKey.slice(0, 9) : partitionKey;
+  partitionKey?.length > SBI_LENGTH
+    ? partitionKey.slice(0, SBI_LENGTH)
+    : partitionKey;
 
 const invalidClaimDataToString = (invalidDataEventData) => {
   const {
@@ -95,6 +99,8 @@ const parseSheepTestResults = (sheepTestResults, updatedProperty, newValue) => {
       if (item.testResult) {
         result.push(`result ${item.testResult}`);
       }
+    } else {
+      // Primitive values (or null) hold no test-result data, so nothing is collected.
     }
   };
 
