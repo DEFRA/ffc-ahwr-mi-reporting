@@ -1,47 +1,40 @@
 module.exports = {
   collectCoverage: true,
-  collectCoverageFrom: [
-    '**/*.js',
-    '!**/*.test.js'
-  ],
-  coverageDirectory: 'test-output',
-  coverageReporters: [
-    'text-summary',
-    'lcov'
-  ],
+  collectCoverageFrom: ["**/*.js", "!**/*.test.js"],
+  coverageDirectory: "test-output",
+  coverageReporters: ["text-summary", "lcov"],
   coveragePathIgnorePatterns: [
-    '<rootDir>/node_modules/',
-    '<rootDir>/test-output/',
-    '<rootDir>/test/',
-    '<rootDir>/jest.config.js'
+    "<rootDir>/node_modules/",
+    "<rootDir>/test-output/",
+    "<rootDir>/test/",
+    "<rootDir>/jest.config.js",
   ],
-  modulePathIgnorePatterns: [
-    'node_modules'
-  ],
+  modulePathIgnorePatterns: ["node_modules"],
   reporters: [
-    'default',
+    "default",
     [
-      'jest-junit',
+      "jest-junit",
       {
-        suiteName: 'jest tests',
-        outputDirectory: 'test-output',
-        outputName: 'junit.xml'
-      }
-    ]
+        suiteName: "jest tests",
+        outputDirectory: "test-output",
+        outputName: "junit.xml",
+      },
+    ],
   ],
-  testEnvironment: 'node',
-  testPathIgnorePatterns: ['test/integration'],
-  setupFilesAfterEnv: ['./jest.setup.js'],
+  testEnvironment: "node",
+  testPathIgnorePatterns: ["test/integration"],
+  setupFilesAfterEnv: ["./jest.setup.js"],
   verbose: true,
   transform: {
-    '^.+\\.[j]sx?$': ['babel-jest', {
-      presets: [
-        ['@babel/preset-env', { targets: { node: 'current' } }]
-      ],
-      plugins: ['@babel/plugin-transform-modules-commonjs']
-    }]
+    "^.+\\.[j]sx?$": [
+      "babel-jest",
+      {
+        presets: [["@babel/preset-env", { targets: { node: "current" } }]],
+        plugins: ["@babel/plugin-transform-modules-commonjs"],
+      },
+    ],
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(uuid|@azure|@azure/data-tables|@azure/storage-blob)/)'
-  ]
-}
+    "/node_modules/(?!(uuid|@azure|@azure/data-tables|@azure/storage-blob)/)",
+  ],
+};

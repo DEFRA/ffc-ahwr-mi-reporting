@@ -1,17 +1,17 @@
-const { NODE_ENV } = process.env
+const { NODE_ENV } = process.env;
 
 module.exports = {
   presets: [
     [
-      '@babel/preset-env',
+      "@babel/preset-env",
       {
-        modules: NODE_ENV === 'test' ? 'auto' : false
-      }
-    ]
+        modules: NODE_ENV === "test" ? "auto" : false,
+      },
+    ],
   ],
   env: {
     test: {
-      plugins: ['@babel/plugin-transform-modules-commonjs']
-    }
-  }
-}
+      plugins: ["@babel/plugin-transform-modules-commonjs"],
+    },
+  },
+};

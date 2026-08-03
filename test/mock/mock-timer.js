@@ -1,3 +1,3 @@
 module.exports = {
-  isPastDue: false
-}
+  isPastDue: false,
+};

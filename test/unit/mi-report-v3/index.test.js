@@ -1,78 +1,97 @@
-
-jest.mock('../../../ffc-ahwr-mi-reporting/config/config.js', () => ({
-  containerName: 'reports',
-  environment: 'testEnv',
-  storageAccountName: 'storageAccountName',
+jest.mock("../../../ffc-ahwr-mi-reporting/config/config.js", () => ({
+  containerName: "reports",
+  environment: "testEnv",
+  storageAccountName: "storageAccountName",
   sharePoint: {
-    dstFolder: 'dstFolder'
+    dstFolder: "dstFolder",
   },
   featureToggle: {
     sharePoint: {
-      enabled: true
-    }
-  }
-}))
-jest.mock('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename')
-jest.mock('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
-jest.mock('@azure/data-tables', () => ({
+      enabled: true,
+    },
+  },
+}));
+jest.mock("../../../ffc-ahwr-mi-reporting/csv/create-csv-filename");
+jest.mock("../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph");
+jest.mock("@azure/data-tables", () => ({
   TableClient: jest.fn(),
-  odata: {}
-}))
+  odata: {},
+}));
 
-jest.mock('@azure/storage-blob', () => ({
-  BlobServiceClient: jest.fn()
-}))
+jest.mock("@azure/storage-blob", () => ({
+  BlobServiceClient: jest.fn(),
+}));
 
-jest.mock('../../../ffc-ahwr-mi-reporting/storage/storage', () => ({
+jest.mock("../../../ffc-ahwr-mi-reporting/storage/storage", () => ({
   connect: jest.fn(),
   processEntitiesByTimestampPaged: jest.fn(),
-  streamBlobToFile: jest.fn()
-}))
-const buildAhwrMiReport = require('../../../ffc-ahwr-mi-reporting/mi-report-v3/index')
+  streamBlobToFile: jest.fn(),
+}));
+const buildAhwrMiReport = require("../../../ffc-ahwr-mi-reporting/mi-report-v3/index");
 
-const { featureToggle } = require('../../../ffc-ahwr-mi-reporting/config/config')
-const createFileName = require('../../../ffc-ahwr-mi-reporting/csv/create-csv-filename')
-const { connect, processEntitiesByTimestampPaged } = require('../../../ffc-ahwr-mi-reporting/storage/storage')
-const { uploadBlobToSharePoint } = require('../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph')
-const mockContext = require('../../mock/mock-context')
+const {
+  featureToggle,
+} = require("../../../ffc-ahwr-mi-reporting/config/config");
+const createFileName = require("../../../ffc-ahwr-mi-reporting/csv/create-csv-filename");
+const {
+  connect,
+  processEntitiesByTimestampPaged,
+} = require("../../../ffc-ahwr-mi-reporting/storage/storage");
+const {
+  uploadBlobToSharePoint,
+} = require("../../../ffc-ahwr-mi-reporting/sharepoint/ms-graph");
+const mockContext = require("../../mock/mock-context");
 
-const consoleSpy = jest
-  .spyOn(mockContext.log, 'info')
+const consoleSpy = jest.spyOn(mockContext.log, "info");
 
-describe('buildAhwrMiReport', () => {
+describe("buildAhwrMiReport", () => {
   beforeEach(() => {
-    createFileName.mockReturnValue('ahwr-mi-report-v3-fileName')
-  })
+    createFileName.mockReturnValue("ahwr-mi-report-v3-fileName");
+  });
 
   afterEach(() => {
-    consoleSpy.mockReset()
-    jest.clearAllMocks()
-  })
+    consoleSpy.mockReset();
+    jest.clearAllMocks();
+  });
 
-  test('should create and store report but not upload to SharePoint if feature toggle is disabled', async () => {
-    featureToggle.sharePoint.enabled = false
+  test("should create and store report but not upload to SharePoint if feature toggle is disabled", async () => {
+    featureToggle.sharePoint.enabled = false;
 
-    await buildAhwrMiReport(mockContext)
+    await buildAhwrMiReport(mockContext);
 
-    expect(createFileName).toHaveBeenCalledWith('ahwr-mi-report-v3-')
+    expect(createFileName).toHaveBeenCalledWith("ahwr-mi-report-v3-");
     // TODO AHWR-96 contains AHWR, correct?
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Creating, storing but not uploading AHWR MI Report V3'))
-    expect(connect).toHaveBeenCalled()
-    expect(processEntitiesByTimestampPaged).toHaveBeenCalled()
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('AHWR MI Report V3 has been stored but not uploaded'))
-  })
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "Creating, storing but not uploading AHWR MI Report V3",
+      ),
+    );
+    expect(connect).toHaveBeenCalled();
+    expect(processEntitiesByTimestampPaged).toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "AHWR MI Report V3 has been stored but not uploaded",
+      ),
+    );
+  });
 
-  test('should create report, store report and upload to SharePoint', async () => {
-    featureToggle.sharePoint.enabled = true
+  test("should create report, store report and upload to SharePoint", async () => {
+    featureToggle.sharePoint.enabled = true;
 
-    await buildAhwrMiReport(mockContext)
+    await buildAhwrMiReport(mockContext);
 
-    expect(createFileName).toHaveBeenCalledWith('ahwr-mi-report-v3-')
+    expect(createFileName).toHaveBeenCalledWith("ahwr-mi-report-v3-");
     // TODO AHWR-96 contains AHWR, correct?
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Creating, storing and uploading AHWR MI Report V3:'))
-    expect(connect).toHaveBeenCalled()
-    expect(processEntitiesByTimestampPaged).toHaveBeenCalled()
-    expect(uploadBlobToSharePoint).toHaveBeenCalled()
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('AHWR MI Report V3 has been stored and uploaded'))
-  })
-})
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "Creating, storing and uploading AHWR MI Report V3:",
+      ),
+    );
+    expect(connect).toHaveBeenCalled();
+    expect(processEntitiesByTimestampPaged).toHaveBeenCalled();
+    expect(uploadBlobToSharePoint).toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("AHWR MI Report V3 has been stored and uploaded"),
+    );
+  });
+});

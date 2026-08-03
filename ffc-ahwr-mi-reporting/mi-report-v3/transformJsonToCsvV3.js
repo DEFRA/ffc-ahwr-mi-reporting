@@ -1,121 +1,130 @@
-const { statusToString, statusToId, IN_CHECK_STATUS_ID } = require('../utils/statusHelpers')
+const {
+  statusToString,
+  statusToId,
+  IN_CHECK_STATUS_ID,
+} = require("../utils/statusHelpers");
 const {
   arrayToString,
   getReferenceFromNestedData,
   getSbiFromPartitionKey,
   invalidClaimDataToString,
   parseSheepTestResults,
-  replaceCommasWithSpace, getVetNameFromPossibleSources, getVetRcvsFromPossibleSources, getVisitDateFromPossibleSources, getTestResultFromPossibleSources, getUrnResultFromPossibleSources, getDateOfTestingFromPossibleSources
-} = require('../utils/parse-data')
-const { PIG_GENETIC_SEQUENCING_VALUES } = require('./pig-genetic-sequencing-values')
+  replaceCommasWithSpace,
+  getVetNameFromPossibleSources,
+  getVetRcvsFromPossibleSources,
+  getVisitDateFromPossibleSources,
+  getTestResultFromPossibleSources,
+  getUrnResultFromPossibleSources,
+  getDateOfTestingFromPossibleSources,
+} = require("../utils/parse-data");
+const {
+  PIG_GENETIC_SEQUENCING_VALUES,
+} = require("./pig-genetic-sequencing-values");
 
 // Define the CSV column names
 const defaultColumns = [
-  'sbiFromPartitionKey',
-  'sessionId',
-  'eventType', // type
-  'message',
-  'reference',
-  'applicationReference',
-  'tempApplicationReference',
-  'tempClaimReference',
-  'typeOfClaim', // typeOfReview
-  'sbiFromPayload',
-  'crn',
-  'frn',
-  'farmerName',
-  'organisationName',
-  'userEmail',
-  'orgEmail',
-  'address',
-  'raisedBy',
-  'raisedOn',
-  'journey',
-  'confirmCheckDetails',
-  'eligibleSpecies', // old application journey
-  'agreeSameSpecies',
-  'agreeMultipleSpecies',
-  'agreeSpeciesNumbers',
-  'agreeVisitTimings',
-  'declaration',
-  'offerStatus',
-  'species', // whichReview
-  'detailsCorrect',
-  'typeOfLivestock',
-  'visitDate',
-  'dateOfSampling',
-  'vetName',
-  'vetRcvs',
-  'urnReference', // urnResult
-  'herdVaccinationStatus',
-  'numberOfOralFluidSamples',
-  'numberOfSamplesTested',
-  'numberAnimalsTested',
-  'testResults',
-  'vetVisitsReviewTestResults',
-  'sheepEndemicsPackage',
-  'sheepTests',
-  'sheepTestResults',
-  'piHunt',
-  'piHuntRecommended',
-  'piHuntAllAnimals',
-  'biosecurity',
-  'biosecurityAssessmentPercentage',
-  'diseaseStatus',
-  'claimPaymentAmount',
-  'latestEndemicsApplication',
-  'latestVetVisitApplication',
-  'relevantReviewForEndemics',
-  'claimed',
-  'exception',
-  'invalidClaimData',
-  'statusId',
-  'statusName',
-  'eventStatus'
-]
+  "sbiFromPartitionKey",
+  "sessionId",
+  "eventType", // type
+  "message",
+  "reference",
+  "applicationReference",
+  "tempApplicationReference",
+  "tempClaimReference",
+  "typeOfClaim", // typeOfReview
+  "sbiFromPayload",
+  "crn",
+  "frn",
+  "farmerName",
+  "organisationName",
+  "userEmail",
+  "orgEmail",
+  "address",
+  "raisedBy",
+  "raisedOn",
+  "journey",
+  "confirmCheckDetails",
+  "eligibleSpecies", // old application journey
+  "agreeSameSpecies",
+  "agreeMultipleSpecies",
+  "agreeSpeciesNumbers",
+  "agreeVisitTimings",
+  "declaration",
+  "offerStatus",
+  "species", // whichReview
+  "detailsCorrect",
+  "typeOfLivestock",
+  "visitDate",
+  "dateOfSampling",
+  "vetName",
+  "vetRcvs",
+  "urnReference", // urnResult
+  "herdVaccinationStatus",
+  "numberOfOralFluidSamples",
+  "numberOfSamplesTested",
+  "numberAnimalsTested",
+  "testResults",
+  "vetVisitsReviewTestResults",
+  "sheepEndemicsPackage",
+  "sheepTests",
+  "sheepTestResults",
+  "piHunt",
+  "piHuntRecommended",
+  "piHuntAllAnimals",
+  "biosecurity",
+  "biosecurityAssessmentPercentage",
+  "diseaseStatus",
+  "claimPaymentAmount",
+  "latestEndemicsApplication",
+  "latestVetVisitApplication",
+  "relevantReviewForEndemics",
+  "claimed",
+  "exception",
+  "invalidClaimData",
+  "statusId",
+  "statusName",
+  "eventStatus",
+];
 
 const flagColumns = [
-  'applicationFlagId',
-  'applicationFlagDetail',
-  'flagAppliesToMh',
-  'applicationFlagRemovedDetail'
-]
+  "applicationFlagId",
+  "applicationFlagDetail",
+  "flagAppliesToMh",
+  "applicationFlagRemovedDetail",
+];
 
 const multiHerdsColumns = [
-  'tempHerdId',
-  'herdId',
-  'herdVersion',
-  'herdName',
-  'herdSpecies',
-  'herdCph',
-  'herdReasonManagementNeeds',
-  'herdReasonUniqueHealth',
-  'herdReasonDifferentBreed',
-  'herdReasonOtherPurpose',
-  'herdReasonKeptSeparate',
-  'herdReasonOnlyHerd',
-  'herdReasonOther'
-]
+  "tempHerdId",
+  "herdId",
+  "herdVersion",
+  "herdName",
+  "herdSpecies",
+  "herdCph",
+  "herdReasonManagementNeeds",
+  "herdReasonUniqueHealth",
+  "herdReasonDifferentBreed",
+  "herdReasonOtherPurpose",
+  "herdReasonKeptSeparate",
+  "herdReasonOnlyHerd",
+  "herdReasonOther",
+];
 
 const pigUpdatesColumns = [
-  'pigsElisaTestResult',
-  'pigsPcrTestResult',
-  'pigsGeneticSequencing'
-]
+  "pigsElisaTestResult",
+  "pigsPcrTestResult",
+  "pigsGeneticSequencing",
+];
 
-const pigsAndPaymentsColumns = [
-  'typeOfSamplesTaken',
-  'numberOfBloodSamples'
-]
+const pigsAndPaymentsColumns = ["typeOfSamplesTaken", "numberOfBloodSamples"];
 
 const poultryColumns = [
-  'schemeType',
-  'typesOfPoultry',
-  'biosecurityChanges',
-  'biosecurityChangesCost',
-  'biosecurityUsefulness',
-  'schemeExperienceInterview'
-]
+  "schemeType",
+  "typesOfPoultry",
+  "biosecurityChanges",
+  "biosecurityChangesCost",
+  "biosecurityUsefulness",
+  "schemeExperienceInterview",
+];
 
 const buildColumns = () => {
   return [
@@ -124,52 +133,61 @@ const buildColumns = () => {
     ...multiHerdsColumns,
     ...pigUpdatesColumns,
     ...pigsAndPaymentsColumns,
-    ...poultryColumns
-  ]
-}
+    ...poultryColumns,
+  ];
+};
 
 const getData = (...args) => {
-  return args
-}
+  return args;
+};
 
 const formatPigsGeneticSequencing = (geneticSequencingResult) => {
   if (!geneticSequencingResult) {
-    return ''
+    return "";
   }
 
   const geneticSequencingLabel = PIG_GENETIC_SEQUENCING_VALUES.find(
-    (keyValuePair) => keyValuePair.value === geneticSequencingResult).label
+    (keyValuePair) => keyValuePair.value === geneticSequencingResult,
+  ).label;
 
-  return geneticSequencingLabel
-}
+  return geneticSequencingLabel;
+};
 
 const resolveRowStatus = (statusId, subStatus, type) => {
   if (subStatus && statusId === IN_CHECK_STATUS_ID) {
-    const subStatusId = statusToId(subStatus)
-    return { rowStatusId: subStatusId, rowType: type.replace(/.$/, subStatusId) }
+    const subStatusId = statusToId(subStatus);
+    return {
+      rowStatusId: subStatusId,
+      rowType: type.replace(/.$/, subStatusId),
+    };
   }
-  return { rowStatusId: statusId, rowType: type }
-}
+  return { rowStatusId: statusId, rowType: type };
+};
 
 // Function to transform event data to CSV row format
-function transformEventToCsvV3 (event, context) {
+function transformEventToCsvV3(event, context) {
   if (!event) {
-    context.log.error('No event provided')
-    return
+    context.log.error("No event provided");
+    return;
   }
 
-  const { partitionKey, SessionId: sessionId, Status: eventStatus, Payload: payload } = event
-  const sbiFromPartitionKey = getSbiFromPartitionKey(partitionKey)
-  let parsedPayload
+  const {
+    partitionKey,
+    SessionId: sessionId,
+    Status: eventStatus,
+    Payload: payload,
+  } = event;
+  const sbiFromPartitionKey = getSbiFromPartitionKey(partitionKey);
+  let parsedPayload;
 
   try {
-    parsedPayload = JSON.parse(payload)
+    parsedPayload = JSON.parse(payload);
   } catch (error) {
-    context.log.error('Parse event error', event, error)
-    return
+    context.log.error("Parse event error", event, error);
+    return;
   }
 
-  const { type, data, raisedBy, raisedOn, message } = parsedPayload
+  const { type, data, raisedBy, raisedOn, message } = parsedPayload;
   const {
     organisation,
     reference,
@@ -246,19 +264,33 @@ function transformEventToCsvV3 (event, context) {
     biosecurityChanges,
     biosecurityChangesCost,
     biosecurityUsefulness,
-    schemeExperienceInterview
-  } = data ?? {}
-  const { sbi, farmerName, name, email, orgEmail, address, crn, frn } = organisation ?? {}
-  const { biosecurity: biosecurityConfirmation, assessmentPercentage } = biosecurity ?? {}
-  const relevantReviewForEndemicsReference = getReferenceFromNestedData(relevantReviewForEndemics)
-  const latestEndemicsApplicationReference = getReferenceFromNestedData(latestEndemicsApplication)
-  const latestVetVisitApplicationReference = getReferenceFromNestedData(latestVetVisitApplication)
-  const invalidClaimData = type?.endsWith('-invalid') ? invalidClaimDataToString(data) : ''
-  const sheepTestsString = sheepTests ? arrayToString(sheepTests) : ''
-  const sheepTestResultsString = parseSheepTestResults(sheepTestResults, updatedProperty, newValue)
-  const { rowStatusId, rowType } = resolveRowStatus(statusId, subStatus, type)
+    schemeExperienceInterview,
+  } = data ?? {};
+  const { sbi, farmerName, name, email, orgEmail, address, crn, frn } =
+    organisation ?? {};
+  const { biosecurity: biosecurityConfirmation, assessmentPercentage } =
+    biosecurity ?? {};
+  const relevantReviewForEndemicsReference = getReferenceFromNestedData(
+    relevantReviewForEndemics,
+  );
+  const latestEndemicsApplicationReference = getReferenceFromNestedData(
+    latestEndemicsApplication,
+  );
+  const latestVetVisitApplicationReference = getReferenceFromNestedData(
+    latestVetVisitApplication,
+  );
+  const invalidClaimData = type?.endsWith("-invalid")
+    ? invalidClaimDataToString(data)
+    : "";
+  const sheepTestsString = sheepTests ? arrayToString(sheepTests) : "";
+  const sheepTestResultsString = parseSheepTestResults(
+    sheepTestResults,
+    updatedProperty,
+    newValue,
+  );
+  const { rowStatusId, rowType } = resolveRowStatus(statusId, subStatus, type);
 
-  const flagData = getData(flagId, flagDetail, flagAppliesToMh, deletedNote)
+  const flagData = getData(flagId, flagDetail, flagAppliesToMh, deletedNote);
   const herdData = getData(
     tempHerdId,
     herdId,
@@ -272,10 +304,22 @@ function transformEventToCsvV3 (event, context) {
     herdReasonOtherPurpose,
     herdReasonKeptSeparate,
     herdReasonOnlyHerd,
-    herdReasonOther)
-  const pigUpdatesData = [pigsElisaTestResult, pigsPcrTestResult, formatPigsGeneticSequencing(pigsGeneticSequencing)]
-  const pigsAndPaymentsData = [typeOfSamplesTaken, numberOfBloodSamples]
-  const poultryData = [schemeType, typesOfPoultry, biosecurityChanges, biosecurityChangesCost, biosecurityUsefulness, schemeExperienceInterview]
+    herdReasonOther,
+  );
+  const pigUpdatesData = [
+    pigsElisaTestResult,
+    pigsPcrTestResult,
+    formatPigsGeneticSequencing(pigsGeneticSequencing),
+  ];
+  const pigsAndPaymentsData = [typeOfSamplesTaken, numberOfBloodSamples];
+  const poultryData = [
+    schemeType,
+    typesOfPoultry,
+    biosecurityChanges,
+    biosecurityChangesCost,
+    biosecurityUsefulness,
+    schemeExperienceInterview,
+  ];
 
   return [
     sbiFromPartitionKey,
@@ -310,9 +354,18 @@ function transformEventToCsvV3 (event, context) {
     detailsCorrect,
     typeOfLivestock,
     getVisitDateFromPossibleSources(visitDate, updatedProperty, newValue),
-    getDateOfTestingFromPossibleSources(dateOfTesting, updatedProperty, newValue),
+    getDateOfTestingFromPossibleSources(
+      dateOfTesting,
+      updatedProperty,
+      newValue,
+    ),
     getVetNameFromPossibleSources(vetName, updatedProperty, newValue),
-    getVetRcvsFromPossibleSources(vetRcvs, vetRCVSNumber, updatedProperty, newValue),
+    getVetRcvsFromPossibleSources(
+      vetRcvs,
+      vetRCVSNumber,
+      updatedProperty,
+      newValue,
+    ),
     getUrnResultFromPossibleSources(urnResult, updatedProperty, newValue),
     herdVaccinationStatus,
     numberOfOralFluidSamples,
@@ -343,8 +396,19 @@ function transformEventToCsvV3 (event, context) {
     ...herdData,
     ...pigUpdatesData,
     ...pigsAndPaymentsData,
-    ...poultryData
-  ].map(item => replaceCommasWithSpace(item)).join(',')
+    ...poultryData,
+  ]
+    .map((item) => replaceCommasWithSpace(item))
+    .join(",");
 }
 
-module.exports = { transformEventToCsvV3, buildColumns, defaultColumns, flagColumns, multiHerdsColumns, pigUpdatesColumns, pigsAndPaymentsColumns, poultryColumns }
+module.exports = {
+  transformEventToCsvV3,
+  buildColumns,
+  defaultColumns,
+  flagColumns,
+  multiHerdsColumns,
+  pigUpdatesColumns,
+  pigsAndPaymentsColumns,
+  poultryColumns,
+};

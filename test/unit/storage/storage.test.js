@@ -1,325 +1,356 @@
 const {
   connect,
   processEntitiesByTimestampPaged,
-  streamBlobToFile
-} = require('../../../ffc-ahwr-mi-reporting/storage/storage')
-const {
-  transformEventToCsvV3,
-  buildColumns
-} = /** @type {any} */ (require('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3'))
-const mockContext = require('../../mock/mock-context')
-const {
-  transformEventToCsvV3: actualTransformEventToCsvV3
-} = jest.requireActual('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
+  streamBlobToFile,
+} = require("../../../ffc-ahwr-mi-reporting/storage/storage");
+const { transformEventToCsvV3, buildColumns } = /** @type {any} */ (
+  require("../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3")
+);
+const mockContext = require("../../mock/mock-context");
+const { transformEventToCsvV3: actualTransformEventToCsvV3 } =
+  jest.requireActual(
+    "../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3",
+  );
 
-const mockAppendBlock = jest.fn().mockResolvedValue(true)
+const mockAppendBlock = jest.fn().mockResolvedValue(true);
 
 const getDefaultYields = () => [
   [
     {
       Payload: JSON.stringify({
-        type: 'application:status-updated:1',
-        message: 'New application has been created',
+        type: "application:status-updated:1",
+        message: "New application has been created",
         data: {
-          reference: 'AHWR-1234-1234',
-          statusId: 1
+          reference: "AHWR-1234-1234",
+          statusId: 1,
         },
-        raisedBy: 'admin',
-        raisedOn: '2025-01-27T16:22:17.015Z',
-        timestamp: '2025-01-27T16:22:17.021Z'
+        raisedBy: "admin",
+        raisedOn: "2025-01-27T16:22:17.015Z",
+        timestamp: "2025-01-27T16:22:17.021Z",
       }),
-      EventType: 'application:status-updated:1'
+      EventType: "application:status-updated:1",
     },
     {
       Payload: JSON.stringify({
-        type: 'application-vetRcvs',
-        message: 'claim data updated',
+        type: "application-vetRcvs",
+        message: "claim data updated",
         data: {
-          applicationReference: 'AHWR-209E-ED2E',
-          reference: 'AHWR-209E-ED2E',
-          updatedProperty: 'vetRcvs',
-          newValue: '1234567',
-          oldValue: '1234123',
-          note: 'upto 7'
+          applicationReference: "AHWR-209E-ED2E",
+          reference: "AHWR-209E-ED2E",
+          updatedProperty: "vetRcvs",
+          newValue: "1234567",
+          oldValue: "1234123",
+          note: "upto 7",
         },
-        raisedBy: 'Jane Doe',
-        raisedOn: '2025-03-28T12:06:37.489Z'
+        raisedBy: "Jane Doe",
+        raisedOn: "2025-03-28T12:06:37.489Z",
       }),
-      EventType: 'application-vetRcvs'
+      EventType: "application-vetRcvs",
     },
     {
       Payload: JSON.stringify({
-        type: 'application:flagged',
-        message: 'Application flagged',
+        type: "application:flagged",
+        message: "Application flagged",
         data: {
-          flagId: 'b6b76548-bd6e-45b3-b137-05d930004c9b',
-          flagDetail: 'Declined multi herds agreement',
-          flagAppliesToMh: true
+          flagId: "b6b76548-bd6e-45b3-b137-05d930004c9b",
+          flagDetail: "Declined multi herds agreement",
+          flagAppliesToMh: true,
         },
-        raisedBy: 'Jane Doe',
-        raisedOn: '2025-03-28T12:06:37.489Z'
+        raisedBy: "Jane Doe",
+        raisedOn: "2025-03-28T12:06:37.489Z",
       }),
-      EventType: 'application:flagged'
+      EventType: "application:flagged",
     },
     {
       Payload: JSON.stringify({
-        type: 'application:unflagged',
-        message: 'Application flag removed',
+        type: "application:unflagged",
+        message: "Application flag removed",
         data: {
-          flagId: 'b6b76548-bd6e-45b3-b137-05d930004c9b'
+          flagId: "b6b76548-bd6e-45b3-b137-05d930004c9b",
         },
-        raisedBy: 'Jane Doe',
-        raisedOn: '2025-03-28T12:06:37.489Z'
+        raisedBy: "Jane Doe",
+        raisedOn: "2025-03-28T12:06:37.489Z",
       }),
-      EventType: 'application:unflagged'
-    }
+      EventType: "application:unflagged",
+    },
   ],
   [
     {
       Payload: JSON.stringify({
-        type: 'farmerApplyData-declaration',
-        message: 'Session set for farmerApplyData and declaration.',
+        type: "farmerApplyData-declaration",
+        message: "Session set for farmerApplyData and declaration.",
         data: {
-          reference: 'Temp',
-          declaration: true
+          reference: "Temp",
+          declaration: true,
         },
-        raisedBy: 'johndoe@google.com.test',
-        raisedOn: '2024-01-04T21:27:12.490Z'
+        raisedBy: "johndoe@google.com.test",
+        raisedOn: "2024-01-04T21:27:12.490Z",
       }),
-      EventType: 'farmerApplyData-declaration'
+      EventType: "farmerApplyData-declaration",
     },
     {
       Payload: JSON.stringify({
-        type: 'tokens-nonce',
-        message: 'Session set for tokens and nonce',
+        type: "tokens-nonce",
+        message: "Session set for tokens and nonce",
         data: {
-          reference: 'Temp',
-          declaration: true
+          reference: "Temp",
+          declaration: true,
         },
-        raisedBy: 'johndoe@google.com.test',
-        raisedOn: '2024-01-04T21:27:12.490Z'
+        raisedBy: "johndoe@google.com.test",
+        raisedOn: "2024-01-04T21:27:12.490Z",
       }),
-      EventType: 'tokens-nonce'
-    }
-  ]
-]
+      EventType: "tokens-nonce",
+    },
+  ],
+];
 
-let mockYields = getDefaultYields()
+let mockYields = getDefaultYields();
 
-jest.mock('@azure/storage-blob', () => ({
+jest.mock("@azure/storage-blob", () => ({
   BlobServiceClient: jest.fn().mockImplementation(() => ({
     getContainerClient: jest.fn().mockReturnValue({
       createIfNotExists: jest.fn(),
       getAppendBlobClient: jest.fn().mockImplementation((filename) => {
-        if (filename === 'fileNameThatDoesNotExist') {
+        if (filename === "fileNameThatDoesNotExist") {
           return {
             exists: jest.fn().mockResolvedValue(false),
             create: jest.fn().mockResolvedValue(true),
-            appendBlock: mockAppendBlock
-          }
+            appendBlock: mockAppendBlock,
+          };
         } else {
           return {
             exists: jest.fn().mockResolvedValue(true),
-            appendBlock: mockAppendBlock
-          }
+            appendBlock: mockAppendBlock,
+          };
         }
       }),
       getBlobClient: jest.fn().mockImplementation(() => {
         return {
-          download: jest.fn().mockResolvedValue({ readableStreamBody: '' }),
-          getProperties: jest.fn().mockResolvedValue({ contentLength: 45 })
-        }
-      })
-    })
-  }))
-}))
+          download: jest.fn().mockResolvedValue({ readableStreamBody: "" }),
+          getProperties: jest.fn().mockResolvedValue({ contentLength: 45 }),
+        };
+      }),
+    }),
+  })),
+}));
 
-jest.mock('@azure/data-tables', () => ({
+jest.mock("@azure/data-tables", () => ({
   TableClient: jest.fn().mockImplementation(() => ({
     listEntities: jest.fn().mockReturnValue({
       byPage: jest.fn().mockImplementation(() => {
-        let i = 0
+        let i = 0;
         return {
           next: async () => {
             if (i < mockYields.length) {
-              return { value: mockYields[i++], done: false }
+              return { value: mockYields[i++], done: false };
             }
-            return { value: undefined, done: true }
+            return { value: undefined, done: true };
           },
-          [Symbol.asyncIterator] () {
-            return this
-          }
-        }
-      })
-    })
+          [Symbol.asyncIterator]() {
+            return this;
+          },
+        };
+      }),
+    }),
   })),
-  odata: jest.fn()
-}))
+  odata: jest.fn(),
+}));
 
-jest.mock('../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3')
+jest.mock("../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3");
 
-const consoleSpy = jest
-  .spyOn(mockContext.log, 'info')
+const consoleSpy = jest.spyOn(mockContext.log, "info");
 
-const errorSpy = jest
-  .spyOn(mockContext.log, 'error')
+const errorSpy = jest.spyOn(mockContext.log, "error");
 
-describe('Storage', () => {
+describe("Storage", () => {
   beforeEach(async () => {
-    mockYields = getDefaultYields()
-    await connect(mockContext)
-  })
+    mockYields = getDefaultYields();
+    await connect(mockContext);
+  });
 
   afterEach(() => {
-    consoleSpy.mockReset()
-    jest.clearAllMocks()
-  })
+    consoleSpy.mockReset();
+    jest.clearAllMocks();
+  });
 
-  describe('processEntitiesByTimestampPaged', () => {
-    test('should process successfully when file already exists', async () => {
-      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3)
-      await processEntitiesByTimestampPaged('fileName', mockContext)
+  describe("processEntitiesByTimestampPaged", () => {
+    test("should process successfully when file already exists", async () => {
+      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3);
+      await processEntitiesByTimestampPaged("fileName", mockContext);
 
-      expect(consoleSpy).toHaveBeenCalledWith('Page 1 and 4 event items written to append blob')
-      expect(consoleSpy).toHaveBeenCalledWith('Page 2 and 5 event items written to append blob')
-    })
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Page 1 and 4 event items written to append blob",
+      );
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Page 2 and 5 event items written to append blob",
+      );
+    });
 
-    test('should process successfully when file does not exists', async () => {
-      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3)
-      buildColumns.mockImplementation(() => ['someColumn', 'anotherColumn'])
-      await processEntitiesByTimestampPaged('fileNameThatDoesNotExist', mockContext)
+    test("should process successfully when file does not exists", async () => {
+      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3);
+      buildColumns.mockImplementation(() => ["someColumn", "anotherColumn"]);
+      await processEntitiesByTimestampPaged(
+        "fileNameThatDoesNotExist",
+        mockContext,
+      );
 
-      expect(consoleSpy).toHaveBeenCalledWith('Page 1 and 4 event items written to append blob')
-      expect(consoleSpy).toHaveBeenCalledWith('Page 2 and 5 event items written to append blob')
-    })
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Page 1 and 4 event items written to append blob",
+      );
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Page 2 and 5 event items written to append blob",
+      );
+    });
 
-    test('should continue processing valid events when one event fails', async () => {
-      transformEventToCsvV3.mockImplementationOnce(() => { throw new Error('Something went wrong') })
-      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3)
+    test("should continue processing valid events when one event fails", async () => {
+      transformEventToCsvV3.mockImplementationOnce(() => {
+        throw new Error("Something went wrong");
+      });
+      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3);
 
-      await processEntitiesByTimestampPaged('fileName', mockContext)
+      await processEntitiesByTimestampPaged("fileName", mockContext);
 
-      expect(errorSpy).toHaveBeenCalledWith('Failed to transform event to csv.', {
-        error: 'Something went wrong',
-        event: {
-          EventType: 'application:status-updated:1',
-          Payload: JSON.stringify({
-            type: 'application:status-updated:1',
-            message: 'New application has been created',
-            data: {
-              reference: 'AHWR-1234-1234',
-              statusId: 1
-            },
-            raisedBy: 'admin',
-            raisedOn: '2025-01-27T16:22:17.015Z',
-            timestamp: '2025-01-27T16:22:17.021Z'
-          })
-        }
-      })
-      expect(errorSpy).toHaveBeenCalledTimes(1)
-      expect(mockAppendBlock).toHaveBeenCalledTimes(2)
-
-      const expectedEventTypes = [
-        'application-vetRcvs',
-        'application:flagged',
-        'application:unflagged',
-        'farmerApplyData-declaration'
-      ]
-      const rows = mockAppendBlock.mock.calls.map(([rowContent]) => rowContent).join('\n')
-      for (const eventType of expectedEventTypes) {
-        expect(rows).toContain(eventType)
-      }
-      expect(rows).not.toContain('application:status-updated:1')
-    })
-
-    test('should not add unnecessary events to the csv file', async () => {
-      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3)
-
-      await processEntitiesByTimestampPaged('fileName', mockContext)
+      expect(errorSpy).toHaveBeenCalledWith(
+        "Failed to transform event to csv.",
+        {
+          error: "Something went wrong",
+          event: {
+            EventType: "application:status-updated:1",
+            Payload: JSON.stringify({
+              type: "application:status-updated:1",
+              message: "New application has been created",
+              data: {
+                reference: "AHWR-1234-1234",
+                statusId: 1,
+              },
+              raisedBy: "admin",
+              raisedOn: "2025-01-27T16:22:17.015Z",
+              timestamp: "2025-01-27T16:22:17.021Z",
+            }),
+          },
+        },
+      );
+      expect(errorSpy).toHaveBeenCalledTimes(1);
+      expect(mockAppendBlock).toHaveBeenCalledTimes(2);
 
       const expectedEventTypes = [
-        'application-vetRcvs',
-        'application:flagged',
-        'application:unflagged',
-        'farmerApplyData-declaration',
-        'application:status-updated:1'
-      ]
-      const rows = mockAppendBlock.mock.calls.map(([rowContent]) => rowContent).join('\n')
+        "application-vetRcvs",
+        "application:flagged",
+        "application:unflagged",
+        "farmerApplyData-declaration",
+      ];
+      const rows = mockAppendBlock.mock.calls
+        .map(([rowContent]) => rowContent)
+        .join("\n");
       for (const eventType of expectedEventTypes) {
-        expect(rows).toContain(eventType)
+        expect(rows).toContain(eventType);
+      }
+      expect(rows).not.toContain("application:status-updated:1");
+    });
+
+    test("should not add unnecessary events to the csv file", async () => {
+      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3);
+
+      await processEntitiesByTimestampPaged("fileName", mockContext);
+
+      const expectedEventTypes = [
+        "application-vetRcvs",
+        "application:flagged",
+        "application:unflagged",
+        "farmerApplyData-declaration",
+        "application:status-updated:1",
+      ];
+      const rows = mockAppendBlock.mock.calls
+        .map(([rowContent]) => rowContent)
+        .join("\n");
+      for (const eventType of expectedEventTypes) {
+        expect(rows).toContain(eventType);
       }
 
-      expect(rows).not.toContain('tokens-nonce')
-    })
+      expect(rows).not.toContain("tokens-nonce");
+    });
 
     test('should not write "undefined" to csv when transform returns undefined', async () => {
-      transformEventToCsvV3.mockImplementationOnce(() => undefined)
-      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3)
+      transformEventToCsvV3.mockImplementationOnce(() => undefined);
+      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3);
 
-      await processEntitiesByTimestampPaged('fileName', mockContext)
+      await processEntitiesByTimestampPaged("fileName", mockContext);
 
-      const rows = mockAppendBlock.mock.calls.map(([rowContent]) => rowContent).join('\n')
-      expect(rows).not.toContain('undefined')
-    })
+      const rows = mockAppendBlock.mock.calls
+        .map(([rowContent]) => rowContent)
+        .join("\n");
+      expect(rows).not.toContain("undefined");
+    });
 
-    test('should not append block when all events in a page return undefined from transform', async () => {
+    test("should not append block when all events in a page return undefined from transform", async () => {
       mockYields = [
-        [{
-          Payload: '',
-          EventType: 'farmerApplyData-organisation'
-        }]
-      ]
-      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3)
+        [
+          {
+            Payload: "",
+            EventType: "farmerApplyData-organisation",
+          },
+        ],
+      ];
+      transformEventToCsvV3.mockImplementation(actualTransformEventToCsvV3);
 
-      await processEntitiesByTimestampPaged('fileName', mockContext)
+      await processEntitiesByTimestampPaged("fileName", mockContext);
 
-      expect(mockAppendBlock).not.toHaveBeenCalled()
-      expect(mockContext.log.info).toHaveBeenCalledWith('Page 1 was not written to csv, no rowContent produced for eventsPage')
-    })
+      expect(mockAppendBlock).not.toHaveBeenCalled();
+      expect(mockContext.log.info).toHaveBeenCalledWith(
+        "Page 1 was not written to csv, no rowContent produced for eventsPage",
+      );
+    });
 
-    test('should not append block to the csv file when all events are filtered (deemed unnecessary)', async () => {
+    test("should not append block to the csv file when all events are filtered (deemed unnecessary)", async () => {
       // override yields to return page 1 with unnecessary event only
       mockYields = [
-        [{
-          Payload: JSON.stringify({
-            type: 'tokens-nonce',
-            message: 'Session set for tokens and nonce',
-            data: {
-              reference: 'Temp',
-              declaration: true
-            },
-            raisedBy: 'johndoe@google.com.test',
-            raisedOn: '2024-01-04T21:27:12.490Z'
-          }),
-          EventType: 'tokens-nonce'
-        }],
-        [{
-          Payload: JSON.stringify({
-            type: 'application:status-updated:1',
-            message: 'New application has been created',
-            data: {
-              reference: 'AHWR-1234-1234',
-              statusId: 1
-            },
-            raisedBy: 'admin',
-            raisedOn: '2025-01-27T16:22:17.015Z',
-            timestamp: '2025-01-27T16:22:17.021Z'
-          }),
-          EventType: 'application:status-updated:1'
-        }]
-      ]
-      await processEntitiesByTimestampPaged('fileName', mockContext)
+        [
+          {
+            Payload: JSON.stringify({
+              type: "tokens-nonce",
+              message: "Session set for tokens and nonce",
+              data: {
+                reference: "Temp",
+                declaration: true,
+              },
+              raisedBy: "johndoe@google.com.test",
+              raisedOn: "2024-01-04T21:27:12.490Z",
+            }),
+            EventType: "tokens-nonce",
+          },
+        ],
+        [
+          {
+            Payload: JSON.stringify({
+              type: "application:status-updated:1",
+              message: "New application has been created",
+              data: {
+                reference: "AHWR-1234-1234",
+                statusId: 1,
+              },
+              raisedBy: "admin",
+              raisedOn: "2025-01-27T16:22:17.015Z",
+              timestamp: "2025-01-27T16:22:17.021Z",
+            }),
+            EventType: "application:status-updated:1",
+          },
+        ],
+      ];
+      await processEntitiesByTimestampPaged("fileName", mockContext);
 
-      expect(mockAppendBlock).toHaveBeenCalledTimes(1) // called once for page 2
-      expect(mockContext.log.info).toHaveBeenCalledWith('Page 1 was not written to csv, no rowContent produced for eventsPage')
-    })
-  })
+      expect(mockAppendBlock).toHaveBeenCalledTimes(1); // called once for page 2
+      expect(mockContext.log.info).toHaveBeenCalledWith(
+        "Page 1 was not written to csv, no rowContent produced for eventsPage",
+      );
+    });
+  });
 
-  describe('streamBlobToFile', () => {
-    test('should process successfully', async () => {
-      const { fileContentStream, contentLength } = await streamBlobToFile('fileName')
-      expect(fileContentStream).not.toBeNull()
-      expect(contentLength).toEqual(45)
-    })
-  })
-})
+  describe("streamBlobToFile", () => {
+    test("should process successfully", async () => {
+      const { fileContentStream, contentLength } =
+        await streamBlobToFile("fileName");
+      expect(fileContentStream).not.toBeNull();
+      expect(contentLength).toEqual(45);
+    });
+  });
+});
