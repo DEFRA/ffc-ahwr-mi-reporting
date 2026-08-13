@@ -8,6 +8,7 @@ const {
   pigUpdatesColumns,
   pigsAndPaymentsColumns,
   poultryColumns,
+  withdrawalColumns,
 } = require("../../../ffc-ahwr-mi-reporting/mi-report-v3/transformJsonToCsvV3");
 const mockContext = require("../../mock/mock-context");
 const { randomUUID } = require("node:crypto");
@@ -17,10 +18,18 @@ jest.mock("fs");
 
 const consoleSpy = jest.spyOn(mockContext.log, "error");
 
+/** @param {string} csvRow @param {string[]} columnNames */
+const getColumnValues = (csvRow, columnNames) => {
+  const columns = buildColumns();
+  const values = csvRow.split(",");
+  return columnNames.map((columnName) => values[columns.indexOf(columnName)]);
+};
+
 describe("transformEventToCsvV3", () => {
   afterEach(() => {
     consoleSpy.mockReset();
     config.poultryReleaseDate = undefined;
+    config.withdrawalColumnsReleaseDate = undefined;
   });
 
   test("returns undefined when no event provided", async () => {
@@ -353,11 +362,79 @@ describe("transformEventToCsvV3", () => {
       `107663771,${uuid},scheme-schemeType,Session set for fundingSelection and selectedFunding.,,,,,,,,,,,,,,peterdancem@ecnadretepw.com.test,2026-04-28T14:50:31.444Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,IAHW,,,,,`,
     );
   });
+
+  test("returns csv row with withdrawal data when withdrawal columns are enabled", async () => {
+    config.withdrawalColumnsReleaseDate = new Date("2025-04-25").toISOString();
+    const uuid = randomUUID();
+    const event = {
+      partitionKey: "123456789",
+      SessionId: uuid,
+      EventType: "claim-withdrawn",
+      EventRaised: new Date().toISOString(),
+      Payload: JSON.stringify({
+        type: "claim-withdrawn",
+        message: "Claim withdrawn",
+        data: {
+          reference: "REBC-VA4R-TRL7",
+          applicationReference: "IAHW-1234-APP1",
+          status: "WITHDRAWN",
+          withdrawalReason: "unintentionalTypingError",
+          withdrawalDiscoveryMethod: "customerContactedRPA",
+        },
+        raisedBy: "admin",
+        raisedOn: "2026-04-28T14:50:31.444Z",
+      }),
+    };
+
+    const result = transformEventToCsvV3(event, mockContext);
+
+    expect(
+      getColumnValues(result ?? "", [
+        "withdrawalReason",
+        "withdrawalDiscoveryMethod",
+      ]),
+    ).toEqual(["unintentionalTypingError", "customerContactedRPA"]);
+  });
+
+  test("does not return withdrawal data when withdrawal columns are disabled", async () => {
+    config.withdrawalColumnsReleaseDate = undefined;
+    const uuid = randomUUID();
+    const event = {
+      partitionKey: "123456789",
+      SessionId: uuid,
+      EventType: "claim-withdrawn",
+      EventRaised: new Date().toISOString(),
+      Payload: JSON.stringify({
+        type: "claim-withdrawn",
+        message: "Claim withdrawn",
+        data: {
+          reference: "REBC-VA4R-TRL7",
+          applicationReference: "IAHW-1234-APP1",
+          status: "WITHDRAWN",
+          withdrawalReason: "unintentionalTypingError",
+          withdrawalDiscoveryMethod: "customerContactedRPA",
+        },
+        raisedBy: "admin",
+        raisedOn: "2026-04-28T14:50:31.444Z",
+      }),
+    };
+
+    const result = transformEventToCsvV3(event, mockContext);
+
+    expect(result?.split(",")).toHaveLength(buildColumns().length);
+    expect(result).not.toContain("unintentionalTypingError");
+    expect(result).not.toContain("customerContactedRPA");
+  });
 });
 
 describe("buildColumns", () => {
-  test("it returns the correct columns", () => {
+  afterEach(() => {
+    config.withdrawalColumnsReleaseDate = undefined;
+  });
+
+  test("it returns the correct columns when withdrawal columns are disabled", () => {
     config.poultryReleaseDate = undefined;
+    config.withdrawalColumnsReleaseDate = undefined;
     expect(buildColumns()).toEqual([
       ...defaultColumns,
       ...flagColumns,
@@ -365,6 +442,20 @@ describe("buildColumns", () => {
       ...pigUpdatesColumns,
       ...pigsAndPaymentsColumns,
       ...poultryColumns,
+    ]);
+  });
+
+  test("it includes withdrawal columns when enabled", () => {
+    config.poultryReleaseDate = undefined;
+    config.withdrawalColumnsReleaseDate = new Date("2025-04-25").toISOString();
+    expect(buildColumns()).toEqual([
+      ...defaultColumns,
+      ...flagColumns,
+      ...multiHerdsColumns,
+      ...pigUpdatesColumns,
+      ...pigsAndPaymentsColumns,
+      ...poultryColumns,
+      ...withdrawalColumns,
     ]);
   });
 });
@@ -438,5 +529,58 @@ describe("poultry field column mapping", () => {
     expect(getColumnValue(result ?? "", "schemeExperienceInterview")).toBe(
       "positive",
     );
+  });
+});
+
+describe("withdrawal field column mapping", () => {
+  /** @param {string} uuid @param {string} fieldName @param {string} fieldValue */
+  const makeWithdrawalEvent = (uuid, fieldName, fieldValue) => ({
+    partitionKey: "123456789",
+    SessionId: uuid,
+    EventType: "claim-withdrawn",
+    EventRaised: new Date().toISOString(),
+    Payload: JSON.stringify({
+      type: "claim-withdrawn",
+      message: "Claim withdrawn",
+      data: { [fieldName]: fieldValue },
+      raisedBy: "admin",
+      raisedOn: "2026-04-28T14:50:31.444Z",
+    }),
+  });
+
+  beforeEach(() => {
+    config.withdrawalColumnsReleaseDate = new Date("2025-04-25").toISOString();
+  });
+
+  afterEach(() => {
+    config.withdrawalColumnsReleaseDate = undefined;
+  });
+
+  test("withdrawalReason value maps to the correct column", () => {
+    const result = transformEventToCsvV3(
+      makeWithdrawalEvent(
+        randomUUID(),
+        "withdrawalReason",
+        "unintentionalTypingError",
+      ),
+      mockContext,
+    );
+    expect(getColumnValues(result ?? "", ["withdrawalReason"])).toEqual([
+      "unintentionalTypingError",
+    ]);
+  });
+
+  test("withdrawalDiscoveryMethod value maps to the correct column", () => {
+    const result = transformEventToCsvV3(
+      makeWithdrawalEvent(
+        randomUUID(),
+        "withdrawalDiscoveryMethod",
+        "customerContactedRPA",
+      ),
+      mockContext,
+    );
+    expect(
+      getColumnValues(result ?? "", ["withdrawalDiscoveryMethod"]),
+    ).toEqual(["customerContactedRPA"]);
   });
 });
