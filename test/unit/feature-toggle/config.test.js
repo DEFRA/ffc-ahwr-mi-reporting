@@ -8,7 +8,6 @@ describe("feature-toggle config", () => {
     jest.resetModules();
     process.env = { ...ORIGINAL_ENV };
     delete process.env.SHAREPOINT_ENABLED;
-    delete process.env.POULTRY_RELEASE_DATE;
     delete process.env.WITHDRAWAL_COLUMNS_RELEASE_DATE;
   });
 
@@ -45,22 +44,6 @@ describe("feature-toggle config", () => {
       expect(() => require(FEATURE_TOGGLE_PATH)).toThrow(
         /feature toggle config is invalid/,
       );
-    });
-  });
-
-  describe("poultryReleaseDate", () => {
-    test("is undefined when POULTRY_RELEASE_DATE is not set", () => {
-      const config = require(FEATURE_TOGGLE_PATH);
-
-      expect(config.poultryReleaseDate).toBeUndefined();
-    });
-
-    test("is set when POULTRY_RELEASE_DATE is provided", () => {
-      process.env.POULTRY_RELEASE_DATE = "2025-04-25T00:00:00.000Z";
-
-      const config = require(FEATURE_TOGGLE_PATH);
-
-      expect(config.poultryReleaseDate).toBe("2025-04-25T00:00:00.000Z");
     });
   });
 
