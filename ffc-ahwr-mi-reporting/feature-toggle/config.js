@@ -7,6 +7,7 @@ function buildFeatureToggleConfig() {
       enabled: Joi.boolean().optional().default(false),
     },
     poultryReleaseDate: Joi.string().optional(),
+    withdrawalColumnsReleaseDate: Joi.string().optional(),
   });
 
   // Build config
@@ -15,6 +16,7 @@ function buildFeatureToggleConfig() {
       enabled: process.env.SHAREPOINT_ENABLED,
     },
     poultryReleaseDate: process.env.POULTRY_RELEASE_DATE,
+    withdrawalColumnsReleaseDate: process.env.WITHDRAWAL_COLUMNS_RELEASE_DATE,
   };
 
   // Validate config
