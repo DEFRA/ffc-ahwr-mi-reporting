@@ -1,8 +1,19 @@
 const neostandard = require("neostandard");
+const sonarjs = require("eslint-plugin-sonarjs");
 
-module.exports = neostandard({
-  env: ["node", "jest"],
-  ignores: [...neostandard.resolveIgnoresFromGitignore()],
-  noJsx: true,
-  noStyle: true,
-});
+module.exports = [
+  ...neostandard({
+    env: ["node", "jest"],
+    ignores: [...neostandard.resolveIgnoresFromGitignore()],
+    noJsx: true,
+    noStyle: true,
+  }),
+  {
+    plugins: {
+      sonarjs,
+    },
+    rules: {
+      "sonarjs/no-commented-code": "error",
+    },
+  },
+];
