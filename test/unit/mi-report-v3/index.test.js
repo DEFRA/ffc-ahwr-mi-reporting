@@ -60,7 +60,6 @@ describe("buildAhwrMiReport", () => {
     await buildAhwrMiReport(mockContext);
 
     expect(createFileName).toHaveBeenCalledWith("ahwr-mi-report-v3-");
-    // TODO AHWR-96 contains AHWR, correct?
     expect(consoleSpy).toHaveBeenCalledWith(
       expect.stringContaining(
         "Creating, storing but not uploading AHWR MI Report V3",
@@ -81,7 +80,6 @@ describe("buildAhwrMiReport", () => {
     await buildAhwrMiReport(mockContext);
 
     expect(createFileName).toHaveBeenCalledWith("ahwr-mi-report-v3-");
-    // TODO AHWR-96 contains AHWR, correct?
     expect(consoleSpy).toHaveBeenCalledWith(
       expect.stringContaining(
         "Creating, storing and uploading AHWR MI Report V3:",
