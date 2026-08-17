@@ -396,6 +396,35 @@ describe("transformEventToCsvV3", () => {
     ).toEqual(["unintentionalTypingError", "customerContactedRPA"]);
   });
 
+  test("returns csv row with biosecurity improvements data when withdrawal columns are enabled", async () => {
+    config.withdrawalColumnsReleaseDate = new Date("2025-04-25").toISOString();
+    const uuid = randomUUID();
+    const event = {
+      partitionKey: "123456789",
+      SessionId: uuid,
+      EventType: "claim-withdrawn",
+      EventRaised: new Date().toISOString(),
+      Payload: JSON.stringify({
+        type: "claim-withdrawn",
+        message: "Claim withdrawn",
+        data: {
+          reference: "REBC-VA4R-TRL7",
+          applicationReference: "IAHW-1234-APP1",
+          status: "WITHDRAWN",
+          biosecurityImprovements: "yes",
+        },
+        raisedBy: "admin",
+        raisedOn: "2026-04-28T14:50:31.444Z",
+      }),
+    };
+
+    const result = transformEventToCsvV3(event, mockContext);
+
+    expect(getColumnValues(result ?? "", ["biosecurityImprovements"])).toEqual([
+      "yes",
+    ]);
+  });
+
   test("does not return withdrawal data when withdrawal columns are disabled", async () => {
     config.withdrawalColumnsReleaseDate = undefined;
     const uuid = randomUUID();
@@ -582,5 +611,15 @@ describe("withdrawal field column mapping", () => {
     expect(
       getColumnValues(result ?? "", ["withdrawalDiscoveryMethod"]),
     ).toEqual(["customerContactedRPA"]);
+  });
+
+  test("biosecurityImprovements value maps to the correct column", () => {
+    const result = transformEventToCsvV3(
+      makeWithdrawalEvent(randomUUID(), "biosecurityImprovements", "yes"),
+      mockContext,
+    );
+    expect(getColumnValues(result ?? "", ["biosecurityImprovements"])).toEqual([
+      "yes",
+    ]);
   });
 });
