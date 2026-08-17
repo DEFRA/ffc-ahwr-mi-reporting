@@ -127,7 +127,11 @@ const poultryColumns = [
   "schemeExperienceInterview",
 ];
 
-const withdrawalColumns = ["withdrawalReason", "withdrawalDiscoveryMethod"];
+const withdrawalColumns = [
+  "withdrawalReason",
+  "withdrawalDiscoveryMethod",
+  "biosecurityImprovements",
+];
 
 const isWithdrawalColumnsEnabled = () => {
   if (!config.withdrawalColumnsReleaseDate) {
@@ -278,6 +282,7 @@ function transformEventToCsvV3(event, context) {
     schemeExperienceInterview,
     withdrawalReason,
     withdrawalDiscoveryMethod,
+    biosecurityImprovements,
   } = data ?? {};
   const { sbi, farmerName, name, email, orgEmail, address, crn, frn } =
     organisation ?? {};
@@ -334,7 +339,7 @@ function transformEventToCsvV3(event, context) {
     schemeExperienceInterview,
   ];
   const withdrawalData = isWithdrawalColumnsEnabled()
-    ? [withdrawalReason, withdrawalDiscoveryMethod]
+    ? [withdrawalReason, withdrawalDiscoveryMethod, biosecurityImprovements]
     : [];
 
   return [

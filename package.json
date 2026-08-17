@@ -80,7 +80,7 @@
   },
   "nano-staged": {
     "*.js": [
-      "standard --fix",
+      "eslint --fix",
       "prettier --write"
     ]
   }
