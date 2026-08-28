@@ -58,6 +58,20 @@ Each group must contain the following variables. Mark secrets with the lock icon
 | `SHAREPOINT_DOCUMENT_LIBRARY`           | No     | SharePoint document library name                                                                            |
 | `SHAREPOINT_DST_FOLDER`                 | No     | Destination folder path in SharePoint                                                                       |
 | `PAGE_SIZE`                             | No     | Number of records per page — defaults to `1000` if not set                                                  |
+| Variable                                | Secret | Description                                                                                                                                             |
+| --------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AZURE_WEB_JOBS_STORAGE`                | Yes    | Storage account connection string used by the Azure Functions runtime (`AzureWebJobsStorage`)                                                           |
+| `STORAGE_ACCOUNT_NAME`                  | No     | Storage account name which contains blobs and tables. Used with managed identity (`DefaultAzureCredential`)                                             |
+| `APPLICATIONINSIGHTS_CONNECTION_STRING` | Yes    | Application Insights connection string                                                                                                                  |
+| `SHAREPOINT_CLIENT_SECRET`              | Yes    | SharePoint app registration client secret                                                                                                               |
+| `SHAREPOINT_ENABLED`                    | No     | Feature toggle — `true` or `false`                                                                                                                      |
+| `SHAREPOINT_TENANT_ID`                  | No     | SharePoint tenant ID                                                                                                                                    |
+| `SHAREPOINT_CLIENT_ID`                  | No     | SharePoint app registration client ID                                                                                                                   |
+| `SHAREPOINT_HOSTNAME`                   | No     | e.g. `yourtenant.sharepoint.com`                                                                                                                        |
+| `SHAREPOINT_SITE_PATH`                  | No     | e.g. `/sites/yoursite`                                                                                                                                  |
+| `SHAREPOINT_DOCUMENT_LIBRARY`           | No     | SharePoint document library name                                                                                                                        |
+| `SHAREPOINT_DST_FOLDER`                 | No     | Destination folder path in SharePoint                                                                                                                   |
+| `PAGE_SIZE`                             | No     | Number of records per page — defaults to `1000` if not set                                                                                              |
 
 > **Note:** Each variable group must be linked to the pipeline. In the Library, open each group and under **Pipeline permissions** add the pipeline defined above.
 
