@@ -46,45 +46,28 @@ describe("config", () => {
     });
   });
 
-  test("uses STORAGE_CONNECTION_STRING when it is set", () => {
-    jest.replaceProperty(process, "env", {
-      ...baseEnv,
-      STORAGE_ACCOUNT_NAME: undefined,
-      STORAGE_CONNECTION_STRING: "UseDevelopmentStorage=true",
-    });
-
-    mockFeatureToggle(false);
-
-    const config = require(CONFIG_PATH);
-
-    expect(config.connectionString).toBe("UseDevelopmentStorage=true");
-    expect(config.storageAccountName).toBeUndefined();
-  });
-
-  test("accepts both STORAGE_CONNECTION_STRING and STORAGE_ACCOUNT_NAME when set together", () => {
+  test("uses STORAGE_ACCOUNT_NAME when it is set", () => {
     jest.replaceProperty(process, "env", {
       ...baseEnv,
       STORAGE_ACCOUNT_NAME: "account-name",
-      STORAGE_CONNECTION_STRING: "UseDevelopmentStorage=true",
     });
+
     mockFeatureToggle(false);
 
     const config = require(CONFIG_PATH);
 
-    expect(config.connectionString).toBe("UseDevelopmentStorage=true");
     expect(config.storageAccountName).toBe("account-name");
   });
 
-  test("throws when neither STORAGE_CONNECTION_STRING nor STORAGE_ACCOUNT_NAME is set", () => {
+  test("throws when STORAGE_ACCOUNT_NAME is not set", () => {
     jest.replaceProperty(process, "env", {
       ...baseEnv,
       STORAGE_ACCOUNT_NAME: undefined,
-      STORAGE_CONNECTION_STRING: undefined,
     });
     mockFeatureToggle(false);
 
     expect(() => require(CONFIG_PATH)).toThrow(
-      /must contain at least one of \[connectionString, storageAccountName\]/,
+      /"storageAccountName" is required/,
     );
   });
 

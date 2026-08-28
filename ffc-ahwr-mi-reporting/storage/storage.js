@@ -2,7 +2,6 @@ const { TableClient, odata } = require("@azure/data-tables");
 const { BlobServiceClient } = require("@azure/storage-blob");
 const { DefaultAzureCredential } = require("@azure/identity");
 const {
-  connectionString,
   containerName,
   tableName,
   pageSize,
@@ -48,39 +47,22 @@ const initialiseContainers = async (context) => {
 };
 
 const connect = async (context) => {
-  const authMethod = connectionString
-    ? "connectionString"
-    : "storageAccountName";
   context.log.info(
-    `Connecting to storage with ${authMethod} containerName ${containerName} tableName ${tableName}`,
+    `Connecting to storage with containerName ${containerName} tableName ${tableName}`,
   );
-
-  if (connectionString) {
-    blobServiceClient =
-      BlobServiceClient.fromConnectionString(connectionString);
-  } else {
-    blobServiceClient = new BlobServiceClient(
-      `https://${storageAccountName}.blob.core.windows.net`,
-      new DefaultAzureCredential(),
-    );
-  }
+  blobServiceClient = new BlobServiceClient(
+    `https://${storageAccountName}.blob.core.windows.net`,
+    new DefaultAzureCredential(),
+  );
   container = blobServiceClient.getContainerClient(containerName);
   await initialiseContainers(context);
 
-  if (connectionString) {
-    tableClient = TableClient.fromConnectionString(
-      connectionString,
-      tableName,
-      { allowInsecureConnection: true },
-    );
-  } else {
-    tableClient = new TableClient(
-      `https://${storageAccountName}.table.core.windows.net`,
-      tableName,
-      new DefaultAzureCredential(),
-      { allowInsecureConnection: true },
-    );
-  }
+  tableClient = new TableClient(
+    `https://${storageAccountName}.table.core.windows.net`,
+    tableName,
+    new DefaultAzureCredential(),
+    { allowInsecureConnection: true },
+  );
 };
 
 const processEntitiesByTimestampPaged = async (fileName, context) => {

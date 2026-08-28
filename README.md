@@ -6,7 +6,7 @@ FFC AHWR MI reporting
 
 Each record depicts the progression of an agreement or claim's journey.
 
-The report is generated based on events from the Azure Storage 'ahwreventstore' table (env.STORAGE_CONNECTION_STRING)
+The report is generated based on events from the Azure Storage 'ahwreventstore' table
 
 There are three distinct types of events:
 
@@ -47,8 +47,7 @@ Each group must contain the following variables. Mark secrets with the lock icon
 | Variable                                | Secret | Description                                                                                                                                             |
 | --------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `AZURE_WEB_JOBS_STORAGE`                | Yes    | Storage account connection string used by the Azure Functions runtime (`AzureWebJobsStorage`)                                                           |
-| `STORAGE_ACCOUNT_NAME`                  | No     | Storage account name which contains blobs and tables. Used with managed identity (`DefaultAzureCredential`) when `STORAGE_CONNECTION_STRING` is not set |
-| `STORAGE_CONNECTION_STRING`             | Yes    | Full connection string for the storage account containing blobs and tables. Takes precedence over `STORAGE_ACCOUNT_NAME` when set                       |
+| `STORAGE_ACCOUNT_NAME`                  | No     | Storage account name which contains blobs and tables. Used with managed identity (`DefaultAzureCredential`)                                             |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | Yes    | Application Insights connection string                                                                                                                  |
 | `SHAREPOINT_CLIENT_SECRET`              | Yes    | SharePoint app registration client secret                                                                                                               |
 | `SHAREPOINT_ENABLED`                    | No     | Feature toggle — `true` or `false`                                                                                                                      |
