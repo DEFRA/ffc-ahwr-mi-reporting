@@ -1,12 +1,8 @@
 const { TableClient, odata } = require("@azure/data-tables");
 const { BlobServiceClient } = require("@azure/storage-blob");
 const { DefaultAzureCredential } = require("@azure/identity");
-const {
-  containerName,
-  tableName,
-  pageSize,
-  storageAccountName,
-} = require("../config/config");
+const config = require("../config/config");
+const { containerName, tableName, pageSize, storageAccountName } = config;
 const {
   transformEventToCsvV3,
   buildColumns,
@@ -46,23 +42,48 @@ const initialiseContainers = async (context) => {
   }
 };
 
+const ensureLocalTableExists = async (context) => {
+  try {
+    await tableClient.createTable();
+    context.log.info(`Created local emulator table ${tableName}`);
+  } catch (err) {
+    if (/** @type {any} */ (err).statusCode !== 409) {
+      throw err;
+    }
+  }
+};
+
 const connect = async (context) => {
   context.log.info(
     `Connecting to storage with containerName ${containerName} tableName ${tableName}`,
   );
-  blobServiceClient = new BlobServiceClient(
-    `https://${storageAccountName}.blob.core.windows.net`,
-    new DefaultAzureCredential(),
-  );
+
+  if (config.featureToggle.useLocalEmulator) {
+    context.log.info("Connecting to the local Azure Emulator");
+    const azureWebJobsStorage = process.env.AzureWebJobsStorage;
+    blobServiceClient =
+      BlobServiceClient.fromConnectionString(azureWebJobsStorage);
+    tableClient = TableClient.fromConnectionString(
+      azureWebJobsStorage,
+      tableName,
+      { allowInsecureConnection: true },
+    );
+    await ensureLocalTableExists(context);
+  } else {
+    blobServiceClient = new BlobServiceClient(
+      `https://${storageAccountName}.blob.core.windows.net`,
+      new DefaultAzureCredential(),
+    );
+    tableClient = new TableClient(
+      `https://${storageAccountName}.table.core.windows.net`,
+      tableName,
+      new DefaultAzureCredential(),
+      { allowInsecureConnection: true },
+    );
+  }
+
   container = blobServiceClient.getContainerClient(containerName);
   await initialiseContainers(context);
-
-  tableClient = new TableClient(
-    `https://${storageAccountName}.table.core.windows.net`,
-    tableName,
-    new DefaultAzureCredential(),
-    { allowInsecureConnection: true },
-  );
 };
 
 const processEntitiesByTimestampPaged = async (fileName, context) => {

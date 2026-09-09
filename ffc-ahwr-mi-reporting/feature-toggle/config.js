@@ -8,6 +8,7 @@ function buildFeatureToggleConfig() {
     },
     poultryReleaseDate: Joi.string().optional(),
     withdrawalColumnsReleaseDate: Joi.string().optional(),
+    useLocalEmulator: Joi.boolean().optional().default(false),
   });
 
   // Build config
@@ -17,6 +18,7 @@ function buildFeatureToggleConfig() {
     },
     poultryReleaseDate: process.env.POULTRY_RELEASE_DATE,
     withdrawalColumnsReleaseDate: process.env.WITHDRAWAL_COLUMNS_RELEASE_DATE,
+    useLocalEmulator: process.env.USE_LOCAL_EMULATOR,
   };
 
   // Validate config
