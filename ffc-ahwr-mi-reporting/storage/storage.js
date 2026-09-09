@@ -20,6 +20,7 @@ const EVENT_TYPES_NOT_NEEDED_BY_REPORTING_TEAM = new Set([
   "tokens-state",
   "pkcecodes-verifier",
 ]);
+const HTTP_STATUS_CONFLICT = 409;
 
 /** @param {any} event @param {any} context */
 const transformEvent = (event, context) => {
@@ -47,7 +48,7 @@ const ensureLocalTableExists = async (context) => {
     await tableClient.createTable();
     context.log.info(`Created local emulator table ${tableName}`);
   } catch (err) {
-    if (/** @type {any} */ (err).statusCode !== 409) {
+    if (/** @type {any} */ (err).statusCode !== HTTP_STATUS_CONFLICT) {
       throw err;
     }
   }
