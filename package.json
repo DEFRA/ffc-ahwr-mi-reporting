@@ -27,12 +27,13 @@
     "@azure/storage-blob": "^12.13.0",
     "@hapi/wreck": "^18.0.1",
     "@pnp/nodejs-commonjs": "^2.15.0",
-    "joi": "18.2.1",
+    "joi": "18.2.5",
     "moment": "2.29.4"
   },
   "overrides": {
     "adal-node": {
-      "axios": "^1.8.2"
+      "axios": "^1.8.2",
+      "@xmldom/xmldom": "0.8.15"
     },
     "jsonwebtoken": "^9.0.0",
     "node-fetch": "^2.6.7",
