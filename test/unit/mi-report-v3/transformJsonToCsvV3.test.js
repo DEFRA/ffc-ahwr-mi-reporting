@@ -1,5 +1,8 @@
 const config = require("../../../ffc-ahwr-mi-reporting/feature-toggle/config");
 const {
+  PIG_GENETIC_SEQUENCING_VALUES,
+} = require("../../../ffc-ahwr-mi-reporting/mi-report-v3/pig-genetic-sequencing-values");
+const {
   transformEventToCsvV3,
   buildColumns,
   defaultColumns,
@@ -283,30 +286,35 @@ describe("transformEventToCsvV3", () => {
     );
   });
 
-  test("returns csv row with pig updates data", async () => {
-    const uuid = randomUUID();
-    const event = {
-      partitionKey: "123456",
-      SessionId: uuid,
-      EventType: "herd-created",
-      EventRaised: new Date().toISOString(),
-      Payload: JSON.stringify({
-        type: "claim-pigsGeneticSequencing",
-        message: "Session set for claim and pigsGeneticSequencing.",
-        data: {
-          reference: "TEMP-CLAIM-HTPH-6CKK",
-          applicationReference: "IAHW-8UZM-S5CE",
-          pigsGeneticSequencing: "mlv",
-        },
-        raisedBy: "peterevansu@snavereteps.com.test",
-        raisedOn: "2025-07-16T14:39:06.571Z",
-      }),
-    };
+  describe("returns csv row with pig updates data", () => {
+    test.each([...PIG_GENETIC_SEQUENCING_VALUES])(
+      "for sequencing $value",
+      async ({ value, label }) => {
+        const uuid = randomUUID();
+        const event = {
+          partitionKey: "123456",
+          SessionId: uuid,
+          EventType: "herd-created",
+          EventRaised: new Date().toISOString(),
+          Payload: JSON.stringify({
+            type: "claim-pigsGeneticSequencing",
+            message: "Session set for claim and pigsGeneticSequencing.",
+            data: {
+              reference: "TEMP-CLAIM-HTPH-6CKK",
+              applicationReference: "IAHW-8UZM-S5CE",
+              pigsGeneticSequencing: value,
+            },
+            raisedBy: "peterevansu@snavereteps.com.test",
+            raisedOn: "2025-07-16T14:39:06.571Z",
+          }),
+        };
 
-    const result = transformEventToCsvV3(event, mockContext);
+        const result = transformEventToCsvV3(event, mockContext);
 
-    expect(result).toBe(
-      `123456,${uuid},claim-pigsGeneticSequencing,Session set for claim and pigsGeneticSequencing.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Modified Live virus (MLV) only,,,,,,,,`,
+        expect(result).toBe(
+          `123456,${uuid},claim-pigsGeneticSequencing,Session set for claim and pigsGeneticSequencing.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,${label},,,,,,,,`,
+        );
+      },
     );
   });
 

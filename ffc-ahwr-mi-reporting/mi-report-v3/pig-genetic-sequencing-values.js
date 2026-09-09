@@ -21,6 +21,11 @@ const PIG_GENETIC_SEQUENCING_VALUES = [
     value: "prrs2",
     label: "Any PRRS 2 (reportable by the laboratory)",
   },
+  {
+    value: "hct",
+    label:
+      "Sequencing was not possible due to a high Cycle Threshold (Ct) value",
+  },
 ];
 
 module.exports = { PIG_GENETIC_SEQUENCING_VALUES };
