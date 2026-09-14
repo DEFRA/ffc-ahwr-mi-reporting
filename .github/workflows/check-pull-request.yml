@@ -1,4 +1,4 @@
-name: SonarQube Scan
+name: Check Pull Request
 
 on:
   push:
@@ -16,14 +16,14 @@ on:
 
 jobs:
   sonar-scan:
-    name: SonarQube Scan
+    name: Run Pull Request Checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -45,6 +45,6 @@ jobs:
 
       - name: SonarQube Scan
         if: github.actor != 'dependabot[bot]'
-        uses: SonarSource/sonarqube-scan-action@v5.3.1
+        uses: SonarSource/sonarqube-scan-action@v8.2.1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
