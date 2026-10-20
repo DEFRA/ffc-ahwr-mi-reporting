@@ -29,7 +29,6 @@ describe("transformEventToCsvV3", () => {
   afterEach(() => {
     consoleSpy.mockReset();
     config.poultryReleaseDate = undefined;
-    config.withdrawalColumnsReleaseDate = undefined;
   });
 
   test("returns undefined when no event provided", async () => {
@@ -52,7 +51,7 @@ describe("transformEventToCsvV3", () => {
     const result = transformEventToCsvV3(event, mockContext);
 
     expect(result).toBe(
-      "123456,789123456,farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+      "123456,789123456,farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
     );
   });
 
@@ -70,7 +69,7 @@ describe("transformEventToCsvV3", () => {
     const result = transformEventToCsvV3(event, mockContext);
 
     expect(result).toBe(
-      `123456,${uuid},farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`,
+      `123456,${uuid},farmerApplyData-organisation,Session set for farmerApplyData and organisation.,TEMP-1234-ABCD,,,,,123456,0123456789,9876543210,Farmer Brown,Brown Cow Farm,brown@test.com.test,brownorg@test.com.test,Yorkshire Moors AB1 1AB United Kingdom,brown@test.com.test,2024-02-15T13:23:57.287Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`,
     );
   });
 
@@ -106,7 +105,7 @@ describe("transformEventToCsvV3", () => {
     const result = transformEventToCsvV3(event, mockContext);
 
     expect(result).toBe(
-      "123456,789123456,application:status-updated:12,New stage execution has been created,AHWR-04DC-5073,,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+      "123456,789123456,application:status-updated:12,New stage execution has been created,AHWR-04DC-5073,,,,,,,,,,,,,someuser@email.com,2024-01-19T15:32:07.574Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,12,RECOMMENDED TO PAY,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
     );
   });
 
@@ -218,7 +217,7 @@ describe("transformEventToCsvV3", () => {
     const result = transformEventToCsvV3(event, mockContext);
 
     expect(result).toBe(
-      `123456,${uuid},application-flagged,Application flagged,,,,,,,,,,,,,,Jane Doe,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,b6b76548-bd6e-45b3-b137-05d930004c9b,Declined multi herds agreement,true,,,,,,,,,,,,,,,,,,,,,,,,,`,
+      `123456,${uuid},application-flagged,Application flagged,,,,,,,,,,,,,,Jane Doe,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,b6b76548-bd6e-45b3-b137-05d930004c9b,Declined multi herds agreement,true,,,,,,,,,,,,,,,,,,,,,,,,,,,,`,
     );
   });
 
@@ -257,7 +256,7 @@ describe("transformEventToCsvV3", () => {
     const result = transformEventToCsvV3(event, mockContext);
 
     expect(result).toBe(
-      `123456,${uuid},herd-created,Herd created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,${tempHerdId},${herdId},1,Porkers,pigs,123456789,true,true,true,true,true,true,true,,,,,,,,,,,`,
+      `123456,${uuid},herd-created,Herd created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,${tempHerdId},${herdId},1,Porkers,pigs,123456789,true,true,true,true,true,true,true,,,,,,,,,,,,,,`,
     );
   });
 
@@ -279,7 +278,7 @@ describe("transformEventToCsvV3", () => {
     const result = transformEventToCsvV3(event, mockContext);
 
     expect(result).toBe(
-      `123456,${uuid},application-created,Application created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`,
+      `123456,${uuid},application-created,Application created,,,,,,,,,,,,,,Admin,2025-03-28T12:06:37.489Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`,
     );
   });
 
@@ -306,7 +305,7 @@ describe("transformEventToCsvV3", () => {
     const result = transformEventToCsvV3(event, mockContext);
 
     expect(result).toBe(
-      `123456,${uuid},claim-pigsGeneticSequencing,Session set for claim and pigsGeneticSequencing.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Modified Live virus (MLV) only,,,,,,,,`,
+      `123456,${uuid},claim-pigsGeneticSequencing,Session set for claim and pigsGeneticSequencing.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Modified Live virus (MLV) only,,,,,,,,,,,`,
     );
   });
 
@@ -333,7 +332,7 @@ describe("transformEventToCsvV3", () => {
     const result = transformEventToCsvV3(event, mockContext);
 
     expect(result).toBe(
-      `123456,${uuid},claim-numberOfBloodSamples,Session set for claim and numberOfBloodSamples.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30,,,,,,`,
+      `123456,${uuid},claim-numberOfBloodSamples,Session set for claim and numberOfBloodSamples.,TEMP-CLAIM-HTPH-6CKK,IAHW-8UZM-S5CE,,,,,,,,,,,,peterevansu@snavereteps.com.test,2025-07-16T14:39:06.571Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30,,,,,,,,,`,
     );
   });
 
@@ -359,12 +358,11 @@ describe("transformEventToCsvV3", () => {
     const result = transformEventToCsvV3(event, mockContext);
 
     expect(result).toBe(
-      `107663771,${uuid},scheme-schemeType,Session set for fundingSelection and selectedFunding.,,,,,,,,,,,,,,peterdancem@ecnadretepw.com.test,2026-04-28T14:50:31.444Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,IAHW,,,,,`,
+      `107663771,${uuid},scheme-schemeType,Session set for fundingSelection and selectedFunding.,,,,,,,,,,,,,,peterdancem@ecnadretepw.com.test,2026-04-28T14:50:31.444Z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,IAHW,,,,,,,,`,
     );
   });
 
-  test("returns csv row with withdrawal data when withdrawal columns are enabled", async () => {
-    config.withdrawalColumnsReleaseDate = new Date("2025-04-25").toISOString();
+  test("returns csv row with withdrawal data", async () => {
     const uuid = randomUUID();
     const event = {
       partitionKey: "123456789",
@@ -396,8 +394,7 @@ describe("transformEventToCsvV3", () => {
     ).toEqual(["unintentionalTypingError", "customerContactedRPA"]);
   });
 
-  test("returns csv row with biosecurity improvements data when withdrawal columns are enabled", async () => {
-    config.withdrawalColumnsReleaseDate = new Date("2025-04-25").toISOString();
+  test("returns csv row with biosecurity improvements data", async () => {
     const uuid = randomUUID();
     const event = {
       partitionKey: "123456789",
@@ -424,59 +421,10 @@ describe("transformEventToCsvV3", () => {
       "yes",
     ]);
   });
-
-  test("does not return withdrawal data when withdrawal columns are disabled", async () => {
-    config.withdrawalColumnsReleaseDate = undefined;
-    const uuid = randomUUID();
-    const event = {
-      partitionKey: "123456789",
-      SessionId: uuid,
-      EventType: "claim-withdrawn",
-      EventRaised: new Date().toISOString(),
-      Payload: JSON.stringify({
-        type: "claim-withdrawn",
-        message: "Claim withdrawn",
-        data: {
-          reference: "REBC-VA4R-TRL7",
-          applicationReference: "IAHW-1234-APP1",
-          status: "WITHDRAWN",
-          withdrawalReason: "unintentionalTypingError",
-          withdrawalDiscoveryMethod: "customerContactedRPA",
-        },
-        raisedBy: "admin",
-        raisedOn: "2026-04-28T14:50:31.444Z",
-      }),
-    };
-
-    const result = transformEventToCsvV3(event, mockContext);
-
-    expect(result?.split(",")).toHaveLength(buildColumns().length);
-    expect(result).not.toContain("unintentionalTypingError");
-    expect(result).not.toContain("customerContactedRPA");
-  });
 });
 
 describe("buildColumns", () => {
-  afterEach(() => {
-    config.withdrawalColumnsReleaseDate = undefined;
-  });
-
-  test("it returns the correct columns when withdrawal columns are disabled", () => {
-    config.poultryReleaseDate = undefined;
-    config.withdrawalColumnsReleaseDate = undefined;
-    expect(buildColumns()).toEqual([
-      ...defaultColumns,
-      ...flagColumns,
-      ...multiHerdsColumns,
-      ...pigUpdatesColumns,
-      ...pigsAndPaymentsColumns,
-      ...poultryColumns,
-    ]);
-  });
-
-  test("it includes withdrawal columns when enabled", () => {
-    config.poultryReleaseDate = undefined;
-    config.withdrawalColumnsReleaseDate = new Date("2025-04-25").toISOString();
+  test("it returns the correct columns", () => {
     expect(buildColumns()).toEqual([
       ...defaultColumns,
       ...flagColumns,
@@ -575,14 +523,6 @@ describe("withdrawal field column mapping", () => {
       raisedBy: "admin",
       raisedOn: "2026-04-28T14:50:31.444Z",
     }),
-  });
-
-  beforeEach(() => {
-    config.withdrawalColumnsReleaseDate = new Date("2025-04-25").toISOString();
-  });
-
-  afterEach(() => {
-    config.withdrawalColumnsReleaseDate = undefined;
   });
 
   test("withdrawalReason value maps to the correct column", () => {
