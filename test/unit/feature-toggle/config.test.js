@@ -8,7 +8,6 @@ describe("feature-toggle config", () => {
     jest.resetModules();
     process.env = { ...ORIGINAL_ENV };
     delete process.env.SHAREPOINT_ENABLED;
-    delete process.env.WITHDRAWAL_COLUMNS_RELEASE_DATE;
   });
 
   afterAll(() => {
@@ -43,24 +42,6 @@ describe("feature-toggle config", () => {
 
       expect(() => require(FEATURE_TOGGLE_PATH)).toThrow(
         /feature toggle config is invalid/,
-      );
-    });
-  });
-
-  describe("withdrawalColumnsReleaseDate", () => {
-    test("is undefined when WITHDRAWAL_COLUMNS_RELEASE_DATE is not set", () => {
-      const config = require(FEATURE_TOGGLE_PATH);
-
-      expect(config.withdrawalColumnsReleaseDate).toBeUndefined();
-    });
-
-    test("is set when WITHDRAWAL_COLUMNS_RELEASE_DATE is provided", () => {
-      process.env.WITHDRAWAL_COLUMNS_RELEASE_DATE = "2025-04-25T00:00:00.000Z";
-
-      const config = require(FEATURE_TOGGLE_PATH);
-
-      expect(config.withdrawalColumnsReleaseDate).toBe(
-        "2025-04-25T00:00:00.000Z",
       );
     });
   });

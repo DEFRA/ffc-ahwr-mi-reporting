@@ -20,7 +20,6 @@ const {
 const {
   PIG_GENETIC_SEQUENCING_VALUES,
 } = require("./pig-genetic-sequencing-values");
-const config = require("../feature-toggle/config");
 
 // Define the CSV column names
 const defaultColumns = [
@@ -133,13 +132,6 @@ const withdrawalColumns = [
   "biosecurityImprovements",
 ];
 
-const isWithdrawalColumnsEnabled = () => {
-  if (!config.withdrawalColumnsReleaseDate) {
-    return false;
-  }
-  return new Date() >= new Date(config.withdrawalColumnsReleaseDate);
-};
-
 const buildColumns = () => {
   return [
     ...defaultColumns,
@@ -148,7 +140,7 @@ const buildColumns = () => {
     ...pigUpdatesColumns,
     ...pigsAndPaymentsColumns,
     ...poultryColumns,
-    ...(isWithdrawalColumnsEnabled() ? withdrawalColumns : []),
+    ...withdrawalColumns,
   ];
 };
 
@@ -338,9 +330,11 @@ function transformEventToCsvV3(event, context) {
     biosecurityUsefulness,
     schemeExperienceInterview,
   ];
-  const withdrawalData = isWithdrawalColumnsEnabled()
-    ? [withdrawalReason, withdrawalDiscoveryMethod, biosecurityImprovements]
-    : [];
+  const withdrawalData = [
+    withdrawalReason,
+    withdrawalDiscoveryMethod,
+    biosecurityImprovements,
+  ];
 
   return [
     sbiFromPartitionKey,
