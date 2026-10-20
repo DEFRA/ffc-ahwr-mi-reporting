@@ -135,3 +135,19 @@ In order to assist with local development you can trigger the reports to run eve
 In `function.json`, replace `"schedule": "0 0 6 * * *"` with `"schedule": "0 * * * * *"`.
 
 For different time triggers find this helpful website: [https://crontab.guru/](https://crontab.guru/).
+
+## Dependabot
+
+Currently setup to work into four groups, so we don't have PRs per package. The updates run once a week, on a Monday. Except for the security group, which is advisory-triggered and ignores the schedule.
+
+## SonarCloud
+
+This project is set up to integrate with sonarcloud, and scans will be performed on all pull requests, and on
+publish to main branch. We follow the quality gates as per DEFRA standards, and if coverage falls below the
+acceptable level, or new issues are introduced the build will fail.
+
+### About the licence
+
+The Open Government Licence (OGL) was developed by the Controller of Her Majesty's Stationery Office (HMSO) to enable information providers in the public sector to license the use and re-use of their information under a common open licence.
+
+It is designed to encourage use and re-use of information freely and flexibly, with only a few conditions.
