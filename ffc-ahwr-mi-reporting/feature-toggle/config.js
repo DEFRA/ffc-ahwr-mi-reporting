@@ -7,6 +7,7 @@ function buildFeatureToggleConfig() {
       enabled: Joi.boolean().optional().default(false),
     },
     poultryReleaseDate: Joi.string().optional(),
+    agreementStartDateColumnsReleaseDate: Joi.string().optional(),
     useLocalEmulator: Joi.boolean().optional().default(false),
   });
 
@@ -16,6 +17,8 @@ function buildFeatureToggleConfig() {
       enabled: process.env.SHAREPOINT_ENABLED,
     },
     poultryReleaseDate: process.env.POULTRY_RELEASE_DATE,
+    agreementStartDateColumnsReleaseDate:
+      process.env.AGREEMENT_START_DATE_COLUMNS_RELEASE_DATE,
     useLocalEmulator: process.env.USE_LOCAL_EMULATOR,
   };
 

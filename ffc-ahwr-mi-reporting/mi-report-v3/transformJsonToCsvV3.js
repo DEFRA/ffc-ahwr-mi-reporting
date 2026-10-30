@@ -16,7 +16,9 @@ const {
   getTestResultFromPossibleSources,
   getUrnResultFromPossibleSources,
   getDateOfTestingFromPossibleSources,
+  getAgreementStartDate,
 } = require("../utils/parse-data");
+const config = require("../feature-toggle/config");
 const {
   PIG_GENETIC_SEQUENCING_VALUES,
 } = require("./pig-genetic-sequencing-values");
@@ -132,6 +134,15 @@ const withdrawalColumns = [
   "biosecurityImprovements",
 ];
 
+const agreementStartDateColumns = ["agreementStartDate"];
+
+const isAgreementStartDateColumnsEnabled = () => {
+  if (!config.agreementStartDateColumnsReleaseDate) {
+    return false;
+  }
+  return new Date() >= new Date(config.agreementStartDateColumnsReleaseDate);
+};
+
 const buildColumns = () => {
   return [
     ...defaultColumns,
@@ -141,6 +152,7 @@ const buildColumns = () => {
     ...pigsAndPaymentsColumns,
     ...poultryColumns,
     ...withdrawalColumns,
+    ...(isAgreementStartDateColumnsEnabled() ? agreementStartDateColumns : []),
   ];
 };
 
@@ -336,6 +348,10 @@ function transformEventToCsvV3(event, context) {
     biosecurityImprovements,
   ];
 
+  const agreementStartDateData = isAgreementStartDateColumnsEnabled()
+    ? [getAgreementStartDate(type, updatedProperty, newValue)]
+    : [];
+
   return [
     sbiFromPartitionKey,
     sessionId,
@@ -413,6 +429,7 @@ function transformEventToCsvV3(event, context) {
     ...pigsAndPaymentsData,
     ...poultryData,
     ...withdrawalData,
+    ...agreementStartDateData,
   ]
     .map((item) => replaceCommasWithSpace(item))
     .join(",");
@@ -428,4 +445,5 @@ module.exports = {
   pigsAndPaymentsColumns,
   poultryColumns,
   withdrawalColumns,
+  agreementStartDateColumns,
 };

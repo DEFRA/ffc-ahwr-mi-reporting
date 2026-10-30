@@ -143,6 +143,17 @@ const getVisitDateFromPossibleSources = (
   return "";
 };
 
+const getAgreementStartDate = (type, updatedProperty, newValue) => {
+  // ahwr-application-backend (main) publishes this via applicationDataUpdateEvent, which keeps
+  // the type as "application-<field>" (event-publisher/application-data-update-event.js).
+  // updatedProperty is also checked so only the createdAt change fills the column.
+  if (type === "application-createdAt" && updatedProperty === "createdAt") {
+    return newValue;
+  }
+
+  return "";
+};
+
 const getVetNameFromPossibleSources = (
   vetNameValue,
   updatedProperty,
@@ -229,6 +240,7 @@ module.exports = {
   formatDate,
   getReferenceFromNestedData,
   getSbiFromPartitionKey,
+  getAgreementStartDate,
   getVetNameFromPossibleSources,
   getVetRcvsFromPossibleSources,
   getVisitDateFromPossibleSources,
