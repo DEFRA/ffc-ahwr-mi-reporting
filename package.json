@@ -23,21 +23,25 @@
   },
   "dependencies": {
     "@azure/data-tables": "13.3.2",
-    "@azure/identity": "^4.13.1",
+    "@azure/identity": "^4.14.1",
     "@azure/storage-blob": "^12.13.0",
     "@hapi/wreck": "^18.0.1",
     "@pnp/nodejs-commonjs": "^2.15.0",
     "joi": "18.2.9",
-    "moment": "2.29.4"
+    "moment": "2.31.0"
   },
   "overrides": {
     "adal-node": {
       "axios": "^1.8.2",
-      "@xmldom/xmldom": "0.8.15"
+      "@xmldom/xmldom": "0.8.15",
+      "uuid": "^11.1.1"
     },
     "jsonwebtoken": "^9.0.0",
     "node-fetch": "^2.6.7",
-    "form-data": "^4.0.6"
+    "form-data": "^4.0.6",
+    "@pnp/nodejs-commonjs": {
+      "@azure/msal-node": "^7.1.2"
+    }
   },
   "devDependencies": {
     "@babel/core": "7.27.4",
