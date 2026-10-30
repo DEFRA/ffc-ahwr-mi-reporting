@@ -13,6 +13,7 @@ const {
   getTestResultFromPossibleSources,
   parseSheepTestResults,
   getDateOfTestingFromPossibleSources,
+  getAgreementStartDate,
 } = require("../../../ffc-ahwr-mi-reporting/utils/parse-data");
 
 describe("formatDate(date)", () => {
@@ -408,5 +409,26 @@ describe("parseSheepTestResults", () => {
     );
 
     expect(result).toEqual("liverFluke  result clinicalSymptomsPresent");
+  });
+});
+
+describe("getAgreementStartDate", () => {
+  test("returns newValue for an application-createdAt event updating createdAt", () => {
+    expect(
+      getAgreementStartDate(
+        "application-createdAt",
+        "createdAt",
+        "2025-01-22T13:28:17.013Z",
+      ),
+    ).toEqual("2025-01-22T13:28:17.013Z");
+  });
+
+  test.each([
+    ["claim-createdAt", "createdAt"],
+    ["application-createdAt", "visitDate"],
+    ["claim-vetName", "vetName"],
+    [undefined, undefined],
+  ])("returns empty string for type %s and property %s", (type, property) => {
+    expect(getAgreementStartDate(type, property, "2025-01-01")).toEqual("");
   });
 });

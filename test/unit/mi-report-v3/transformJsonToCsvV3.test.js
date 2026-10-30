@@ -32,6 +32,7 @@ describe("transformEventToCsvV3", () => {
   afterEach(() => {
     consoleSpy.mockReset();
     config.poultryReleaseDate = undefined;
+    config.agreementStartDateColumnsReleaseDate = undefined;
   });
 
   test("returns undefined when no event provided", async () => {
@@ -569,5 +570,56 @@ describe("withdrawal field column mapping", () => {
     expect(getColumnValues(result ?? "", ["biosecurityImprovements"])).toEqual([
       "yes",
     ]);
+  });
+});
+
+describe("agreementStartDate column", () => {
+  const makeCreatedAtEvent = () => ({
+    partitionKey: "107663771",
+    SessionId: randomUUID(),
+    EventType: "application-createdAt",
+    EventRaised: new Date().toISOString(),
+    Payload: JSON.stringify({
+      type: "application-createdAt",
+      message: "Application data updated",
+      data: {
+        reference: "IAHW-8UZM-S5CE",
+        applicationReference: "IAHW-8UZM-S5CE",
+        updatedProperty: "createdAt",
+        newValue: "2025-01-22T13:28:17.013Z",
+      },
+      raisedBy: "Admin2",
+      raisedOn: "2026-05-12T10:20:34.857Z",
+    }),
+  });
+
+  afterEach(() => {
+    config.agreementStartDateColumnsReleaseDate = undefined;
+  });
+
+  test("column is absent when the release date is not set", () => {
+    expect(buildColumns()).not.toContain("agreementStartDate");
+  });
+
+  test("column is absent when the release date is in the future", () => {
+    config.agreementStartDateColumnsReleaseDate = "2999-01-01T00:00:00.000Z";
+    expect(buildColumns()).not.toContain("agreementStartDate");
+  });
+
+  test("column is last and populated from an application-createdAt event once released", () => {
+    config.agreementStartDateColumnsReleaseDate = "2025-01-01T00:00:00.000Z";
+    const columns = buildColumns();
+    const result = transformEventToCsvV3(makeCreatedAtEvent(), mockContext);
+
+    expect(columns[columns.length - 1]).toBe("agreementStartDate");
+    expect(getColumnValues(result ?? "", ["agreementStartDate"])).toEqual([
+      "2025-01-22T13:28:17.013Z",
+    ]);
+    expect((result ?? "").split(",")).toHaveLength(columns.length);
+  });
+
+  test("row has no extra cell before the release date", () => {
+    const result = transformEventToCsvV3(makeCreatedAtEvent(), mockContext);
+    expect((result ?? "").split(",")).toHaveLength(buildColumns().length);
   });
 });
