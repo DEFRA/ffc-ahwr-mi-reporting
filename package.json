@@ -24,10 +24,10 @@
   "dependencies": {
     "@azure/data-tables": "13.3.2",
     "@azure/identity": "^4.14.1",
-    "@azure/storage-blob": "^12.13.0",
+    "@azure/storage-blob": "^12.34.0",
     "@hapi/wreck": "^18.0.1",
     "@pnp/nodejs-commonjs": "^2.15.0",
-    "joi": "18.2.9",
+    "joi": "18.3.0",
     "moment": "2.31.0"
   },
   "overrides": {
