@@ -601,6 +601,14 @@ describe("agreementStartDate column", () => {
     expect(buildColumns()).not.toContain("agreementStartDate");
   });
 
+  test.each(["", "34/45/5193", "not-a-date"])(
+    "column is absent when the release date is %p",
+    (value) => {
+      config.agreementStartDateColumnsReleaseDate = value;
+      expect(buildColumns()).not.toContain("agreementStartDate");
+    },
+  );
+
   test("column is absent when the release date is in the future", () => {
     config.agreementStartDateColumnsReleaseDate = "2999-01-01T00:00:00.000Z";
     expect(buildColumns()).not.toContain("agreementStartDate");
