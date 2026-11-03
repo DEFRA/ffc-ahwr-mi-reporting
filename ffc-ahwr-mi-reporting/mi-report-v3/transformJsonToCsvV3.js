@@ -140,7 +140,8 @@ const isAgreementStartDateColumnsEnabled = () => {
   if (!config.agreementStartDateColumnsReleaseDate) {
     return false;
   }
-  return new Date() >= new Date(config.agreementStartDateColumnsReleaseDate);
+  const releaseDate = new Date(config.agreementStartDateColumnsReleaseDate);
+  return !Number.isNaN(releaseDate.getTime()) && new Date() >= releaseDate;
 };
 
 const buildColumns = () => {

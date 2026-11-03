@@ -7,7 +7,7 @@ function buildFeatureToggleConfig() {
       enabled: Joi.boolean().optional().default(false),
     },
     poultryReleaseDate: Joi.string().optional(),
-    agreementStartDateColumnsReleaseDate: Joi.string().optional(),
+    agreementStartDateColumnsReleaseDate: Joi.string().allow("").optional(),
     useLocalEmulator: Joi.boolean().optional().default(false),
   });
 
